@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
-    private static readonly int IsCarrying = Animator.StringToHash("IsCarrying");
+  
 
     void Awake()
     {
@@ -92,18 +92,14 @@ public class PlayerController : MonoBehaviour
         bool isMoving = movementInput.magnitude > 0.1f;
         
         animator.SetBool(IsMoving, isMoving);
-        animator.SetBool(IsCarrying, heldItem != null);
+   
         
         if (isMoving)
         {
             animator.SetFloat(MoveX, movementInput.x);
             animator.SetFloat(MoveY, movementInput.y);
             
-            // ������� ������� �� �����������
-            if (movementInput.x != 0)
-            {
-                spriteRenderer.flipX = movementInput.x < 0;
-            }
+         
         }
     }
 
