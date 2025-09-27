@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: WallTiles_11
+  m_Name: FloorTiles_7
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -5751794854050388275, guid: 4d58bc12262e76040a130c79a34f82b5, type: 3}
+  m_Sprite: {fileID: -3357707860964885180, guid: 96b78cad7bb6ddf4096fc152168d88c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
