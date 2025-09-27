@@ -1571,6 +1571,7 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 0d085fe2cf042ff4bbe869936dce78c9, type: 2}
+
     - target: {fileID: 6972211366622097466, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
       propertyPath: m_Constraints
       value: 4
@@ -1581,6 +1582,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6972211366622097466, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
       propertyPath: m_CollisionDetection
+
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844817550060832976, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
