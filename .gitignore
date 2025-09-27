@@ -7,6 +7,21 @@
 [Ll]ogs/
 MemoryCaptures/
 UserSettings/
+# Unity local settings
+Library/
+Temp/
+Obj/
+# Unity editor window layouts
+*.csproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
 
 # ===== Visual Studio / Rider / IDE files =====
 .vs/
