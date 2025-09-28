@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Unity.Cinemachine;
 
 public class BSPGenerator : MonoBehaviour
 {
@@ -21,27 +22,20 @@ public class BSPGenerator : MonoBehaviour
     public TileBase[] floorTiles;
     public TileBase wallTile;
 
-    [Header("Characters")]
-    public GameObject playerPrefab; // только игрок
+    [Header("Player")]
+    public GameObject mousePrefab;
 
-    public List<Leaf> leaves = new List<Leaf>();
+    [Header("Camera")]
+    public CinemachineCamera virtualCamera;
+
     private System.Random rng;
+    public List<Leaf> leaves = new List<Leaf>();
+    private GameObject playerInstance;
 
     void Start()
     {
         rng = new System.Random();
         Generate();
-    }
-
-    public List<Leaf> GetRoomLeaves()
-    {
-        List<Leaf> rooms = new List<Leaf>();
-        foreach (Leaf l in leaves)
-        {
-            if (l.room != RectInt.zero)
-                rooms.Add(l);
-        }
-        return rooms;
     }
 
     public void Generate()
@@ -50,23 +44,30 @@ public class BSPGenerator : MonoBehaviour
         wallTilemap.ClearAllTiles();
         leaves.Clear();
 
+        // Создаём корневой лист
         Leaf root = new Leaf(0, 0, mapWidth, mapHeight);
         leaves.Add(root);
 
         SplitLeaves(root);
+
+        // Создаём комнаты
         root.CreateRooms(rng);
 
+        // Рисуем комнаты
         foreach (Leaf l in leaves)
         {
             if (l.room != RectInt.zero)
                 DrawRoom(l.room);
         }
 
+        // Создаём двери
         root.CreateDoors(this);
+
+        // Строим стены
         BuildWalls();
 
-        // Спавн игрока в верхней центральной комнате
-        SpawnPlayerAtTopCenterRoom();
+        // Спавн мыши в верхней центральной комнате
+        SpawnMouse();
     }
 
     private void SplitLeaves(Leaf root)
@@ -130,6 +131,7 @@ public class BSPGenerator : MonoBehaviour
                 }
             }
 
+        // Замкнутый контур
         for (int x = -1; x <= mapWidth; x++)
         {
             wallTilemap.SetTile(new Vector3Int(x, -1, 0), wallTile);
@@ -162,10 +164,12 @@ public class BSPGenerator : MonoBehaviour
         composite.enabled = true;
     }
 
-    private void SpawnPlayerAtTopCenterRoom()
+    private void SpawnMouse()
     {
+        if (mousePrefab == null || leaves.Count == 0) return;
+
+        // Находим верхнюю центральную комнату
         Leaf topCenterRoom = FindTopCenterRoom();
-        if (topCenterRoom == null) return;
 
         Vector3 spawnPos = new Vector3(
             topCenterRoom.room.x + topCenterRoom.room.width / 2f,
@@ -173,10 +177,38 @@ public class BSPGenerator : MonoBehaviour
             0
         );
 
-        Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+        playerInstance = Instantiate(mousePrefab, spawnPos, Quaternion.identity);
 
-        // Показываем только эту комнату
+        // Камера следит за мышь
+           if (virtualCamera != null)
+        {
+            virtualCamera.Follow = playerInstance.transform;
+            virtualCamera.LookAt = playerInstance.transform; // для 2D необязательно
+        }
+
+        // Показываем только верхнюю комнату
         RevealRoom(topCenterRoom.room);
+
+        Debug.Log("Mouse spawned at: " + playerInstance.transform.position);
+        Debug.Log("Virtual Camera Follow set to: " + virtualCamera.Follow);
+    }
+
+    public void RevealRoom(RectInt room)
+    {
+        for (int x = 0; x < mapWidth; x++)
+            for (int y = 0; y < mapHeight; y++)
+            {
+                floorTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
+                wallTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
+            }
+
+        for (int x = room.xMin; x < room.xMax; x++)
+            for (int y = room.yMin; y < room.yMax; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (floorTilemap.GetTile(pos) != null) floorTilemap.SetColor(pos, Color.white);
+                if (wallTilemap.GetTile(pos) != null) wallTilemap.SetColor(pos, Color.white);
+            }
     }
 
     private Leaf FindTopCenterRoom()
@@ -197,24 +229,6 @@ public class BSPGenerator : MonoBehaviour
             }
         }
         return closest;
-    }
-
-    public void RevealRoom(RectInt room)
-    {
-        for (int x = 0; x < mapWidth; x++)
-            for (int y = 0; y < mapHeight; y++)
-            {
-                floorTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
-                wallTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
-            }
-
-        for (int x = room.xMin; x < room.xMax; x++)
-            for (int y = room.yMin; y < room.yMax; y++)
-            {
-                Vector3Int pos = new Vector3Int(x, y, 0);
-                if (floorTilemap.GetTile(pos) != null) floorTilemap.SetColor(pos, Color.white);
-                if (wallTilemap.GetTile(pos) != null) wallTilemap.SetColor(pos, Color.white);
-            }
     }
 }
 
