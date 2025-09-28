@@ -261,8 +261,7 @@ MonoBehaviour:
   floorTiles:
   - {fileID: 11400000, guid: b86ed1cf049070f47bb6ff964b1d299a, type: 2}
   wallTile: {fileID: 11400000, guid: bcee8185945c8b641b9bc83a98c63acf, type: 2}
-  playerPrefab: {fileID: 0}
-  mousePrefab: {fileID: 0}
+  playerPrefab: {fileID: 1177883326}
 --- !u!1 &843756221
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,52 +884,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!1 &1183809370
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1183809372}
-  - component: {fileID: 1183809371}
-  m_Layer: 0
-  m_Name: PlayerSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1183809371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183809370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54590bd6fde9cba40939061021900375, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: 0}
-  generator: {fileID: 777052143}
---- !u!4 &1183809372
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183809370}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.20303, y: -0.06411001, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1203193710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1668,7 +1621,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1526946620}
   - {fileID: 690265206}
-  - {fileID: 1183809372}
   - {fileID: 777052142}
   - {fileID: 1203193712}
   - {fileID: 25953770802269514}

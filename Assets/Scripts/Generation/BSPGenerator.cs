@@ -22,8 +22,7 @@ public class BSPGenerator : MonoBehaviour
     public TileBase wallTile;
 
     [Header("Characters")]
-    public GameObject playerPrefab;
-    public GameObject mousePrefab;
+    public GameObject playerPrefab; // только игрок
 
     public List<Leaf> leaves = new List<Leaf>();
     private System.Random rng;
@@ -33,17 +32,17 @@ public class BSPGenerator : MonoBehaviour
         rng = new System.Random();
         Generate();
     }
-    public List<Leaf> GetRoomLeaves()
-{
-    List<Leaf> rooms = new List<Leaf>();
-    foreach (Leaf l in leaves)
-    {
-        if (l.room != RectInt.zero)
-            rooms.Add(l);
-    }
-    return rooms;
-}
 
+    public List<Leaf> GetRoomLeaves()
+    {
+        List<Leaf> rooms = new List<Leaf>();
+        foreach (Leaf l in leaves)
+        {
+            if (l.room != RectInt.zero)
+                rooms.Add(l);
+        }
+        return rooms;
+    }
 
     public void Generate()
     {
@@ -51,31 +50,23 @@ public class BSPGenerator : MonoBehaviour
         wallTilemap.ClearAllTiles();
         leaves.Clear();
 
-        // Создаем корневой лист
         Leaf root = new Leaf(0, 0, mapWidth, mapHeight);
         leaves.Add(root);
 
         SplitLeaves(root);
-
-        // Создаем комнаты
         root.CreateRooms(rng);
 
-        // Рисуем комнаты
         foreach (Leaf l in leaves)
         {
             if (l.room != RectInt.zero)
                 DrawRoom(l.room);
         }
 
-        // Создаем двери между комнатами
         root.CreateDoors(this);
-
-        // Строим стены и замкнутый контур
         BuildWalls();
 
-        // Спавн игрока и мыши
-        SpawnCharacter(playerPrefab);
-        SpawnCharacter(mousePrefab);
+        // Спавн игрока в верхней центральной комнате
+        SpawnPlayerAtTopCenterRoom();
     }
 
     private void SplitLeaves(Leaf root)
@@ -139,7 +130,6 @@ public class BSPGenerator : MonoBehaviour
                 }
             }
 
-        // Замкнутый контур
         for (int x = -1; x <= mapWidth; x++)
         {
             wallTilemap.SetTile(new Vector3Int(x, -1, 0), wallTile);
@@ -172,30 +162,45 @@ public class BSPGenerator : MonoBehaviour
         composite.enabled = true;
     }
 
-    private void SpawnCharacter(GameObject prefab)
+    private void SpawnPlayerAtTopCenterRoom()
     {
-        if (prefab == null || leaves.Count == 0) return;
+        Leaf topCenterRoom = FindTopCenterRoom();
+        if (topCenterRoom == null) return;
 
-        // Находим случайную комнату
-        Leaf roomLeaf = leaves[rng.Next(leaves.Count)];
-        while (roomLeaf.room == RectInt.zero) roomLeaf = leaves[rng.Next(leaves.Count)];
+        Vector3 spawnPos = new Vector3(
+            topCenterRoom.room.x + topCenterRoom.room.width / 2f,
+            topCenterRoom.room.y + topCenterRoom.room.height / 2f,
+            0
+        );
 
-        int x = rng.Next(roomLeaf.room.xMin + 1, roomLeaf.room.xMax - 1);
-        int y = rng.Next(roomLeaf.room.yMin + 1, roomLeaf.room.yMax - 1);
-        Vector3 spawnPos = new Vector3(x + 0.5f, y + 0.5f, 0);
+        Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
-        Instantiate(prefab, spawnPos, Quaternion.identity);
+        // Показываем только эту комнату
+        RevealRoom(topCenterRoom.room);
+    }
 
-        // Показываем только комнату, если это игрок
-        if (prefab == playerPrefab)
+    private Leaf FindTopCenterRoom()
+    {
+        Vector2 topCenter = new Vector2(mapWidth / 2f, mapHeight - 2);
+        Leaf closest = null;
+        float minDist = float.MaxValue;
+
+        foreach (Leaf l in leaves)
         {
-            RevealRoom(roomLeaf.room);
+            if (l.room == RectInt.zero) continue;
+            Vector2 roomCenter = new Vector2(l.room.x + l.room.width / 2f, l.room.y + l.room.height / 2f);
+            float dist = Vector2.Distance(topCenter, roomCenter);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = l;
+            }
         }
+        return closest;
     }
 
     public void RevealRoom(RectInt room)
     {
-        // Скрываем все тайлы
         for (int x = 0; x < mapWidth; x++)
             for (int y = 0; y < mapHeight; y++)
             {
@@ -203,7 +208,6 @@ public class BSPGenerator : MonoBehaviour
                 wallTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
             }
 
-        // Показываем только текущую комнату
         for (int x = room.xMin; x < room.xMax; x++)
             for (int y = room.yMin; y < room.yMax; y++)
             {
@@ -274,7 +278,6 @@ public class Leaf
             Vector2Int c1 = left.GetRoomCenter();
             Vector2Int c2 = right.GetRoomCenter();
 
-            // горизонтальная или вертикальная дверь
             if (c1.x != c2.x)
             {
                 int doorX = (c1.x + c2.x) / 2;
