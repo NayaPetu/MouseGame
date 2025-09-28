@@ -262,6 +262,7 @@ MonoBehaviour:
   wallTile: {fileID: 11400000, guid: bcee8185945c8b641b9bc83a98c63acf, type: 2}
   arcTile: {fileID: 11400000, guid: 90bcedba8e809fb4eb8ecd060bd02219, type: 2}
   playerPrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
+  enemyCatPrefab: {fileID: 233196495347687082, guid: bf31d04492cf0c54290b8bde96e32be2, type: 3}
   virtualCamera: {fileID: 865403527}
 --- !u!1 &843756221
 GameObject:

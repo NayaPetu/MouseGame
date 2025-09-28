@@ -21,10 +21,13 @@ public class BSPGenerator : MonoBehaviour
     [Header("Tiles")]
     public TileBase floorTile;
     public TileBase wallTile;
-    public TileBase arcTile; // новый тайл для арок
+    public TileBase arcTile;
 
     [Header("Player")]
     public GameObject playerPrefab;
+
+    [Header("Enemy")]
+    public GameObject enemyCatPrefab;
 
     [Header("Camera")]
     public CinemachineCamera virtualCamera;
@@ -45,34 +48,21 @@ public class BSPGenerator : MonoBehaviour
         wallTilemap.ClearAllTiles();
         leaves.Clear();
 
-        // Корневой лист BSP
         Leaf root = new Leaf(0, 0, mapWidth, mapHeight);
         leaves.Add(root);
 
-        // Разделяем листья
         SplitLeaves(root);
-
-        // Создаём комнаты
         root.CreateRooms(rng);
 
-        // Рисуем комнаты
         foreach (Leaf l in leaves)
             if (l.room != RectInt.zero)
                 DrawRoom(l.room);
 
-        // Создаём арки между соседними комнатами
         root.CreateArcs(this);
-
-        // Строим стены, учитывая арки
         BuildWalls();
-
-        // Скрываем все комнаты
         HideAllRooms();
 
-        // Спавним игрока
         SpawnPlayer();
-
-        // Обновление видимости
         StartCoroutine(UpdateVisibleRooms());
     }
 
@@ -109,7 +99,6 @@ public class BSPGenerator : MonoBehaviour
                 floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTile);
     }
 
-    // Построение стен, пропуская арки
     public void BuildWalls()
     {
         BoundsInt bounds = floorTilemap.cellBounds;
@@ -118,11 +107,8 @@ public class BSPGenerator : MonoBehaviour
             for (int y = bounds.yMin - 1; y <= bounds.yMax + 1; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
+                if (floorTilemap.GetTile(pos) != null) continue; // пол или арка
 
-                if (floorTilemap.GetTile(pos) != null) continue; // внутри комнаты
-                if (floorTilemap.GetTile(pos) == arcTile) continue; // арка
-
-                // если сосед есть пол или арка — ставим стену
                 Vector3Int[] neighbors = {
                     new Vector3Int(x+1, y, 0),
                     new Vector3Int(x-1, y, 0),
@@ -132,7 +118,8 @@ public class BSPGenerator : MonoBehaviour
 
                 foreach (var n in neighbors)
                 {
-                    if (floorTilemap.GetTile(n) != null)
+                    TileBase t = floorTilemap.GetTile(n);
+                    if (t != null) 
                     {
                         wallTilemap.SetTile(pos, wallTile);
                         wallTilemap.SetColor(pos, Color.white);
@@ -159,14 +146,57 @@ public class BSPGenerator : MonoBehaviour
     private void SpawnPlayer()
     {
         Leaf startLeaf = FindTopCenterLeaf();
-        Vector3 spawnPos = new Vector3(startLeaf.room.x + startLeaf.room.width / 2f,
-                                       startLeaf.room.y + startLeaf.room.height / 2f, 0);
+        Vector3 spawnPos = new Vector3(
+            startLeaf.room.x + startLeaf.room.width / 2f,
+            startLeaf.room.y + startLeaf.room.height / 2f,
+            0
+        );
         playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-
         if (virtualCamera != null)
             virtualCamera.Follow = playerInstance.transform;
 
         RevealRoom(startLeaf.room);
+        SpawnEnemyInSameRoom();
+    }
+
+    private void SpawnEnemyInSameRoom()
+    {
+        if (enemyCatPrefab == null || playerInstance == null) return;
+        Leaf room = FindLeafContainingPosition(playerInstance.transform.position);
+        Vector3 enemyPos = new Vector3(
+            room.room.x + room.room.width / 2f,
+            room.room.y + room.room.height / 2f,
+            0
+        );
+        GameObject enemy = Instantiate(enemyCatPrefab, enemyPos, Quaternion.identity);
+
+        EnemyAI ai = enemy.GetComponent<EnemyAI>();
+        if (ai != null)
+            ai.Init(GenerateWalkableMap());
+    }
+
+    private Leaf FindLeafContainingPosition(Vector3 pos)
+    {
+        foreach (Leaf leaf in leaves)
+        {
+            if (leaf.room == RectInt.zero) continue;
+            Rect r = new Rect(leaf.room.x, leaf.room.y, leaf.room.width, leaf.room.height);
+            if (r.Contains(new Vector2(pos.x, pos.y))) return leaf;
+        }
+        return null;
+    }
+
+    private bool[,] GenerateWalkableMap()
+    {
+        bool[,] map = new bool[mapWidth, mapHeight];
+        for (int x = 0; x < mapWidth; x++)
+            for (int y = 0; y < mapHeight; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                TileBase t = floorTilemap.GetTile(pos);
+                map[x, y] = t == floorTile || t == arcTile; // арки тоже проходимы
+            }
+        return map;
     }
 
     private Leaf FindTopCenterLeaf()
@@ -174,7 +204,6 @@ public class BSPGenerator : MonoBehaviour
         Vector2 topCenter = new Vector2(mapWidth / 2f, mapHeight - 2);
         Leaf closest = null;
         float minDist = float.MaxValue;
-
         foreach (Leaf l in leaves)
         {
             if (l.room == RectInt.zero) continue;
@@ -200,7 +229,6 @@ public class BSPGenerator : MonoBehaviour
             }
     }
 
-    // Создание арки (проход в стене)
     public void CreateArc(Vector2Int pos)
     {
         floorTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), arcTile);
@@ -229,7 +257,7 @@ public class BSPGenerator : MonoBehaviour
     }
 }
 
-// ===== Класс листа BSP =====
+// ===== Leaf =====
 public class Leaf
 {
     public int x, y, width, height;
@@ -252,7 +280,6 @@ public class Leaf
         if (max <= minSize) return false;
 
         int split = rng.Next(minSize, max);
-
         if (splitH)
         {
             left = new Leaf(x, y, width, split);
@@ -290,7 +317,6 @@ public class Leaf
             Vector2Int c1 = left.GetRoomCenter();
             Vector2Int c2 = right.GetRoomCenter();
 
-            // Арка на стене между комнатами
             Vector2Int arcPos;
             if (c1.x != c2.x)
                 arcPos = new Vector2Int((c1.x + c2.x) / 2, Random.Range(
