@@ -19,17 +19,18 @@ public class BSPGenerator : MonoBehaviour
     public Tilemap wallTilemap;
 
     [Header("Tiles")]
-    public TileBase[] floorTiles;
+    public TileBase floorTile;
     public TileBase wallTile;
+    public TileBase arcTile; // новый тайл для арок
 
     [Header("Player")]
-    public GameObject mousePrefab;
+    public GameObject playerPrefab;
 
     [Header("Camera")]
     public CinemachineCamera virtualCamera;
 
     private System.Random rng;
-    public List<Leaf> leaves = new List<Leaf>();
+    private List<Leaf> leaves = new List<Leaf>();
     private GameObject playerInstance;
 
     void Start()
@@ -44,10 +45,11 @@ public class BSPGenerator : MonoBehaviour
         wallTilemap.ClearAllTiles();
         leaves.Clear();
 
-        // Создаём корневой лист
+        // Корневой лист BSP
         Leaf root = new Leaf(0, 0, mapWidth, mapHeight);
         leaves.Add(root);
 
+        // Разделяем листья
         SplitLeaves(root);
 
         // Создаём комнаты
@@ -55,19 +57,23 @@ public class BSPGenerator : MonoBehaviour
 
         // Рисуем комнаты
         foreach (Leaf l in leaves)
-        {
             if (l.room != RectInt.zero)
                 DrawRoom(l.room);
-        }
 
-        // Создаём двери
-        root.CreateDoors(this);
+        // Создаём арки между соседними комнатами
+        root.CreateArcs(this);
 
-        // Строим стены
+        // Строим стены, учитывая арки
         BuildWalls();
 
-        // Спавн мыши в верхней центральной комнате
-        SpawnMouse();
+        // Скрываем все комнаты
+        HideAllRooms();
+
+        // Спавним игрока
+        SpawnPlayer();
+
+        // Обновление видимости
+        StartCoroutine(UpdateVisibleRooms());
     }
 
     private void SplitLeaves(Leaf root)
@@ -77,7 +83,6 @@ public class BSPGenerator : MonoBehaviour
         {
             didSplit = false;
             List<Leaf> newLeaves = new List<Leaf>();
-
             foreach (Leaf l in leaves)
             {
                 if (l.left == null && l.right == null)
@@ -101,117 +106,70 @@ public class BSPGenerator : MonoBehaviour
     {
         for (int x = room.xMin; x < room.xMax; x++)
             for (int y = room.yMin; y < room.yMax; y++)
-                floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTiles[rng.Next(floorTiles.Length)]);
+                floorTilemap.SetTile(new Vector3Int(x, y, 0), floorTile);
     }
 
-    public void DrawDoor(Vector2Int pos)
-    {
-        floorTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), floorTiles[rng.Next(floorTiles.Length)]);
-        wallTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), null);
-    }
-
-    private void BuildWalls()
+    // Построение стен, пропуская арки
+    public void BuildWalls()
     {
         BoundsInt bounds = floorTilemap.cellBounds;
         for (int x = bounds.xMin - 1; x <= bounds.xMax + 1; x++)
+        {
             for (int y = bounds.yMin - 1; y <= bounds.yMax + 1; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
-                if (floorTilemap.GetTile(pos) != null)
+
+                if (floorTilemap.GetTile(pos) != null) continue; // внутри комнаты
+                if (floorTilemap.GetTile(pos) == arcTile) continue; // арка
+
+                // если сосед есть пол или арка — ставим стену
+                Vector3Int[] neighbors = {
+                    new Vector3Int(x+1, y, 0),
+                    new Vector3Int(x-1, y, 0),
+                    new Vector3Int(x, y+1, 0),
+                    new Vector3Int(x, y-1, 0)
+                };
+
+                foreach (var n in neighbors)
                 {
-                    Vector3Int[] neighbors = {
-                        new Vector3Int(x+1, y, 0),
-                        new Vector3Int(x-1, y, 0),
-                        new Vector3Int(x, y+1, 0),
-                        new Vector3Int(x, y-1, 0)
-                    };
-                    foreach (var n in neighbors)
-                        if (floorTilemap.GetTile(n) == null)
-                            wallTilemap.SetTile(n, wallTile);
+                    if (floorTilemap.GetTile(n) != null)
+                    {
+                        wallTilemap.SetTile(pos, wallTile);
+                        wallTilemap.SetColor(pos, Color.white);
+                        break;
+                    }
                 }
             }
-
-        // Замкнутый контур
-        for (int x = -1; x <= mapWidth; x++)
-        {
-            wallTilemap.SetTile(new Vector3Int(x, -1, 0), wallTile);
-            wallTilemap.SetTile(new Vector3Int(x, mapHeight, 0), wallTile);
         }
-        for (int y = -1; y <= mapHeight; y++)
-        {
-            wallTilemap.SetTile(new Vector3Int(-1, y, 0), wallTile);
-            wallTilemap.SetTile(new Vector3Int(mapWidth, y, 0), wallTile);
-        }
-
-        wallTilemap.RefreshAllTiles();
-        StartCoroutine(UpdateColliderNextFrame());
     }
 
-    private IEnumerator UpdateColliderNextFrame()
-    {
-        yield return null;
-        var tilemapCollider = wallTilemap.GetComponent<TilemapCollider2D>();
-        var composite = wallTilemap.GetComponent<CompositeCollider2D>();
-        var rb = wallTilemap.GetComponent<Rigidbody2D>();
-
-        tilemapCollider.compositeOperation = TilemapCollider2D.CompositeOperation.Merge;
-        composite.geometryType = CompositeCollider2D.GeometryType.Polygons;
-        rb.bodyType = RigidbodyType2D.Static;
-
-        tilemapCollider.enabled = false;
-        tilemapCollider.enabled = true;
-        composite.enabled = false;
-        composite.enabled = true;
-    }
-
-    private void SpawnMouse()
-    {
-        if (mousePrefab == null || leaves.Count == 0) return;
-
-        // Находим верхнюю центральную комнату
-        Leaf topCenterRoom = FindTopCenterRoom();
-
-        Vector3 spawnPos = new Vector3(
-            topCenterRoom.room.x + topCenterRoom.room.width / 2f,
-            topCenterRoom.room.y + topCenterRoom.room.height / 2f,
-            0
-        );
-
-        playerInstance = Instantiate(mousePrefab, spawnPos, Quaternion.identity);
-
-        // Камера следит за мышь
-           if (virtualCamera != null)
-        {
-            virtualCamera.Follow = playerInstance.transform;
-            virtualCamera.LookAt = playerInstance.transform; // для 2D необязательно
-        }
-
-        // Показываем только верхнюю комнату
-        RevealRoom(topCenterRoom.room);
-
-        Debug.Log("Mouse spawned at: " + playerInstance.transform.position);
-        Debug.Log("Virtual Camera Follow set to: " + virtualCamera.Follow);
-    }
-
-    public void RevealRoom(RectInt room)
+    private void HideAllRooms()
     {
         for (int x = 0; x < mapWidth; x++)
             for (int y = 0; y < mapHeight; y++)
             {
-                floorTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
-                wallTilemap.SetColor(new Vector3Int(x, y, 0), Color.clear);
-            }
-
-        for (int x = room.xMin; x < room.xMax; x++)
-            for (int y = room.yMin; y < room.yMax; y++)
-            {
                 Vector3Int pos = new Vector3Int(x, y, 0);
-                if (floorTilemap.GetTile(pos) != null) floorTilemap.SetColor(pos, Color.white);
-                if (wallTilemap.GetTile(pos) != null) wallTilemap.SetColor(pos, Color.white);
+                if (floorTilemap.GetTile(pos) != null)
+                    floorTilemap.SetColor(pos, Color.clear);
+                if (wallTilemap.GetTile(pos) != null)
+                    wallTilemap.SetColor(pos, Color.clear);
             }
     }
 
-    private Leaf FindTopCenterRoom()
+    private void SpawnPlayer()
+    {
+        Leaf startLeaf = FindTopCenterLeaf();
+        Vector3 spawnPos = new Vector3(startLeaf.room.x + startLeaf.room.width / 2f,
+                                       startLeaf.room.y + startLeaf.room.height / 2f, 0);
+        playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+
+        if (virtualCamera != null)
+            virtualCamera.Follow = playerInstance.transform;
+
+        RevealRoom(startLeaf.room);
+    }
+
+    private Leaf FindTopCenterLeaf()
     {
         Vector2 topCenter = new Vector2(mapWidth / 2f, mapHeight - 2);
         Leaf closest = null;
@@ -230,14 +188,54 @@ public class BSPGenerator : MonoBehaviour
         }
         return closest;
     }
+
+    private void RevealRoom(RectInt room)
+    {
+        for (int x = room.xMin; x < room.xMax; x++)
+            for (int y = room.yMin; y < room.yMax; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (floorTilemap.GetTile(pos) != null) floorTilemap.SetColor(pos, Color.white);
+                if (wallTilemap.GetTile(pos) != null) wallTilemap.SetColor(pos, Color.white);
+            }
+    }
+
+    // Создание арки (проход в стене)
+    public void CreateArc(Vector2Int pos)
+    {
+        floorTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), arcTile);
+        floorTilemap.SetColor(new Vector3Int(pos.x, pos.y, 0), Color.white);
+        wallTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), null);
+    }
+
+    private IEnumerator UpdateVisibleRooms()
+    {
+        while (true)
+        {
+            Vector2 playerPos = playerInstance.transform.position;
+            foreach (Leaf leaf in leaves)
+            {
+                if (leaf.room == RectInt.zero) continue;
+                Rect roomRect = new Rect(leaf.room.x, leaf.room.y, leaf.room.width, leaf.room.height);
+                if (roomRect.Contains(playerPos))
+                {
+                    RevealRoom(leaf.room);
+                    foreach (Vector2Int arc in leaf.arcs)
+                        CreateArc(arc);
+                }
+            }
+            yield return null;
+        }
+    }
 }
 
-// ===== CLASS LEAF =====
+// ===== Класс листа BSP =====
 public class Leaf
 {
     public int x, y, width, height;
     public Leaf left, right;
     public RectInt room;
+    public List<Vector2Int> arcs = new List<Vector2Int>();
 
     public Leaf(int x, int y, int w, int h)
     {
@@ -277,36 +275,39 @@ public class Leaf
         }
         else
         {
-            int rw = rng.Next(6, Mathf.Min(12, width - 2));
-            int rh = rng.Next(6, Mathf.Min(12, height - 2));
+            int rw = rng.Next(6, width - 2);
+            int rh = rng.Next(6, height - 2);
             int rx = rng.Next(x + 1, x + width - rw - 1);
             int ry = rng.Next(y + 1, y + height - rh - 1);
             room = new RectInt(rx, ry, rw, rh);
         }
     }
 
-    public void CreateDoors(BSPGenerator gen)
+    public void CreateArcs(BSPGenerator gen)
     {
         if (left != null && right != null)
         {
             Vector2Int c1 = left.GetRoomCenter();
             Vector2Int c2 = right.GetRoomCenter();
 
+            // Арка на стене между комнатами
+            Vector2Int arcPos;
             if (c1.x != c2.x)
-            {
-                int doorX = (c1.x + c2.x) / 2;
-                int doorY = c1.y;
-                gen.DrawDoor(new Vector2Int(doorX, doorY));
-            }
+                arcPos = new Vector2Int((c1.x + c2.x) / 2, Random.Range(
+                    Mathf.Max(left.room.y, right.room.y),
+                    Mathf.Min(left.room.y + left.room.height - 1, right.room.y + right.room.height - 1)
+                ));
             else
-            {
-                int doorY = (c1.y + c2.y) / 2;
-                int doorX = c1.x;
-                gen.DrawDoor(new Vector2Int(doorX, doorY));
-            }
+                arcPos = new Vector2Int(Random.Range(
+                    Mathf.Max(left.room.x, right.room.x),
+                    Mathf.Min(left.room.x + left.room.width - 1, right.room.x + right.room.width - 1)
+                ), (c1.y + c2.y) / 2);
 
-            left.CreateDoors(gen);
-            right.CreateDoors(gen);
+            arcs.Add(arcPos);
+            gen.CreateArc(arcPos);
+
+            left.CreateArcs(gen);
+            right.CreateArcs(gen);
         }
     }
 

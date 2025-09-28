@@ -258,10 +258,10 @@ MonoBehaviour:
   maxLeafSize: 20
   floorTilemap: {fileID: 922833459}
   wallTilemap: {fileID: 1248919436}
-  floorTiles:
-  - {fileID: 11400000, guid: b86ed1cf049070f47bb6ff964b1d299a, type: 2}
+  floorTile: {fileID: 11400000, guid: 8af94ee125b44524fb9a7d39b7b822df, type: 2}
   wallTile: {fileID: 11400000, guid: bcee8185945c8b641b9bc83a98c63acf, type: 2}
-  mousePrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
+  arcTile: {fileID: 11400000, guid: 90bcedba8e809fb4eb8ecd060bd02219, type: 2}
+  playerPrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
   virtualCamera: {fileID: 865403527}
 --- !u!1 &843756221
 GameObject:
@@ -546,7 +546,7 @@ GameObject:
   m_Component:
   - component: {fileID: 865403528}
   - component: {fileID: 865403527}
-  - component: {fileID: 865403526}
+  - component: {fileID: 865403530}
   - component: {fileID: 865403525}
   - component: {fileID: 865403529}
   m_Layer: 0
@@ -576,37 +576,6 @@ MonoBehaviour:
     MaxWindowSize: 0
     Padding: 0
   m_LegacyMaxWindowSize: -2
---- !u!114 &865403526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 865403524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
-  CameraDistance: 10
-  DeadZoneDepth: 0
-  Composition:
-    ScreenPosition: {x: 0, y: 0}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 1, y: 1, z: 1}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
 --- !u!114 &865403527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,6 +647,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraConfinerSwitcher
   confiner: {fileID: 865403525}
+--- !u!114 &865403530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 865403524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
+  TrackerSettings:
+    BindingMode: 4
+    PositionDamping: {x: 1, y: 1, z: 1}
+    AngularDampingMode: 0
+    RotationDamping: {x: 1, y: 1, z: 1}
+    QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 0, z: -10}
 --- !u!1 &922833456
 GameObject:
   m_ObjectHideFlags: 0
