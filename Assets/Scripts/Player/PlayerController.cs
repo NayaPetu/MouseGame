@@ -150,21 +150,33 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TryChangeTile()
+   private Vector3 SnapToPixelGrid(Vector3 worldPos, int pixelsPerUnit = 16)
+{
+    float unitsPerPixel = 1f / pixelsPerUnit;
+    worldPos.x = Mathf.Round(worldPos.x / unitsPerPixel) * unitsPerPixel;
+    worldPos.y = Mathf.Round(worldPos.y / unitsPerPixel) * unitsPerPixel;
+    return worldPos;
+}
+
+
+private void TryChangeTile()
+{
+    Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    mouseWorldPos = SnapToPixelGrid(mouseWorldPos); // округляем
+
+    Vector2 mousePos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
+
+    RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero, 0f, tileChangeLayer);
+    if (hit.collider != null)
     {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
-        
-        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero, 0f, tileChangeLayer);
-        if (hit.collider != null)
+        TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
+        if (tileChanger != null)
         {
-            TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
-            if (tileChanger != null)
-            {
-                tileChanger.ChangeTile(hit.point);
-            }
+            tileChanger.ChangeTile(SnapToPixelGrid(hit.point)); // округляем точку изменения
         }
     }
+}
+
 
     public void PickUpItem(GameObject item)
     {
