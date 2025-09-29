@@ -172,11 +172,11 @@ public class PlayerController : MonoBehaviour
         
         heldItem = item;
         
-        // ������ ������� �������� ��������
+     
         heldItem.transform.SetParent(itemHoldPosition);
         heldItem.transform.localPosition = Vector3.zero;
         
-        // ��������� ������ � ��������� � ��������
+   
         Rigidbody2D itemRb = heldItem.GetComponent<Rigidbody2D>();
         Collider2D itemCollider = heldItem.GetComponent<Collider2D>();
         
@@ -188,17 +188,17 @@ public class PlayerController : MonoBehaviour
     {
         if (heldItem == null) return;
         
-        // ��������������� ������ � ���������
+     
         Rigidbody2D itemRb = heldItem.GetComponent<Rigidbody2D>();
         Collider2D itemCollider = heldItem.GetComponent<Collider2D>();
         
         if (itemRb != null) itemRb.simulated = true;
         if (itemCollider != null) itemCollider.enabled = true;
         
-        // ���������� ��������
+   
         heldItem.transform.SetParent(null);
         
-        // ������� ������� � ����������� ��������
+     
         if (itemRb != null)
         {
             itemRb.linearVelocity = rb.linearVelocity * 0.5f;

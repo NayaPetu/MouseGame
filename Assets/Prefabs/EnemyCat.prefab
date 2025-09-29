@@ -186,3 +186,4 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 8
+  attackDistance: 0.5
