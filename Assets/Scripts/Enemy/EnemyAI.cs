@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public class EnemyAI : MonoBehaviour
 {
     public float speed = 2f;
@@ -10,14 +11,24 @@ public class EnemyAI : MonoBehaviour
     public float attackDistance = 0.5f;
 
     private Rigidbody2D rb;
+    private Animator animator;
     private Transform target;
     private bool[,] walkable;
     private Vector2Int patrolTarget;
     private bool hasPatrolTarget = false;
 
+    // Хэши параметров аниматора
+    private static readonly int MoveX = Animator.StringToHash("MoveX");
+    private static readonly int MoveY = Animator.StringToHash("MoveY");
+    private static readonly int IsMoving = Animator.StringToHash("IsMoving");
+
+    // Последнее направление (чтобы кот "смотрел" в сторону движения даже на месте)
+    private Vector2 lastMoveDir;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     public void Init(bool[,] mapWalkable)
@@ -48,7 +59,31 @@ public class EnemyAI : MonoBehaviour
         else return;
 
         Vector2 dir = (moveTarget - rb.position).normalized;
+
+        // Движение
         rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
+
+        // Анимация
+        HandleAnimation(dir);
+    }
+
+    private void HandleAnimation(Vector2 dir)
+    {
+        bool isMoving = dir.magnitude > 0.1f;
+        animator.SetBool(IsMoving, isMoving);
+
+        if (isMoving)
+        {
+            animator.SetFloat(MoveX, dir.x);
+            animator.SetFloat(MoveY, dir.y);
+            lastMoveDir = dir;
+        }
+        else
+        {
+            // фиксируем последнее направление (для idle-анимации)
+            animator.SetFloat(MoveX, lastMoveDir.x);
+            animator.SetFloat(MoveY, lastMoveDir.y);
+        }
     }
 
     void DetectPlayer()
