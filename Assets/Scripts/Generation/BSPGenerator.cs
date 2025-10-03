@@ -32,6 +32,10 @@ public class BSPGenerator : MonoBehaviour
     [Header("Camera")]
     public CinemachineCamera virtualCamera;
 
+    [Header("Items")]
+    public GameObject[] itemPrefabs; // все предметы (BaseItem и наследники)
+    public int itemsPerRoom = 2;     // сколько предметов спавнить в каждой комнате
+
     private System.Random rng;
     private List<Leaf> leaves = new List<Leaf>();
     private GameObject playerInstance;
@@ -55,8 +59,13 @@ public class BSPGenerator : MonoBehaviour
         root.CreateRooms(rng);
 
         foreach (Leaf l in leaves)
+        {
             if (l.room != RectInt.zero)
+            {
                 DrawRoom(l.room);
+                SpawnItemsInRoom(l.room); // спавн предметов в каждой комнате
+            }
+        }
 
         root.CreateArcs(this);
         BuildWalls();
@@ -107,7 +116,7 @@ public class BSPGenerator : MonoBehaviour
             for (int y = bounds.yMin - 1; y <= bounds.yMax + 1; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
-                if (floorTilemap.GetTile(pos) != null) continue; // пол или арка
+                if (floorTilemap.GetTile(pos) != null) continue;
 
                 Vector3Int[] neighbors = {
                     new Vector3Int(x+1, y, 0),
@@ -119,7 +128,7 @@ public class BSPGenerator : MonoBehaviour
                 foreach (var n in neighbors)
                 {
                     TileBase t = floorTilemap.GetTile(n);
-                    if (t != null) 
+                    if (t != null)
                     {
                         wallTilemap.SetTile(pos, wallTile);
                         wallTilemap.SetColor(pos, Color.white);
@@ -194,7 +203,7 @@ public class BSPGenerator : MonoBehaviour
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
                 TileBase t = floorTilemap.GetTile(pos);
-                map[x, y] = t == floorTile || t == arcTile; // арки тоже проходимы
+                map[x, y] = t == floorTile || t == arcTile;
             }
         return map;
     }
@@ -255,9 +264,29 @@ public class BSPGenerator : MonoBehaviour
             yield return null;
         }
     }
+
+    // ============================
+    // Генерация предметов в комнате
+    // ============================
+    private void SpawnItemsInRoom(RectInt room)
+    {
+        if (itemPrefabs.Length == 0) return;
+
+        for (int i = 0; i < itemsPerRoom; i++)
+        {
+            GameObject prefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
+            float x = Random.Range(room.xMin + 1, room.xMax - 1);
+            float y = Random.Range(room.yMin + 1, room.yMax - 1);
+            Vector3 spawnPos = new Vector3(x, y, 0);
+
+            Instantiate(prefab, spawnPos, Quaternion.identity);
+        }
+    }
 }
 
-// ===== Leaf =====
+// ============================
+// Leaf
+// ============================
 public class Leaf
 {
     public int x, y, width, height;
