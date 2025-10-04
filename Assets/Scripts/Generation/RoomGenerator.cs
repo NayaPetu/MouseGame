@@ -1,69 +1,94 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using Unity.Cinemachine;
 
 public class RoomGenerator : MonoBehaviour
 {
     [Header("Room Prefabs")]
-    public GameObject startRoomPrefab; // фиксированная комната
-    public GameObject[] roomPrefabs; // вариативные комнаты
+    public GameObject startRoomPrefab;
+    public GameObject[] roomPrefabs;
 
-    [Header("Room Connections")]
-    public int numberOfRooms = 5;
-    public float roomSpacing = 10f; // расстояние между центрами комнат
+    [Header("Doors")]
+    public GameObject doorPrefab;
+
+    [Header("Player/Enemy")]
+    public GameObject playerPrefab;
+    public GameObject enemyPrefab;
+
+    [Header("Camera")]
+    public CinemachineCamera virtualCamera;
 
     private List<GameObject> spawnedRooms = new List<GameObject>();
+    public List<GameObject> SpawnedRooms => spawnedRooms;
 
-    public FurnitureSpawner furnitureSpawner;
+    // Расположение комнат
+    private Vector2Int currentPos = Vector2Int.zero;
 
     public void GenerateRooms()
     {
         spawnedRooms.Clear();
+        currentPos = Vector2Int.zero;
 
-        // Спавн первой фиксированной комнаты
+        // --- Стартовая комната ---
         GameObject startRoom = Instantiate(startRoomPrefab, Vector3.zero, Quaternion.identity);
         spawnedRooms.Add(startRoom);
 
-        Vector3 lastPos = startRoom.transform.position;
+        // Спавн игрока в центре стартовой комнаты
+        Vector3 spawnPlayerPos = GetRoomCenter(startRoom);
+        GameObject player = Instantiate(playerPrefab, spawnPlayerPos, Quaternion.identity);
+        if (virtualCamera != null) virtualCamera.Follow = player.transform;
 
-        for (int i = 1; i < numberOfRooms; i++)
+        // Спавн врага рядом с игроком
+        if (enemyPrefab != null)
         {
-            GameObject prefab = roomPrefabs[Random.Range(0, roomPrefabs.Length)];
-            Vector3 offset = new Vector3(Random.Range(-roomSpacing, roomSpacing), Random.Range(-roomSpacing, roomSpacing), 0);
-            Vector3 spawnPos = lastPos + offset;
+            Vector3 enemyPos = spawnPlayerPos + Vector3.right * 1.5f;
+            GameObject enemy = Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
+        }
 
-            GameObject room = Instantiate(prefab, spawnPos, Quaternion.identity);
+        // --- Генерация остальных комнат ---
+        for (int i = 0; i < roomPrefabs.Length; i++)
+        {
+            GameObject prefab = roomPrefabs[i];
+
+            // Получаем размеры предыдущей комнаты
+            GameObject lastRoom = spawnedRooms[spawnedRooms.Count - 1];
+            Vector2 lastSize = GetRoomSize(lastRoom);
+
+            // Сдвигаем новую комнату вправо, чтобы стены соприкасались
+            Vector3 newPos = lastRoom.transform.position + new Vector3(lastSize.x, 0, 0);
+            GameObject room = Instantiate(prefab, newPos, Quaternion.identity);
             spawnedRooms.Add(room);
 
-            // Создаём арку/дверь между комнатами
-            CreateDoorBetween(lastPos, spawnPos);
-
-            lastPos = spawnPos;
-
-            // Спавн мебели и предметов
-            if (furnitureSpawner != null)
+            // Создаём дверь между комнатами
+            if (doorPrefab != null)
             {
-                RectInt roomBounds = GetRoomBounds(room);
-                furnitureSpawner.SpawnFurniture(roomBounds);
+                Vector3 doorPos = lastRoom.transform.position + new Vector3(lastSize.x / 2f, 0, 0);
+                GameObject door = Instantiate(doorPrefab, doorPos, Quaternion.identity);
+                door.transform.rotation = Quaternion.Euler(0, 0, 90f); // дверь вертикально
             }
         }
     }
 
-    private void CreateDoorBetween(Vector3 a, Vector3 b)
+    private Vector3 GetRoomCenter(GameObject room)
     {
-      
-        Instantiate(doorPrefab, (a+b)/2, Quaternion.identity);
-    }
-
-    private RectInt GetRoomBounds(GameObject room)
-    {
-     
         BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
         if (box != null)
         {
             Vector3 pos = box.transform.position + (Vector3)box.offset;
-            Vector2 size = box.size;
-            return new RectInt(Mathf.FloorToInt(pos.x - size.x/2), Mathf.FloorToInt(pos.y - size.y/2), Mathf.CeilToInt(size.x), Mathf.CeilToInt(size.y));
+            return pos;
         }
-        return new RectInt(0,0,1,1);
+        return room.transform.position;
+    }
+
+    private Vector2 GetRoomSize(GameObject room)
+    {
+        BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+        if (box != null)
+        {
+            Vector2 size = box.size;
+            return size;
+        }
+        return Vector2.one;
     }
 }

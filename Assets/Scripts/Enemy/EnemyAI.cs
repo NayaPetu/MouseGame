@@ -7,7 +7,6 @@ public class EnemyAI : MonoBehaviour
     public float speed = 2f;
     public float detectionRadius = 5f;
     public LayerMask playerMask, wallMask;
-    public float attackDistance = 0.5f;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -16,18 +15,20 @@ public class EnemyAI : MonoBehaviour
     private Vector2Int patrolTarget;
     private bool hasPatrolTarget = false;
 
-    // ’эши параметров аниматора
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
 
-    // ѕоследнее направление (дл€ idle)
     private Vector2 lastMoveDir;
-    private Vector2 currentDir; // сглаженное направление
+    private Vector2 currentDir;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
         animator = GetComponent<Animator>();
     }
 
@@ -46,11 +47,11 @@ public class EnemyAI : MonoBehaviour
     {
         Vector2 moveTarget;
 
-        if (target != null) // преследуем игрока
+        if (target != null)
         {
             moveTarget = target.position;
         }
-        else if (hasPatrolTarget) // патрулируем комнату
+        else if (hasPatrolTarget)
         {
             moveTarget = new Vector2(patrolTarget.x + 0.5f, patrolTarget.y + 0.5f);
             if (Vector2.Distance(rb.position, moveTarget) < 0.05f)
@@ -58,7 +59,6 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            // нет цели Ч стоим на месте
             HandleAnimation(Vector2.zero, false);
             return;
         }
@@ -68,19 +68,9 @@ public class EnemyAI : MonoBehaviour
 
         if (isMoving)
         {
-            // если близко к цели, фиксируем позицию и считаем, что остановились
-            if (delta.magnitude <= speed * Time.fixedDeltaTime)
-            {
-                rb.position = moveTarget;
-                isMoving = false;
-            }
-            else
-            {
-                Vector2 dir = delta.normalized;
-                rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
-                // сглаживаем направление дл€ анимации
-                currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
-            }
+            Vector2 dir = delta.normalized;
+            rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
+            currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
         }
 
         HandleAnimation(currentDir, isMoving);
@@ -89,7 +79,6 @@ public class EnemyAI : MonoBehaviour
     private void HandleAnimation(Vector2 dir, bool isMoving)
     {
         animator.SetBool(IsMoving, isMoving);
-
         if (isMoving)
         {
             animator.SetFloat(MoveX, dir.x);
@@ -110,14 +99,9 @@ public class EnemyAI : MonoBehaviour
         {
             Vector2 dir = (hit.transform.position - transform.position).normalized;
             if (!Physics2D.Raycast(transform.position, dir, detectionRadius, wallMask))
-            {
                 target = hit.transform;
-            }
         }
-        else
-        {
-            target = null;
-        }
+        else target = null;
     }
 
     void ChoosePatrolTarget()
@@ -137,14 +121,6 @@ public class EnemyAI : MonoBehaviour
                 hasPatrolTarget = true;
                 return;
             }
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.CompareTag("Player"))
-        {
-            Debug.Log(" от атакует игрока!");
         }
     }
 }
