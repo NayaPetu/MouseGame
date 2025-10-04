@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 
@@ -24,8 +23,13 @@ public class PlayerController : MonoBehaviour
     private Vector2 currentVelocity;
     private GameObject heldItem;
     private bool canMove = true;
-    
-    // Animation parameters
+
+    [Header("Animation Settings")]
+    [Tooltip("Если скорость (м/с) меньше этого — считаем, что персонаж стоит")]
+    public float animationVelocityThreshold = 0.08f;
+    private Vector2 lastMoveDir = Vector2.down; // направление по-умолчанию вниз
+
+    // Animation parameters (хэши)
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
@@ -67,7 +71,7 @@ public class PlayerController : MonoBehaviour
     {
         if (movementInput.magnitude > 0.1f)
         {
-            // ���������
+            // ускорение к целевой скорости
             currentVelocity = Vector2.MoveTowards(
                 currentVelocity, 
                 movementInput * moveSpeed, 
@@ -76,7 +80,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // ����������
+            // торможение
             currentVelocity = Vector2.MoveTowards(
                 currentVelocity, 
                 Vector2.zero, 
@@ -86,22 +90,28 @@ public class PlayerController : MonoBehaviour
         
         rb.linearVelocity = currentVelocity;
     }
-
     private void HandleAnimation()
     {
         bool isMoving = movementInput.magnitude > 0.1f;
-        
         animator.SetBool(IsMoving, isMoving);
-   
-        
+
         if (isMoving)
         {
             animator.SetFloat(MoveX, movementInput.x);
             animator.SetFloat(MoveY, movementInput.y);
-            
+            lastMoveDir = movementInput;
+        }
+        else
+        {
          
+            animator.SetFloat(MoveX, lastMoveDir.x);
+            animator.SetFloat(MoveY, lastMoveDir.y);
         }
     }
+
+
+  
+
 
     private void HandleInteraction()
     {
@@ -151,31 +161,31 @@ public class PlayerController : MonoBehaviour
     }
 
    private Vector3 SnapToPixelGrid(Vector3 worldPos, int pixelsPerUnit = 16)
-{
-    float unitsPerPixel = 1f / pixelsPerUnit;
-    worldPos.x = Mathf.Round(worldPos.x / unitsPerPixel) * unitsPerPixel;
-    worldPos.y = Mathf.Round(worldPos.y / unitsPerPixel) * unitsPerPixel;
-    return worldPos;
-}
-
-
-private void TryChangeTile()
-{
-    Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    mouseWorldPos = SnapToPixelGrid(mouseWorldPos); // округляем
-
-    Vector2 mousePos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
-
-    RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero, 0f, tileChangeLayer);
-    if (hit.collider != null)
     {
-        TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
-        if (tileChanger != null)
+        float unitsPerPixel = 1f / pixelsPerUnit;
+        worldPos.x = Mathf.Round(worldPos.x / unitsPerPixel) * unitsPerPixel;
+        worldPos.y = Mathf.Round(worldPos.y / unitsPerPixel) * unitsPerPixel;
+        return worldPos;
+    }
+
+
+    private void TryChangeTile()
+    {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos = SnapToPixelGrid(mouseWorldPos); // округляем
+
+        Vector2 mousePos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
+
+        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero, 0f, tileChangeLayer);
+        if (hit.collider != null)
         {
-            tileChanger.ChangeTile(SnapToPixelGrid(hit.point)); // округляем точку изменения
+            TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
+            if (tileChanger != null)
+            {
+                tileChanger.ChangeTile(SnapToPixelGrid(hit.point)); // округляем точку изменения
+            }
         }
     }
-}
 
 
     public void PickUpItem(GameObject item)

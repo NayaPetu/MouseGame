@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -22,8 +21,9 @@ public class EnemyAI : MonoBehaviour
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
 
-    // Последнее направление (чтобы кот "смотрел" в сторону движения даже на месте)
+    // Последнее направление (для idle)
     private Vector2 lastMoveDir;
+    private Vector2 currentDir; // сглаженное направление
 
     void Awake()
     {
@@ -53,23 +53,41 @@ public class EnemyAI : MonoBehaviour
         else if (hasPatrolTarget) // патрулируем комнату
         {
             moveTarget = new Vector2(patrolTarget.x + 0.5f, patrolTarget.y + 0.5f);
-            if (Vector2.Distance(rb.position, moveTarget) < 0.2f)
+            if (Vector2.Distance(rb.position, moveTarget) < 0.05f)
                 ChoosePatrolTarget();
         }
-        else return;
+        else
+        {
+            // нет цели — стоим на месте
+            HandleAnimation(Vector2.zero, false);
+            return;
+        }
 
-        Vector2 dir = (moveTarget - rb.position).normalized;
+        Vector2 delta = moveTarget - rb.position;
+        bool isMoving = delta.magnitude > 0.001f;
 
-        // Движение
-        rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
+        if (isMoving)
+        {
+            // если близко к цели, фиксируем позицию и считаем, что остановились
+            if (delta.magnitude <= speed * Time.fixedDeltaTime)
+            {
+                rb.position = moveTarget;
+                isMoving = false;
+            }
+            else
+            {
+                Vector2 dir = delta.normalized;
+                rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
+                // сглаживаем направление для анимации
+                currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
+            }
+        }
 
-        // Анимация
-        HandleAnimation(dir);
+        HandleAnimation(currentDir, isMoving);
     }
 
-    private void HandleAnimation(Vector2 dir)
+    private void HandleAnimation(Vector2 dir, bool isMoving)
     {
-        bool isMoving = dir.magnitude > 0.1f;
         animator.SetBool(IsMoving, isMoving);
 
         if (isMoving)
@@ -80,7 +98,6 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            // фиксируем последнее направление (для idle-анимации)
             animator.SetFloat(MoveX, lastMoveDir.x);
             animator.SetFloat(MoveY, lastMoveDir.y);
         }
@@ -94,7 +111,7 @@ public class EnemyAI : MonoBehaviour
             Vector2 dir = (hit.transform.position - transform.position).normalized;
             if (!Physics2D.Raycast(transform.position, dir, detectionRadius, wallMask))
             {
-                target = hit.transform; // нашли игрока
+                target = hit.transform;
             }
         }
         else
@@ -110,7 +127,6 @@ public class EnemyAI : MonoBehaviour
         int w = walkable.GetLength(0);
         int h = walkable.GetLength(1);
 
-        // случайная проходимая позиция
         for (int attempt = 0; attempt < 100; attempt++)
         {
             int x = Random.Range(0, w);
@@ -129,7 +145,6 @@ public class EnemyAI : MonoBehaviour
         if (col.gameObject.CompareTag("Player"))
         {
             Debug.Log("Кот атакует игрока!");
-            // здесь можно уменьшать здоровье игрока
         }
     }
 }
