@@ -169,15 +169,15 @@ MonoBehaviour:
   maxLeafSize: 20
   floorTilemap: {fileID: 922833459}
   wallTilemap: {fileID: 1248919436}
-  floorTile: {fileID: 11400000, guid: 8af94ee125b44524fb9a7d39b7b822df, type: 2}
-  wallTile: {fileID: 11400000, guid: bcee8185945c8b641b9bc83a98c63acf, type: 2}
+  floorTile: {fileID: 11400000, guid: c49bffc56127dde4ebdf591b748935ba, type: 2}
+  wallTile: {fileID: 11400000, guid: ed705bb3c74c13a40bc3b36bd4c01a7f, type: 2}
   arcTile: {fileID: 11400000, guid: 90bcedba8e809fb4eb8ecd060bd02219, type: 2}
   playerPrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
   enemyCatPrefab: {fileID: 233196495347687082, guid: bf31d04492cf0c54290b8bde96e32be2, type: 3}
   virtualCamera: {fileID: 865403527}
   itemPrefabs:
   - {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
-  itemsPerRoom: 2
+  itemsPerRoom: 1
 --- !u!1 &865403524
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,7 +402,7 @@ TilemapRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
-  m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
+  m_ChunkCullingBounds: {x: 0.5, y: 0.5, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
