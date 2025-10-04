@@ -8,10 +8,6 @@ public class FurnitureSpawner : MonoBehaviour
     public GameObject[] furniturePrefabs;
     public int maxFurniturePerRoom = 3;
 
-    [Header("Items")]
-    public GameObject[] itemPrefabs;
-    public int maxItemsPerRoom = 3;
-
     public void SpawnFurniture(RectInt roomBounds)
     {
         if (furniturePrefabs.Length == 0) return;
@@ -20,76 +16,78 @@ public class FurnitureSpawner : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             GameObject prefab = furniturePrefabs[Random.Range(0, furniturePrefabs.Length)];
-            Vector2 pos = GetRandomPositionInRoom(roomBounds, prefab);
+            Vector2 pos = GetRandomPositionInRoom(roomBounds);
             Instantiate(prefab, pos, Quaternion.identity);
         }
     }
 
-    public void SpawnItems(RectInt roomBounds)
+    public Vector2 GetRandomPositionInRoom(RectInt roomBounds)
     {
-        if (itemPrefabs.Length == 0) return;
-
-        int count = Random.Range(1, maxItemsPerRoom + 1);
-        for (int i = 0; i < count; i++)
-        {
-            GameObject prefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
-            Vector2 pos = new Vector2(
-                Random.Range(roomBounds.xMin + 0.5f, roomBounds.xMax - 0.5f),
-                Random.Range(roomBounds.yMin + 0.5f, roomBounds.yMax - 0.5f)
-            );
-            Instantiate(prefab, pos, Quaternion.identity);
-        }
-    }
-
-    public Vector2 GetRandomPositionInRoom(RectInt roomBounds, GameObject prefab)
-    {
-        Vector2 size = Vector2.one;
-        BoxCollider2D col = prefab.GetComponent<BoxCollider2D>();
-        if (col != null) size = col.size;
-
-        float x = Random.Range(roomBounds.xMin + size.x / 2f, roomBounds.xMax - size.x / 2f);
-        float y = Random.Range(roomBounds.yMin + size.y / 2f, roomBounds.yMax - size.y / 2f);
-
+        float x = Random.Range(roomBounds.xMin + 0.5f, roomBounds.xMax - 0.5f);
+        float y = Random.Range(roomBounds.yMin + 0.5f, roomBounds.yMax - 0.5f);
         return new Vector2(x, y);
     }
 
     public RectInt GetRoomBounds(GameObject room)
     {
         BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
-        if (box == null) return new RectInt(0, 0, 1, 1);
+        if (box == null) return new RectInt(0,0,1,1);
 
         Vector3 pos = box.transform.position + (Vector3)box.offset;
         Vector2 size = box.size;
-        return new RectInt(Mathf.FloorToInt(pos.x - size.x / 2), Mathf.FloorToInt(pos.y - size.y / 2),
-                           Mathf.CeilToInt(size.x), Mathf.CeilToInt(size.y));
+        return new RectInt(
+            Mathf.FloorToInt(pos.x - size.x / 2),
+            Mathf.FloorToInt(pos.y - size.y / 2),
+            Mathf.CeilToInt(size.x),
+            Mathf.CeilToInt(size.y)
+        );
     }
 
     public bool[,] GenerateWalkableMapForRooms(List<GameObject> rooms)
     {
-        if (rooms.Count == 0) return new bool[1,1];
+        if (rooms.Count == 0) return null;
 
-        int minX = int.MaxValue, minY = int.MaxValue;
-        int maxX = int.MinValue, maxY = int.MinValue;
+        float minX = float.MaxValue, minY = float.MaxValue;
+        float maxX = float.MinValue, maxY = float.MinValue;
 
         foreach (var room in rooms)
         {
-            RectInt r = GetRoomBounds(room);
-            minX = Mathf.Min(minX, r.xMin);
-            minY = Mathf.Min(minY, r.yMin);
-            maxX = Mathf.Max(maxX, r.xMax);
-            maxY = Mathf.Max(maxY, r.yMax);
+            BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+            if (box == null) continue;
+
+            Vector3 pos = box.transform.position + (Vector3)box.offset;
+            Vector2 size = box.size;
+
+            minX = Mathf.Min(minX, pos.x - size.x/2);
+            minY = Mathf.Min(minY, pos.y - size.y/2);
+            maxX = Mathf.Max(maxX, pos.x + size.x/2);
+            maxY = Mathf.Max(maxY, pos.y + size.y/2);
         }
 
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
+        int width = Mathf.CeilToInt(maxX - minX);
+        int height = Mathf.CeilToInt(maxY - minY);
+
         bool[,] map = new bool[width, height];
 
         foreach (var room in rooms)
         {
-            RectInt r = GetRoomBounds(room);
-            for (int x = r.xMin; x < r.xMax; x++)
-                for (int y = r.yMin; y < r.yMax; y++)
-                    map[x - minX, y - minY] = true;
+            BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+            if (box == null) continue;
+
+            Vector3 pos = box.transform.position + (Vector3)box.offset;
+            Vector2 size = box.size;
+
+            int startX = Mathf.FloorToInt(pos.x - size.x/2 - minX);
+            int startY = Mathf.FloorToInt(pos.y - size.y/2 - minY);
+
+            for (int x = 0; x < Mathf.CeilToInt(size.x); x++)
+                for (int y = 0; y < Mathf.CeilToInt(size.y); y++)
+                {
+                    int mx = startX + x;
+                    int my = startY + y;
+                    if (mx >= 0 && mx < width && my >= 0 && my < height)
+                        map[mx, my] = true;
+                }
         }
 
         return map;

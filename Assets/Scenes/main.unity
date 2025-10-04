@@ -150,8 +150,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FurnitureSpawner
   furniturePrefabs: []
   maxFurniturePerRoom: 3
-  itemPrefabs: []
-  maxItemsPerRoom: 3
 --- !u!4 &519484285
 Transform:
   m_ObjectHideFlags: 0
@@ -256,8 +254,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneStarter
   roomGenerator: {fileID: 1880425265}
-  playerPrefab: {fileID: 0}
-  spawnPlayerInGenerator: 1
 --- !u!4 &795148653
 Transform:
   m_ObjectHideFlags: 0
@@ -1172,7 +1168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.2D.PixelPerfect::UnityEngine.U2D.PixelPerfectCamera
   m_AssetsPPU: 32
-  m_RefResolutionX: 320
+  m_RefResolutionX: 480
   m_RefResolutionY: 180
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -1210,10 +1206,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
   itemPrefabs:
   - {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
-  itemsToSpawn: 5
+  itemsToSpawn: 1
   roomMin: {x: 0, y: 0}
   roomMax: {x: 0, y: 0}
-  randomRotation: 0
+  randomRotation: 1
 --- !u!4 &1557445522
 Transform:
   m_ObjectHideFlags: 0
@@ -1276,11 +1272,11 @@ MonoBehaviour:
   startRoomPrefab: {fileID: 6485592367922715964, guid: 34e3af1b220aa08409712bd294808628, type: 3}
   roomPrefabs:
   - {fileID: 9122937159267256698, guid: dd566258777c816429a84b6a32cde5b7, type: 3}
+  - {fileID: 6485592367922715964, guid: 34e3af1b220aa08409712bd294808628, type: 3}
   numberOfRooms: 5
-  roomSpacing: 10
   doorPrefab: {fileID: 7320420268297753010, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
   furnitureSpawner: {fileID: 519484284}
-  itemSpawnerPrefab: {fileID: 0}
+  itemSpawnerPrefab: {fileID: 1557445521}
   playerPrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
   enemyPrefab: {fileID: 233196495347687082, guid: bf31d04492cf0c54290b8bde96e32be2, type: 3}
   virtualCamera: {fileID: 865403527}
