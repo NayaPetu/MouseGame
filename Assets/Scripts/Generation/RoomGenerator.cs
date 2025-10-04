@@ -25,6 +25,9 @@ public class RoomGenerator : MonoBehaviour
     [Header("Camera")]
     public CinemachineCamera virtualCamera;
 
+    [Header("Layers")]
+    public LayerMask wallLayer;
+
     private List<GameObject> spawnedRooms = new List<GameObject>();
     private GameObject playerInstance;
 
@@ -32,49 +35,38 @@ public class RoomGenerator : MonoBehaviour
     {
         spawnedRooms.Clear();
 
-        // Первая комната
+        // 1?? Первая комната
         GameObject startRoom = Instantiate(startRoomPrefab, Vector3.zero, Quaternion.identity);
         spawnedRooms.Add(startRoom);
 
-        // Спавн игрока на полу
-        playerInstance = Instantiate(playerPrefab, GetRandomSpawnPosition(startRoom), Quaternion.identity);
-        if (virtualCamera != null)
-            virtualCamera.Follow = playerInstance.transform;
+        // 2?? Генерация остальных комнат
+        Vector3 lastRoomPos = startRoom.transform.position;
+        BoxCollider2D lastBox = startRoom.GetComponentInChildren<BoxCollider2D>();
 
-        // Спавн врага
-        if (enemyPrefab != null)
-        {
-            GameObject enemy = Instantiate(enemyPrefab, GetRandomSpawnPosition(startRoom), Quaternion.identity);
-            EnemyAI ai = enemy.GetComponent<EnemyAI>();
-            if (ai != null && furnitureSpawner != null)
-            {
-                ai.Init(furnitureSpawner.GenerateWalkableMapForRooms(spawnedRooms));
-            }
-        }
-
-        // Спавн мебели и предметов
-        SpawnRoomContents(startRoom);
-
-        Vector3 lastPos = startRoom.transform.position;
-
-        // Остальные комнаты
         for (int i = 1; i < numberOfRooms; i++)
         {
             GameObject prefab = roomPrefabs[Random.Range(0, roomPrefabs.Length)];
+            BoxCollider2D newBox = prefab.GetComponentInChildren<BoxCollider2D>();
 
-            // Спавн комнаты справа от предыдущей (без перекрытия)
-            Vector3 spawnPos = lastPos + new Vector3(GetRoomWidth(lastPos, prefab), 0, 0);
+            // Рассчитываем позицию так, чтобы стены касались друг друга
+            float offsetX = (lastBox.bounds.max.x - newBox.bounds.min.x);
+            Vector3 spawnPos = lastRoomPos + new Vector3(offsetX, 0, 0);
+
             GameObject room = Instantiate(prefab, spawnPos, Quaternion.identity);
             spawnedRooms.Add(room);
 
-            // Дверь между комнатами
-            CreateDoorBetween(lastPos, spawnPos, room);
+            // Создаем дверь между комнатами
+            CreateDoorBetween(lastBox, newBox, room);
 
             // Спавн мебели и предметов
             SpawnRoomContents(room);
 
-            lastPos = spawnPos;
+            lastRoomPos = room.transform.position;
+            lastBox = room.GetComponentInChildren<BoxCollider2D>();
         }
+
+        // 3?? Спавн игрока и врага после всех комнат
+        SpawnPlayerAndEnemy(startRoom);
     }
 
     private void SpawnRoomContents(GameObject room)
@@ -94,63 +86,72 @@ public class RoomGenerator : MonoBehaviour
         }
     }
 
-    private Vector3 GetRandomSpawnPosition(GameObject room)
+    private void SpawnPlayerAndEnemy(GameObject startRoom)
+    {
+        // Игрок
+        Vector3 playerPos = GetRandomFloorPosition(startRoom);
+        playerInstance = Instantiate(playerPrefab, playerPos, Quaternion.identity);
+        if (virtualCamera != null)
+            virtualCamera.Follow = playerInstance.transform;
+
+        // Враг
+        if (enemyPrefab != null)
+        {
+            Vector3 enemyPos = GetRandomFloorPosition(startRoom);
+            GameObject enemy = Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
+            EnemyAI ai = enemy.GetComponent<EnemyAI>();
+            if (ai != null && furnitureSpawner != null)
+            {
+                ai.Init(furnitureSpawner.GenerateWalkableMapForRooms(spawnedRooms));
+            }
+        }
+    }
+
+    private Vector3 GetRandomFloorPosition(GameObject room)
     {
         BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
         if (box == null) return room.transform.position;
 
-        Vector3 localMin = (Vector3)box.offset - (Vector3)(box.size / 2f);
-        Vector3 localMax = (Vector3)box.offset + (Vector3)(box.size / 2f);
+        Vector3 min = box.bounds.min;
+        Vector3 max = box.bounds.max;
 
-        float padding = 0.5f;
-        float x = Random.Range(localMin.x + padding, localMax.x - padding);
-        float y = Random.Range(localMin.y + padding, localMax.y - padding);
-
-        Vector3 spawnPos = room.transform.position + new Vector3(x, y, 0);
-
-        // Проверка на пересечение со стеной
-        Collider2D hit = Physics2D.OverlapCircle(spawnPos, 0.2f, LayerMask.GetMask("Wall"));
+        Vector3 spawnPos = Vector3.zero;
         int attempts = 0;
-        while (hit != null && attempts < 10)
+
+        do
         {
-            x = Random.Range(localMin.x + padding, localMax.x - padding);
-            y = Random.Range(localMin.y + padding, localMax.y - padding);
-            spawnPos = room.transform.position + new Vector3(x, y, 0);
-            hit = Physics2D.OverlapCircle(spawnPos, 0.2f, LayerMask.GetMask("Wall"));
+            float x = Random.Range(min.x + 0.5f, max.x - 0.5f);
+            float y = Random.Range(min.y + 0.5f, max.y - 0.5f);
+            spawnPos = new Vector3(x, y, 0);
             attempts++;
         }
+        while (Physics2D.OverlapCircle(spawnPos, 0.3f, wallLayer) != null && attempts < 20);
 
         return spawnPos;
     }
 
-    private float GetRoomWidth(Vector3 lastPos, GameObject prefab)
-    {
-        BoxCollider2D box = prefab.GetComponentInChildren<BoxCollider2D>();
-        if (box != null)
-            return box.size.x;
-        return 10f; // запасная ширина
-    }
-
-    private void CreateDoorBetween(Vector3 previousRoomPos, Vector3 newRoomPos, GameObject newRoom)
+    private void CreateDoorBetween(BoxCollider2D lastBox, BoxCollider2D newBox, GameObject newRoom)
     {
         if (doorPrefab == null) return;
 
-        BoxCollider2D box = newRoom.GetComponentInChildren<BoxCollider2D>();
-        if (box == null) return;
-
-        // Дверь на левой стене новой комнаты
-        float yDoor = Random.Range(box.bounds.min.y + 1, box.bounds.max.y - 1);
-        Vector3 doorPos = new Vector3(box.bounds.min.x, yDoor, 0);
-        Quaternion rotation = Quaternion.Euler(0, 0, 90);
+        // Ставим дверь на левую стену новой комнаты, по центру стены
+        Vector3 doorPos = new Vector3(newBox.bounds.min.x, (newBox.bounds.min.y + newBox.bounds.max.y) / 2f, 0);
+        Quaternion rotation = Quaternion.Euler(0, 0, 90); // для вертикальной стены
 
         GameObject door = Instantiate(doorPrefab, doorPos, rotation);
+        door.layer = LayerMask.NameToLayer("Door");
 
-        // Назначение комнат для двери
+        // Можно добавить ссылку на комнаты в скрипт двери
         Door doorScript = door.GetComponent<Door>();
         if (doorScript != null)
         {
-            doorScript.roomA = spawnedRooms[spawnedRooms.Count - 2]; // предыдущая комната
-            doorScript.roomB = newRoom;                               // новая комната
+            doorScript.roomA = lastBox.gameObject;
+            doorScript.roomB = newRoom;
         }
+
+        // Делаем дверь trigger, чтобы через неё можно было пройти
+        Collider2D col = door.GetComponent<Collider2D>();
+        if (col != null)
+            col.isTrigger = true;
     }
 }
