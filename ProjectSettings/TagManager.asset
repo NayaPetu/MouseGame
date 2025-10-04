@@ -12,10 +12,10 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
-  - 
-  - 
-  - 
+  - Floor
+  - Furniture
+  - Items
+  - Door
   - 
   - 
   - 
@@ -47,11 +47,20 @@ TagManager:
   - name: Floor
     uniqueID: 1509997195
     locked: 0
+  - name: Furniture
+    uniqueID: 3283436683
+    locked: 0
+  - name: Items
+    uniqueID: 1775250487
+    locked: 0
   - name: Props
     uniqueID: 2321231759
     locked: 0
   - name: Foreground
     uniqueID: 3954092467
+    locked: 0
+  - name: Door
+    uniqueID: 949385003
     locked: 0
   - name: Player
     uniqueID: 1291870753
