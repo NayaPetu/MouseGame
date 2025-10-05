@@ -361,8 +361,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 865403524}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.07899, y: -0.31915, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.07899094, y: -0.31914902, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1276,7 +1276,7 @@ MonoBehaviour:
   virtualCamera: {fileID: 865403527}
   floorLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1284,9 +1284,9 @@ SceneRoots:
   - {fileID: 1526946620}
   - {fileID: 777052142}
   - {fileID: 1203193712}
-  - {fileID: 865403528}
   - {fileID: 1521764263}
   - {fileID: 1557445522}
+  - {fileID: 865403528}
   - {fileID: 1880425264}
   - {fileID: 519484285}
   - {fileID: 795148653}

@@ -11,60 +11,67 @@ public class FloorGenerator : MonoBehaviour
     public GameObject enemyPrefab;
 
     [Header("Camera")]
-    public CinemachineCamera virtualCamera; // исправлено с CinemachineCamera
+    public CinemachineCamera virtualCamera;
 
     [Header("Layers")]
     public LayerMask floorLayerMask;
 
     private GameObject playerInstance;
 
-    // Убираем Start() чтобы генератор не вызывал SpawnFloor автоматически
-    // void Start() { SpawnFloor(); }
-
     public void SpawnFloor()
     {
         if (floorPrefabs.Length == 0) return;
 
-        // 1️⃣ Выбираем случайный префаб этажа
+        // Выбираем случайную комнату
         GameObject prefab = floorPrefabs[Random.Range(0, floorPrefabs.Length)];
         GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
 
-        // 2️⃣ Спавн игрока
-        Vector3 playerPos = GetRandomPositionOnFloor(floor);
+        // Спавн игрока
+        Vector3 playerPos = CreateSafeSpawnPosition(floor, 0.3f);
         playerInstance = Instantiate(playerPrefab, playerPos, Quaternion.identity);
 
+        // Камера следует за игроком
         if (virtualCamera != null)
             virtualCamera.Follow = playerInstance.transform;
 
-        // 3️⃣ Спавн врага (например в другой комнате)
+        // Спавн врага
         if (enemyPrefab != null)
         {
-            Vector3 enemyPos = GetRandomPositionOnFloor(floor);
+            Vector3 enemyPos = CreateSafeSpawnPosition(floor, 0.3f);
             Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
         }
     }
 
-    Vector3 GetRandomPositionOnFloor(GameObject floor)
+    // Создание безопасной позиции на полу
+    private Vector3 CreateSafeSpawnPosition(GameObject room, float radius)
     {
-        Transform floorTransform = floor.transform.Find("Floor");
-        if (floorTransform == null) return floor.transform.position;
-
-        Collider2D floorCollider = floorTransform.GetComponent<Collider2D>();
-        if (floorCollider == null) return floor.transform.position;
-
-        Bounds b = floorCollider.bounds;
-
-        // случайная позиция внутри пола
-        for (int attempt = 0; attempt < 20; attempt++)
+        Collider2D floorCollider = room.GetComponentInChildren<Collider2D>();
+        if (floorCollider == null)
         {
-            float x = Random.Range(b.min.x + 0.1f, b.max.x - 0.1f);
-            float y = Random.Range(b.min.y + 0.1f, b.max.y - 0.1f);
-            Vector3 pos = new Vector3(x, y, 0f);
-
-            if (Physics2D.OverlapCircle(pos, 0.2f, floorLayerMask) != null)
-                return pos;
+            Debug.LogWarning($"⚠️ У комнаты {room.name} нет Collider2D для пола!");
+            return room.transform.position;
         }
 
-        return b.center;
+        Bounds b = floorCollider.bounds;
+        float safeMargin = 0.5f;
+
+        for (int attempt = 0; attempt < 50; attempt++)
+        {
+            float x = Random.Range(b.min.x + safeMargin, b.max.x - safeMargin);
+            float y = Random.Range(b.min.y + safeMargin, b.max.y - safeMargin);
+            Vector2 rayOrigin = new Vector2(x, y + 5f);
+
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, 10f, floorLayerMask);
+            if (hit.collider != null)
+            {
+                Vector3 pos = (Vector3)hit.point + Vector3.up * 0.3f;
+                Collider2D overlap = Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"));
+                if (overlap == null)
+                    return pos;
+            }
+        }
+
+        Debug.LogWarning("⚠️ Не удалось найти безопасную точку спавна, используем центр пола");
+        return b.center + Vector3.up * 0.5f;
     }
 }

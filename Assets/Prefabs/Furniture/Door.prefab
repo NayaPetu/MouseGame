@@ -130,7 +130,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1.0002441}
+    oldSize: {x: 0.75, y: 0.7501831}
     newSize: {x: 1, y: 1.0002441}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -150,5 +150,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door
-  roomA: {fileID: 6485592367922715964, guid: 34e3af1b220aa08409712bd294808628, type: 3}
-  roomB: {fileID: 9122937159267256698, guid: dd566258777c816429a84b6a32cde5b7, type: 3}
+  targetDoor: {fileID: 0}
+  roomCollider: {fileID: 0}
