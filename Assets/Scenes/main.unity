@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3a39debc111753489260f6a5bd28963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneStarter
-  roomGenerator: {fileID: 1880425265}
+  floorGenerator: {fileID: 1880425265}
 --- !u!4 &795148653
 Transform:
   m_ObjectHideFlags: 0
@@ -1268,18 +1268,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6397404f6770ca43bac4f999c79e72b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoomGenerator
-  startRoomPrefab: {fileID: 6485592367922715964, guid: 34e3af1b220aa08409712bd294808628, type: 3}
-  roomPrefabs:
-  - {fileID: 9122937159267256698, guid: dd566258777c816429a84b6a32cde5b7, type: 3}
-  - {fileID: 6485592367922715964, guid: 34e3af1b220aa08409712bd294808628, type: 3}
-  numberOfRooms: 5
-  doorPrefab: {fileID: 7320420268297753010, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
-  furnitureSpawner: {fileID: 519484284}
-  itemSpawnerPrefab: {fileID: 1557445521}
+  m_EditorClassIdentifier: Assembly-CSharp::FloorGenerator
+  floorPrefabs:
+  - {fileID: 5316499953734245980, guid: 67d9421c34ed4994388cc1899c97cc8a, type: 3}
   playerPrefab: {fileID: 1769686133124692769, guid: f63b365b77a5961479f4b8bd4f21e538, type: 3}
   enemyPrefab: {fileID: 233196495347687082, guid: bf31d04492cf0c54290b8bde96e32be2, type: 3}
   virtualCamera: {fileID: 865403527}
+  floorLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

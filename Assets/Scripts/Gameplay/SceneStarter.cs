@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class SceneStarter : MonoBehaviour
 {
-    public RoomGenerator roomGenerator;
+    public FloorGenerator floorGenerator;
 
     void Start()
     {
-        if (roomGenerator == null)
+        if (floorGenerator == null)
         {
             Debug.LogError("RoomGenerator не назначен!");
             return;
         }
 
-        roomGenerator.GenerateRooms();
+        floorGenerator.SpawnFloor(); 
     }
 }

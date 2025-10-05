@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6673912888045455712}
   - component: {fileID: 4062789986132035218}
   - component: {fileID: 7823257962488304807}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -80,8 +80,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 1291870753
-  m_SortingLayer: 8
+  m_SortingLayerID: 1509997195
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 7972042343384831389, guid: 038f5b01664548d4babeb278eb32db84, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -119,7 +119,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!95 &6673912888045455712
 Animator:
@@ -161,10 +161,10 @@ MonoBehaviour:
   interactionRadius: 1
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 64
   tileChangeLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   itemHoldPosition: {fileID: 0}

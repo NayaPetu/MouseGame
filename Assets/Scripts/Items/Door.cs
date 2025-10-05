@@ -1,35 +1,21 @@
 using UnityEngine;
+using Unity.Cinemachine;
+
 
 public class Door : MonoBehaviour
 {
-    public GameObject roomA;
-    public GameObject roomB;
+    public Transform targetDoor; // дверь, куда переходит игрок
+    public Collider2D roomCollider; // коллайдер комнаты, для камеры
 
-    private Animator animator;
-
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            if (roomB != null)
-                roomB.SetActive(true);
-
-            if (animator != null)
-                animator.SetTrigger("Open");
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            if (animator != null)
-                animator.SetTrigger("Close");
+            // перемещаем игрока к целевой двери
+            other.transform.position = targetDoor.position;
+            
+            // переключаем камеру на новую комнату
+            Camera.main.GetComponent<CinemachineConfiner2D>().BoundingShape2D = roomCollider;
         }
     }
 }

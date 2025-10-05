@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7005310953420948573}
   - component: {fileID: 684008904707719380}
   - component: {fileID: 2278469536420646498}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: EnemyCat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,11 +183,10 @@ MonoBehaviour:
   detectionRadius: 5
   playerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 576
   wallMask:
     serializedVersion: 2
-    m_Bits: 8
-  attackDistance: 0.5
+    m_Bits: 128
 --- !u!95 &2278469536420646498
 Animator:
   serializedVersion: 7
