@@ -4,49 +4,58 @@ using Unity.Cinemachine;
 public class Door : MonoBehaviour
 {
     [Header("Целевая дверь/комната")]
-    public Transform targetDoor;      // Дверь или точка в целевой комнате
-    public Collider2D roomCollider;   // Коллайдер новой комнаты для камеры
+    public Transform targetDoor;
+    public Collider2D roomCollider;
 
     [Header("Телепорт смещение")]
-    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f); // Смещение игрока при телепорте
+    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f);
 
-    private bool teleported = false;  // Флаг, чтобы предотвратить повторный телепорт
+    private bool playerTeleported = false;
+    private bool enemyTeleported = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player") || teleported) return;
+        // --- Если вошёл игрок ---
+        if (other.CompareTag("Player") && !playerTeleported)
+        {
+            TeleportEntity(other.transform, true);
+            playerTeleported = true;
+        }
 
+        // --- Если вошёл враг ---
+        else if (other.CompareTag("Enemy") && !enemyTeleported)
+        {
+            TeleportEntity(other.transform, false);
+            enemyTeleported = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            playerTeleported = false;
+
+        if (other.CompareTag("Enemy"))
+            enemyTeleported = false;
+    }
+
+    private void TeleportEntity(Transform entity, bool isPlayer)
+    {
         if (targetDoor == null)
         {
             Debug.LogWarning($"targetDoor не назначен на двери {name}!");
             return;
         }
 
-        // 🔹 Телепортируем игрока с безопасным смещением
-        other.transform.position = targetDoor.position + safeOffset;
+        // Смещение — чтобы не застревали
+        entity.position = targetDoor.position + safeOffset;
 
-        // 🔹 Обновляем камеру на новую комнату
-        if (roomCollider != null)
+        // Камеру обновляем только если это игрок
+        if (isPlayer && roomCollider != null)
         {
             CinemachineConfiner2D confiner = Camera.main.GetComponent<CinemachineConfiner2D>();
             if (confiner != null)
                 confiner.BoundingShape2D = roomCollider;
-        }
-        else
-        {
-            Debug.LogWarning($"roomCollider не назначен на двери {name}!");
-        }
-
-        // 🔹 Блокируем повторное срабатывание, пока игрок внутри коллайдера
-        teleported = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // Разблокируем дверь, когда игрок покидает её коллайдер
-            teleported = false;
         }
     }
 }

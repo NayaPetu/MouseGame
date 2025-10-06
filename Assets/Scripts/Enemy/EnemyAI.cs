@@ -1,12 +1,16 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
 public class EnemyAI : MonoBehaviour
 {
+    [Header("Параметры движения")]
     public float speed = 2f;
-    public float detectionRadius = 5f;
-    public LayerMask playerMask, wallMask;
+
+    [Header("Зрение")]
+    public float detectionRadius = 12f; // 👈 увеличен радиус обнаружения
+    public LayerMask playerMask;
+    public LayerMask wallMask;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -64,13 +68,17 @@ public class EnemyAI : MonoBehaviour
         }
 
         Vector2 delta = moveTarget - rb.position;
-        bool isMoving = delta.magnitude > 0.001f;
+        bool isMoving = delta.magnitude > 0.05f; // 👈 увеличен порог остановки
 
         if (isMoving)
         {
             Vector2 dir = delta.normalized;
             rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
-            currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
+            currentDir = Vector2.Lerp(currentDir, dir, 0.25f);
+        }
+        else
+        {
+            currentDir = Vector2.zero;
         }
 
         HandleAnimation(currentDir, isMoving);
@@ -79,6 +87,7 @@ public class EnemyAI : MonoBehaviour
     private void HandleAnimation(Vector2 dir, bool isMoving)
     {
         animator.SetBool(IsMoving, isMoving);
+
         if (isMoving)
         {
             animator.SetFloat(MoveX, dir.x);
@@ -87,8 +96,24 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            animator.SetFloat(MoveX, lastMoveDir.x);
-            animator.SetFloat(MoveY, lastMoveDir.y);
+            Vector2 lookDir = lastMoveDir;
+
+            // 👁 если игрок близко — поворачиваемся лицом к нему даже в idle
+            if (target != null)
+            {
+                Vector2 toPlayer = (target.position - transform.position).normalized;
+                if (toPlayer.magnitude > 0.1f)
+                    lookDir = toPlayer;
+            }
+
+            // 👇 фиксируем idle-направление по 4 сторонам
+            Vector2 snapped = new Vector2(
+                Mathf.Abs(lookDir.x) > Mathf.Abs(lookDir.y) ? Mathf.Sign(lookDir.x) : 0,
+                Mathf.Abs(lookDir.y) >= Mathf.Abs(lookDir.x) ? Mathf.Sign(lookDir.y) : 0
+            );
+
+            animator.SetFloat(MoveX, snapped.x);
+            animator.SetFloat(MoveY, snapped.y);
         }
     }
 
@@ -99,9 +124,14 @@ public class EnemyAI : MonoBehaviour
         {
             Vector2 dir = (hit.transform.position - transform.position).normalized;
             if (!Physics2D.Raycast(transform.position, dir, detectionRadius, wallMask))
+            {
                 target = hit.transform;
+            }
         }
-        else target = null;
+        else
+        {
+            target = null;
+        }
     }
 
     void ChoosePatrolTarget()
@@ -122,5 +152,12 @@ public class EnemyAI : MonoBehaviour
                 return;
             }
         }
+    }
+
+    // Визуализация радиуса зрения в редакторе
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }

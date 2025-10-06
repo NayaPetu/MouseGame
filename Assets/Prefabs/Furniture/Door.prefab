@@ -126,7 +126,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0030403137, y: 0.04558754}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -136,7 +136,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1.0002441}
+  m_Size: {x: 1.0243111, y: 1.0853462}
   m_EdgeRadius: 0
 --- !u!114 &8147011829764184836
 MonoBehaviour:
@@ -152,3 +152,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   targetDoor: {fileID: 0}
   roomCollider: {fileID: 0}
+  safeOffset: {x: 0.5, y: 0, z: 0}
