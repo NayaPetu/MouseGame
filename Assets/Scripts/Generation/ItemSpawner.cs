@@ -1,49 +1,62 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    [Header("Настройки спавнера")]
-    public GameObject[] itemPrefabs; // все предметы (BaseItem и наследники)
-    public int itemsToSpawn = 5;      // сколько предметов заспавнить
-    public Vector2 roomMin;           // нижний левый угол комнаты
-    public Vector2 roomMax;           // верхний правый угол комнаты
+    [Header("РќР°СЃС‚СЂРѕР№РєРё СЃРїР°РІРЅРµСЂР°")]
+    public GameObject[] itemPrefabs; // РІСЃРµ РїСЂРµРґРјРµС‚С‹
+    public int itemsToSpawn = 5;     // СЃРєРѕР»СЊРєРѕ РїСЂРµРґРјРµС‚РѕРІ Р·Р°СЃРїР°РІРЅРёС‚СЊ
+    public Vector2 roomMin;          // РЅРёР¶РЅРёР№ Р»РµРІС‹Р№ СѓРіРѕР» РєРѕРјРЅР°С‚С‹
+    public Vector2 roomMax;          // РІРµСЂС…РЅРёР№ РїСЂР°РІС‹Р№ СѓРіРѕР» РєРѕРјРЅР°С‚С‹
 
-    [Header("Опционально")]
-    public bool randomRotation = false; // повернуть предмет случайно
+    [Header("РћРїС†РёРѕРЅР°Р»СЊРЅРѕ")]
+    public bool randomRotation = false;
+    public LayerMask floorLayerMask; // СЃР»РѕР№ РїРѕР»Р°
+    public LayerMask wallLayerMask;  // СЃР»РѕР№ СЃС‚РµРЅ, С‡С‚РѕР±С‹ РїСЂРµРґРјРµС‚С‹ РЅРµ Р·Р°СЃС‚СЂРµРІР°Р»Рё
 
-    void Start()
+    public void SpawnItems()
     {
-        SpawnItems();
-    }
+        if (itemPrefabs.Length == 0) return;
 
-    void SpawnItems()
-    {
         for (int i = 0; i < itemsToSpawn; i++)
         {
-            if (itemPrefabs.Length == 0) return;
-
-            // Выбираем случайный предмет
             GameObject itemPrefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
+            Vector3 spawnPos = FindSafePosition(0.3f); // radius Р±РµР·РѕРїР°СЃРЅРѕРіРѕ СЃРїР°РІРЅР°
 
-            // Выбираем случайную позицию в комнате
-            Vector2 spawnPos = new Vector2(
-                Random.Range(roomMin.x, roomMax.x),
-                Random.Range(roomMin.y, roomMax.y)
-            );
-
-            // Создаём объект
-            GameObject item = Instantiate(itemPrefab, spawnPos, Quaternion.identity);
-
-            // Случайный поворот (если включено)
-            if (randomRotation)
+            if (spawnPos != Vector3.zero)
             {
-                float zRot = Random.Range(0f, 360f);
-                item.transform.Rotate(0f, 0f, zRot);
-            }
+                GameObject item = Instantiate(itemPrefab, spawnPos, Quaternion.identity);
 
-            // Убедимся, что предметы не спавнятся внутри стены (если нужно)
-            Collider2D col = item.GetComponent<Collider2D>();
-            if (col != null) col.enabled = true;
+                if (randomRotation)
+                {
+                    float zRot = Random.Range(0f, 360f);
+                    item.transform.Rotate(0f, 0f, zRot);
+                }
+            }
         }
+    }
+
+    private Vector3 FindSafePosition(float radius)
+    {
+        for (int attempt = 0; attempt < 50; attempt++)
+        {
+            float x = Random.Range(roomMin.x, roomMax.x);
+            float y = Random.Range(roomMin.y, roomMax.y);
+            Vector2 rayOrigin = new Vector2(x, y + 5f);
+
+            // РїСЂРѕРІРµСЂСЏРµРј РїРѕР»
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, 10f, floorLayerMask);
+            if (hit.collider != null)
+            {
+                Vector3 pos = (Vector3)hit.point + Vector3.up * 0.3f;
+
+                // РїСЂРѕРІРµСЂСЏРµРј СЃС‚РµРЅС‹, С‡С‚РѕР±С‹ РїСЂРµРґРјРµС‚ РЅРµ РѕРєР°Р·Р°Р»СЃСЏ РІРЅСѓС‚СЂРё
+                Collider2D overlap = Physics2D.OverlapCircle(pos, radius, wallLayerMask);
+                if (overlap == null)
+                    return pos;
+            }
+        }
+
+        Debug.LogWarning("вљ пёЏ РќРµ СѓРґР°Р»РѕСЃСЊ РЅР°Р№С‚Рё Р±РµР·РѕРїР°СЃРЅСѓСЋ РїРѕР·РёС†РёСЋ РґР»СЏ РїСЂРµРґРјРµС‚Р°");
+        return Vector3.zero;
     }
 }

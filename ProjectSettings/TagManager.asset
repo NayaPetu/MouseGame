@@ -3,22 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Walls
+  - '-'
   - Water
   - UI
-  - Player
   - Floor
   - Furniture
-  - Items
+  - Player
+  - Walls
   - Door
-  - 
-  - 
-  - 
+  - Items
+  - Obstacles
+  - Enemy
   - 
   - 
   - 

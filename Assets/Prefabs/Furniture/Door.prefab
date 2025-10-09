@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2651110758274052192}
   - component: {fileID: 6969232727271134488}
   - component: {fileID: 6604300480549928047}
+  - component: {fileID: 8147011829764184836}
   m_Layer: 10
   m_Name: Door
   m_TagString: Untagged
@@ -125,15 +126,30 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0030403137, y: 0.04558754}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1.0002441}
+    oldSize: {x: 0.75, y: 0.7501831}
     newSize: {x: 1, y: 1.0002441}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1.0002441}
+  m_Size: {x: 1.0243111, y: 1.0853462}
   m_EdgeRadius: 0
+--- !u!114 &8147011829764184836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7320420268297753010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+  targetDoor: {fileID: 0}
+  roomCollider: {fileID: 0}
+  safeOffset: {x: 0.5, y: 0, z: 0}

@@ -1,54 +1,95 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class FurnitureSpawner : MonoBehaviour
 {
-    [Header("Furniture Settings")]
-    public GameObject[] furniturePrefabs; // Декоративная мебель
-    public int maxFurniturePerRoom = 3;   // Максимум мебели в комнате
+    [Header("Furniture")]
+    public GameObject[] furniturePrefabs;
+    public int maxFurniturePerRoom = 3;
 
-    /// <summary>
-    /// Спавнит мебель в указанной комнате
-    /// </summary>
-    /// <param name="roomBounds">Границы комнаты в координатах Tilemap или мира</param>
     public void SpawnFurniture(RectInt roomBounds)
     {
         if (furniturePrefabs.Length == 0) return;
 
-        int furnitureCount = Random.Range(1, maxFurniturePerRoom + 1);
-
-        for (int i = 0; i < furnitureCount; i++)
+        int count = Random.Range(1, maxFurniturePerRoom + 1);
+        for (int i = 0; i < count; i++)
         {
             GameObject prefab = furniturePrefabs[Random.Range(0, furniturePrefabs.Length)];
-
-            Vector2 spawnPos = GetRandomPositionInRoom(roomBounds, prefab);
-            Instantiate(prefab, spawnPos, Quaternion.identity);
+            Vector2 pos = GetRandomPositionInRoom(roomBounds);
+            Instantiate(prefab, pos, Quaternion.identity);
         }
     }
 
-    /// <summary>
-    /// Выбирает случайную позицию внутри комнаты с учётом размера мебели
-    /// </summary>
-    private Vector2 GetRandomPositionInRoom(RectInt roomBounds, GameObject prefab)
+    public Vector2 GetRandomPositionInRoom(RectInt roomBounds)
     {
-        Vector2 size = Vector2.one;
-        Furniture f = prefab.GetComponent<Furniture>();
-        if (f != null)
-        {
-            size = new Vector2(f.sizeInTiles.x, f.sizeInTiles.y);
-        }
-
-        float x = Random.Range(roomBounds.xMin + size.x / 2f, roomBounds.xMax - size.x / 2f);
-        float y = Random.Range(roomBounds.yMin + size.y / 2f, roomBounds.yMax - size.y / 2f);
-
+        float x = Random.Range(roomBounds.xMin + 0.5f, roomBounds.xMax - 0.5f);
+        float y = Random.Range(roomBounds.yMin + 0.5f, roomBounds.yMax - 0.5f);
         return new Vector2(x, y);
     }
-}
 
-/// <summary>
-/// Скрипт для самой мебели, чтобы задать размер в клетках Tilemap
-/// </summary>
-public class Furniture : MonoBehaviour
-{
-    public Vector2Int sizeInTiles = Vector2Int.one; // ширина и высота в тайлах
+    public RectInt GetRoomBounds(GameObject room)
+    {
+        BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+        if (box == null) return new RectInt(0,0,1,1);
+
+        Vector3 pos = box.transform.position + (Vector3)box.offset;
+        Vector2 size = box.size;
+        return new RectInt(
+            Mathf.FloorToInt(pos.x - size.x / 2),
+            Mathf.FloorToInt(pos.y - size.y / 2),
+            Mathf.CeilToInt(size.x),
+            Mathf.CeilToInt(size.y)
+        );
+    }
+
+    public bool[,] GenerateWalkableMapForRooms(List<GameObject> rooms)
+    {
+        if (rooms.Count == 0) return null;
+
+        float minX = float.MaxValue, minY = float.MaxValue;
+        float maxX = float.MinValue, maxY = float.MinValue;
+
+        foreach (var room in rooms)
+        {
+            BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+            if (box == null) continue;
+
+            Vector3 pos = box.transform.position + (Vector3)box.offset;
+            Vector2 size = box.size;
+
+            minX = Mathf.Min(minX, pos.x - size.x/2);
+            minY = Mathf.Min(minY, pos.y - size.y/2);
+            maxX = Mathf.Max(maxX, pos.x + size.x/2);
+            maxY = Mathf.Max(maxY, pos.y + size.y/2);
+        }
+
+        int width = Mathf.CeilToInt(maxX - minX);
+        int height = Mathf.CeilToInt(maxY - minY);
+
+        bool[,] map = new bool[width, height];
+
+        foreach (var room in rooms)
+        {
+            BoxCollider2D box = room.GetComponentInChildren<BoxCollider2D>();
+            if (box == null) continue;
+
+            Vector3 pos = box.transform.position + (Vector3)box.offset;
+            Vector2 size = box.size;
+
+            int startX = Mathf.FloorToInt(pos.x - size.x/2 - minX);
+            int startY = Mathf.FloorToInt(pos.y - size.y/2 - minY);
+
+            for (int x = 0; x < Mathf.CeilToInt(size.x); x++)
+                for (int y = 0; y < Mathf.CeilToInt(size.y); y++)
+                {
+                    int mx = startX + x;
+                    int my = startY + y;
+                    if (mx >= 0 && mx < width && my >= 0 && my < height)
+                        map[mx, my] = true;
+                }
+        }
+
+        return map;
+    }
 }

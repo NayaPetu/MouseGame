@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 7005310953420948573}
   - component: {fileID: 684008904707719380}
   - component: {fileID: 2278469536420646498}
-  m_Layer: 6
+  m_Layer: 13
   m_Name: EnemyCat
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -81,14 +81,14 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1291870753
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8774297933457430302, guid: 30e339618e9803041b08bde4fed6db41, type: 3}
+  m_Sprite: {fileID: 1040611843020108027, guid: c9427321a7f243e44930c58adeba32ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.43759143, y: 0.546875}
+  m_Size: {x: 4, y: 4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -159,8 +159,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.43759143, y: 0.546875}
-    newSize: {x: 0.43759143, y: 0.546875}
+    oldSize: {x: 4, y: 4}
+    newSize: {x: 4, y: 4}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -183,11 +183,10 @@ MonoBehaviour:
   detectionRadius: 5
   playerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   wallMask:
     serializedVersion: 2
-    m_Bits: 8
-  attackDistance: 0.5
+    m_Bits: 512
 --- !u!95 &2278469536420646498
 Animator:
   serializedVersion: 7

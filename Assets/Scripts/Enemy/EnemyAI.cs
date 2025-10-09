@@ -1,13 +1,16 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
 public class EnemyAI : MonoBehaviour
 {
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РґРІРёР¶РµРЅРёСЏ")]
     public float speed = 2f;
-    public float detectionRadius = 5f;
-    public LayerMask playerMask, wallMask;
-    public float attackDistance = 0.5f;
+
+    [Header("Р—СЂРµРЅРёРµ")]
+    public float detectionRadius = 12f; // рџ‘€ СѓРІРµР»РёС‡РµРЅ СЂР°РґРёСѓСЃ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ
+    public LayerMask playerMask;
+    public LayerMask wallMask;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -16,18 +19,20 @@ public class EnemyAI : MonoBehaviour
     private Vector2Int patrolTarget;
     private bool hasPatrolTarget = false;
 
-    // Хэши параметров аниматора
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
 
-    // Последнее направление (для idle)
     private Vector2 lastMoveDir;
-    private Vector2 currentDir; // сглаженное направление
+    private Vector2 currentDir;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
         animator = GetComponent<Animator>();
     }
 
@@ -46,11 +51,11 @@ public class EnemyAI : MonoBehaviour
     {
         Vector2 moveTarget;
 
-        if (target != null) // преследуем игрока
+        if (target != null)
         {
             moveTarget = target.position;
         }
-        else if (hasPatrolTarget) // патрулируем комнату
+        else if (hasPatrolTarget)
         {
             moveTarget = new Vector2(patrolTarget.x + 0.5f, patrolTarget.y + 0.5f);
             if (Vector2.Distance(rb.position, moveTarget) < 0.05f)
@@ -58,29 +63,22 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            // нет цели — стоим на месте
             HandleAnimation(Vector2.zero, false);
             return;
         }
 
         Vector2 delta = moveTarget - rb.position;
-        bool isMoving = delta.magnitude > 0.001f;
+        bool isMoving = delta.magnitude > 0.05f; // рџ‘€ СѓРІРµР»РёС‡РµРЅ РїРѕСЂРѕРі РѕСЃС‚Р°РЅРѕРІРєРё
 
         if (isMoving)
         {
-            // если близко к цели, фиксируем позицию и считаем, что остановились
-            if (delta.magnitude <= speed * Time.fixedDeltaTime)
-            {
-                rb.position = moveTarget;
-                isMoving = false;
-            }
-            else
-            {
-                Vector2 dir = delta.normalized;
-                rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
-                // сглаживаем направление для анимации
-                currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
-            }
+            Vector2 dir = delta.normalized;
+            rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
+            currentDir = Vector2.Lerp(currentDir, dir, 0.25f);
+        }
+        else
+        {
+            currentDir = Vector2.zero;
         }
 
         HandleAnimation(currentDir, isMoving);
@@ -98,8 +96,24 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            animator.SetFloat(MoveX, lastMoveDir.x);
-            animator.SetFloat(MoveY, lastMoveDir.y);
+            Vector2 lookDir = lastMoveDir;
+
+            // рџ‘Ѓ РµСЃР»Рё РёРіСЂРѕРє Р±Р»РёР·РєРѕ вЂ” РїРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ Р»РёС†РѕРј Рє РЅРµРјСѓ РґР°Р¶Рµ РІ idle
+            if (target != null)
+            {
+                Vector2 toPlayer = (target.position - transform.position).normalized;
+                if (toPlayer.magnitude > 0.1f)
+                    lookDir = toPlayer;
+            }
+
+            // рџ‘‡ С„РёРєСЃРёСЂСѓРµРј idle-РЅР°РїСЂР°РІР»РµРЅРёРµ РїРѕ 4 СЃС‚РѕСЂРѕРЅР°Рј
+            Vector2 snapped = new Vector2(
+                Mathf.Abs(lookDir.x) > Mathf.Abs(lookDir.y) ? Mathf.Sign(lookDir.x) : 0,
+                Mathf.Abs(lookDir.y) >= Mathf.Abs(lookDir.x) ? Mathf.Sign(lookDir.y) : 0
+            );
+
+            animator.SetFloat(MoveX, snapped.x);
+            animator.SetFloat(MoveY, snapped.y);
         }
     }
 
@@ -140,11 +154,10 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D col)
+    // Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ СЂР°РґРёСѓСЃР° Р·СЂРµРЅРёСЏ РІ СЂРµРґР°РєС‚РѕСЂРµ
+    private void OnDrawGizmosSelected()
     {
-        if (col.gameObject.CompareTag("Player"))
-        {
-            Debug.Log("Кот атакует игрока!");
-        }
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }

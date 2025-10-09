@@ -1,35 +1,61 @@
-using UnityEngine;
+﻿using UnityEngine;
+using Unity.Cinemachine;
 
 public class Door : MonoBehaviour
 {
-    public GameObject roomA;
-    public GameObject roomB;
+    [Header("Целевая дверь/комната")]
+    public Transform targetDoor;
+    public Collider2D roomCollider;
 
-    private Animator animator;
+    [Header("Телепорт смещение")]
+    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f);
 
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
+    private bool playerTeleported = false;
+    private bool enemyTeleported = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        // --- Если вошёл игрок ---
+        if (other.CompareTag("Player") && !playerTeleported)
         {
-            if (roomB != null)
-                roomB.SetActive(true);
+            TeleportEntity(other.transform, true);
+            playerTeleported = true;
+        }
 
-            if (animator != null)
-                animator.SetTrigger("Open");
+        // --- Если вошёл враг ---
+        else if (other.CompareTag("Enemy") && !enemyTeleported)
+        {
+            TeleportEntity(other.transform, false);
+            enemyTeleported = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+            playerTeleported = false;
+
+        if (other.CompareTag("Enemy"))
+            enemyTeleported = false;
+    }
+
+    private void TeleportEntity(Transform entity, bool isPlayer)
+    {
+        if (targetDoor == null)
         {
-            if (animator != null)
-                animator.SetTrigger("Close");
+            Debug.LogWarning($"targetDoor не назначен на двери {name}!");
+            return;
+        }
+
+        // Смещение — чтобы не застревали
+        entity.position = targetDoor.position + safeOffset;
+
+        // Камеру обновляем только если это игрок
+        if (isPlayer && roomCollider != null)
+        {
+            CinemachineConfiner2D confiner = Camera.main.GetComponent<CinemachineConfiner2D>();
+            if (confiner != null)
+                confiner.BoundingShape2D = roomCollider;
         }
     }
 }
