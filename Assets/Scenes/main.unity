@@ -1209,13 +1209,13 @@ MonoBehaviour:
   itemsToSpawn: 1
   roomMin: {x: 0, y: 0}
   roomMax: {x: 0, y: 0}
-  randomRotation: 0
+  randomRotation: 1
   floorLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   wallLayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 0
 --- !u!4 &1557445522
 Transform:
   m_ObjectHideFlags: 0
@@ -1284,7 +1284,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   itemSpawner: {fileID: 1557445521}
-  itemsToSpawn: 1
+  itemsToSpawn: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
