@@ -16,10 +16,6 @@ public class FloorGenerator : MonoBehaviour
     [Header("Layers")]
     public LayerMask floorLayerMask;
 
-    [Header("Item Spawner")]
-    public ItemSpawner itemSpawner; // Ссылка на спавнер предметов
-    public int itemsToSpawn = 5;     // Количество предметов заспавнить
-
     private GameObject playerInstance;
 
     public void SpawnFloor()
@@ -43,25 +39,6 @@ public class FloorGenerator : MonoBehaviour
         {
             Vector3 enemyPos = CreateSafeSpawnPosition(floor, 0.3f);
             Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
-        }
-
-        // Спавн предметов
-        if (itemSpawner != null)
-        {
-            Collider2D floorCollider = floor.GetComponentInChildren<Collider2D>();
-            if (floorCollider != null)
-            {
-                Bounds b = floorCollider.bounds;
-                itemSpawner.roomMin = b.min;
-                itemSpawner.roomMax = b.max;
-                itemSpawner.itemsToSpawn = itemsToSpawn;
-
-                itemSpawner.SpawnItems();
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ У комнаты нет Collider2D для спавна предметов!");
-            }
         }
     }
 
