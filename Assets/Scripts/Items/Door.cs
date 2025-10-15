@@ -12,6 +12,13 @@ public class Door : MonoBehaviour
 
     private bool playerTeleported = false;
     private bool enemyTeleported = false;
+    // внутри класса Door
+    public void TeleportEnemyToTarget(Transform enemy)
+    {
+    // используем ту же логику что и TeleportEntity, но публично
+        if (targetDoor == null) { Debug.LogWarning($"targetDoor не назначен на двери {name}!"); return; }
+        enemy.position = targetDoor.position + safeOffset;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
