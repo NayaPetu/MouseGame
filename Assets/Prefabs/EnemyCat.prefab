@@ -188,6 +188,9 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 1024
+  doorMask:
+    serializedVersion: 2
+    m_Bits: 8192
   patrolWaitTime: 2
 --- !u!95 &2278469536420646498
 Animator:

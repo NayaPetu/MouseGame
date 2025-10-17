@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using Unity.Cinemachine;
-using System.Linq;
 
 public class FloorGenerator : MonoBehaviour
 {
@@ -18,16 +17,8 @@ public class FloorGenerator : MonoBehaviour
     public LayerMask floorLayerMask;
 
     private GameObject playerInstance;
-    private GameObject enemyInstance;
-    private Room[] allRooms;
 
-    [Header("Настройки спавна")]
-    public bool chooseRandomRoomForPlayer = true;
-    public bool chooseRandomRoomForEnemy = true;
-    public int playerRoomIndex = 0; // индекс комнаты (если не рандом)
-    public int enemyRoomIndex = 1;
-
-    // --- Основной запуск генерации ---
+    // --- Генерация этажа ---
     public void SpawnFloor()
     {
         if (floorPrefabs.Length == 0)
@@ -36,77 +27,78 @@ public class FloorGenerator : MonoBehaviour
             return;
         }
 
-        // 1️⃣ Создаём этаж
+        // Выбираем случайную комнату
         GameObject prefab = floorPrefabs[Random.Range(0, floorPrefabs.Length)];
         GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
 
-        // 2️⃣ Получаем список всех комнат на этаже
-        allRooms = floor.GetComponentsInChildren<Room>(true);
-        if (allRooms == null || allRooms.Length == 0)
-        {
-            Debug.LogError("❌ На этаже не найдено ни одной комнаты!");
-            return;
-        }
+        // === Находим точки спавна внутри префаба ===
+        Transform playerSpawnPoint = floor.transform.Find("PlayerSpawnPoint");
+        Transform enemySpawnPoint = floor.transform.Find("EnemySpawnPoint");
 
-        // 3️⃣ Выбираем комнату для игрока
-        Room playerRoom = chooseRandomRoomForPlayer
-            ? allRooms[Random.Range(0, allRooms.Length)]
-            : allRooms[Mathf.Clamp(playerRoomIndex, 0, allRooms.Length - 1)];
-
-        // 4️⃣ Выбираем комнату для врага
-        Room enemyRoom = chooseRandomRoomForEnemy
-            ? allRooms[Random.Range(0, allRooms.Length)]
-            : allRooms[Mathf.Clamp(enemyRoomIndex, 0, allRooms.Length - 1)];
-
-        // Чтобы не оказались в одной комнате
-        if (enemyRoom == playerRoom && allRooms.Length > 1)
-        {
-            enemyRoom = allRooms.FirstOrDefault(r => r != playerRoom);
-        }
-
-        // 5️⃣ Спавним игрока
-        Vector3 playerPos = GetRandomPointInRoom(playerRoom);
+        // === СПАВН ИГРОКА ===
+        Vector3 playerPos = playerSpawnPoint != null ? playerSpawnPoint.position : CreateSafeSpawnPosition(floor, 0.4f);
         playerInstance = Instantiate(playerPrefab, playerPos, Quaternion.identity);
 
         // Камера следует за игроком
         if (virtualCamera != null)
             virtualCamera.Follow = playerInstance.transform;
 
-        // 6️⃣ Спавним врага
+        // === СПАВН ВРАГА ===
         if (enemyPrefab != null)
         {
-            Vector3 enemyPos = GetRandomPointInRoom(enemyRoom);
-            enemyInstance = Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
-        }
+            Vector3 enemyPos = enemySpawnPoint != null ? enemySpawnPoint.position : CreateSafeSpawnPosition(floor, 0.4f);
+            GameObject enemyInstance = Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
 
-        Debug.Log($"✅ Игрок в {playerRoom.roomName}, враг в {enemyRoom.roomName}");
+            // Инициализируем врага, чтобы он знал игрока
+            Room startRoom = floor.GetComponentInChildren<Room>();
+            if (startRoom != null)
+            {
+                EnemyAI enemyAI = enemyInstance.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                    enemyAI.Init(startRoom, playerInstance.transform, enemyPos);
+            }
+        }
     }
 
-    // --- Получаем случайную точку в комнате ---
-    private Vector3 GetRandomPointInRoom(Room room)
+    // --- Создание безопасной позиции ---
+    private Vector3 CreateSafeSpawnPosition(GameObject room, float radius)
     {
-        if (room == null)
+        Collider2D floorCollider = room.GetComponentInChildren<Collider2D>();
+        if (floorCollider == null)
         {
-            Debug.LogWarning("⚠️ Комната не указана для спавна!");
-            return Vector3.zero;
+            Debug.LogWarning($"⚠️ У комнаты {room.name} нет Collider2D для пола!");
+            return room.transform.position;
         }
 
-        Bounds b = room.GetRoomBounds();
+        Bounds b = floorCollider.bounds;
         float safeMargin = 0.5f;
 
-        for (int attempt = 0; attempt < 50; attempt++)
+        for (int attempt = 0; attempt < 100; attempt++)
         {
             float x = Random.Range(b.min.x + safeMargin, b.max.x - safeMargin);
             float y = Random.Range(b.min.y + safeMargin, b.max.y - safeMargin);
-            Vector3 pos = new Vector3(x, y, 0f);
+            Vector2 point = new Vector2(x, y);
 
-            // Проверяем, не в стене ли
-            Collider2D hit = Physics2D.OverlapCircle(pos, 0.3f, LayerMask.GetMask("Walls"));
-            if (hit == null)
-                return pos;
+            // Проверяем, что точка на полу
+            RaycastHit2D hit = Physics2D.Raycast(point + Vector2.up * 2f, Vector2.down, 5f, floorLayerMask);
+            if (hit.collider == null)
+                continue;
+
+            Vector3 pos = hit.point + Vector2.up * 0.3f;
+
+            // Проверяем коллизии со стенами и дверями
+            Collider2D wallHit = Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"));
+            if (wallHit != null)
+                continue;
+
+            Collider2D doorHit = Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Default"));
+            if (doorHit != null && doorHit.CompareTag("Door"))
+                continue;
+
+            return pos;
         }
 
-        Debug.LogWarning($"⚠️ Не удалось найти свободную позицию в {room.roomName}, берём центр");
-        return b.center;
+        Debug.LogWarning("⚠️ Не удалось найти безопасную точку спавна, используем центр пола");
+        return b.center + Vector3.up * 0.5f;
     }
 }

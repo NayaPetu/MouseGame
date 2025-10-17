@@ -1,57 +1,71 @@
 ﻿using UnityEngine;
-using Unity.Cinemachine;
+using System.Collections;
 
 public class Door : MonoBehaviour
 {
-    [Header("Целевая дверь/комната")]
-    public Transform targetDoor;
-    public Collider2D roomCollider;
+    [Header("Целевая дверь")]
+    public Transform targetDoor; // 👈 не трогаем!
 
-    [Header("Комната, в которой находится эта дверь")]
-    public Room currentRoom;
+    [Header("Комната этой двери")]
+    public Room currentRoom; // 👈 не трогаем!
 
     [Header("Телепорт смещение")]
-    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f);
+    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f); // 👈 не трогаем!
 
-    private bool playerTeleported = false;
     private bool enemyTeleported = false;
+    private bool playerTeleported = false;
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // --- Враг ---
+        if (other.CompareTag("Enemy") && !enemyTeleported)
+        {
+            TeleportEnemyToTarget(other.transform);
+            enemyTeleported = true;
+        }
+
+        // --- Игрок ---
+        if (other.CompareTag("Player") && !playerTeleported)
+        {
+            StartCoroutine(TeleportPlayer(other.transform));
+            playerTeleported = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+            enemyTeleported = false;
+
+        if (other.CompareTag("Player"))
+            playerTeleported = false;
+    }
+
+    // --- Телепорт врага ---
     public void TeleportEnemyToTarget(Transform enemy)
     {
         if (targetDoor == null) return;
         enemy.position = targetDoor.position + safeOffset;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    // --- Телепорт игрока ---
+    private IEnumerator TeleportPlayer(Transform player)
     {
-        if (other.CompareTag("Player") && !playerTeleported)
-        {
-            TeleportEntity(other.transform, true);
-            playerTeleported = true;
-        }
-        else if (other.CompareTag("Enemy") && !enemyTeleported)
-        {
-            TeleportEntity(other.transform, false);
-            enemyTeleported = true;
-        }
-    }
+        if (targetDoor == null) yield break;
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player")) playerTeleported = false;
-        if (other.CompareTag("Enemy")) enemyTeleported = false;
-    }
+        // Блокируем движение, чтобы не дергался
+        PlayerController controller = player.GetComponent<PlayerController>();
+        if (controller != null)
+            controller.SetMovement(false);
 
-    private void TeleportEntity(Transform entity, bool isPlayer)
-    {
-        if (targetDoor == null) return;
-        entity.position = targetDoor.position + safeOffset;
+        yield return new WaitForSeconds(0.05f);
 
-        if (isPlayer && roomCollider != null)
-        {
-            CinemachineConfiner2D confiner = Camera.main.GetComponent<CinemachineConfiner2D>();
-            if (confiner != null)
-                confiner.BoundingShape2D = roomCollider;
-        }
+        // Перемещаем
+        player.position = targetDoor.position + safeOffset;
+
+        yield return new WaitForSeconds(0.05f);
+
+        if (controller != null)
+            controller.SetMovement(true);
     }
 }

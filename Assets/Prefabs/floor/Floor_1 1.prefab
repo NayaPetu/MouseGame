@@ -350,6 +350,18 @@ PrefabInstance:
       propertyPath: safeOffset.y
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 7118671590647209728, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 6744734560989489073}
+    - target: {fileID: 8524682367849977270, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
+      propertyPath: m_Name
+      value: Door bottom
+      objectReference: {fileID: 0}
+    - target: {fileID: 8524682367849977270, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -381,6 +393,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5009953924963977038, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
   m_PrefabInstance: {fileID: 828421198550275928}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7617203976597866584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7118671590647209728, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
+  m_PrefabInstance: {fileID: 828421198550275928}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &2344720270487799338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -390,12 +413,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 3973906819496923182}
     m_Modifications:
     - target: {fileID: 854093473117181189, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: roomName
+      value: "\u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u043A\u043E\u0432\u0435\u0440"
+      objectReference: {fileID: 0}
+    - target: {fileID: 854093473117181189, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: 'roomColliders.Array.data[1]'
       value: 
       objectReference: {fileID: 4877988471175548180}
     - target: {fileID: 2775991015865190408, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: m_Name
-      value: Room_3
+      value: Room_red
+      objectReference: {fileID: 0}
+    - target: {fileID: 4676322897336451960, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 5562613501312350006, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6072940985780823346, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: m_LocalPosition.x
@@ -453,6 +488,10 @@ PrefabInstance:
       propertyPath: safeOffset.y
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 6080696830105553358, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 6169318568993299953}
     - target: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: targetDoor
       value: 
@@ -460,7 +499,11 @@ PrefabInstance:
     - target: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: roomCollider
       value: 
-      objectReference: {fileID: 6584121691148557267}
+      objectReference: {fileID: 4877988471175548180}
+    - target: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 8207897838730607800}
     - target: {fileID: 8436151301871234572, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -498,11 +541,6 @@ MonoBehaviour:
 --- !u!4 &3235195776309645518 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 896119307733472996, guid: 14a89107571867448b46c655aa69fd37, type: 3}
-  m_PrefabInstance: {fileID: 2344720270487799338}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &6019107154684632257 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 8287244232681855723, guid: 14a89107571867448b46c655aa69fd37, type: 3}
   m_PrefabInstance: {fileID: 2344720270487799338}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &6168001023423981606 stripped
@@ -587,6 +625,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6072940985780823346, guid: 14a89107571867448b46c655aa69fd37, type: 3}
   m_PrefabInstance: {fileID: 2344720270487799338}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8424237249454690276 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6080696830105553358, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+  m_PrefabInstance: {fileID: 2344720270487799338}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+--- !u!114 &8736730676702493610 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+  m_PrefabInstance: {fileID: 2344720270487799338}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &5541848420713730120
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -637,7 +697,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7320420268297753010, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
       propertyPath: m_Name
-      value: Door (2)
+      value: Door _right
+      objectReference: {fileID: 0}
+    - target: {fileID: 7320420268297753010, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8147011829764184836, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
       propertyPath: targetDoor
@@ -655,6 +719,10 @@ PrefabInstance:
       propertyPath: safeOffset.x
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8147011829764184836, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 884319233381614470}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -704,6 +772,18 @@ PrefabInstance:
       propertyPath: safeOffset.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 94769405150176577, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 8424237249454690276}
+    - target: {fileID: 1573985183328628727, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: m_Name
+      value: Door_top
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573985183328628727, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 1588835648346660499, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: m_BodyType
       value: 2
@@ -711,6 +791,14 @@ PrefabInstance:
     - target: {fileID: 1851976883503918121, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: m_BodyType
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315507575323990516, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: m_Name
+      value: Door_left
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315507575323990516, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 3793454435613758274, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: targetDoor
@@ -724,6 +812,10 @@ PrefabInstance:
       propertyPath: safeOffset.x
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 3793454435613758274, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 8849779927447505861}
     - target: {fileID: 4633687582209329282, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: m_Name
       value: Room_example
@@ -771,6 +863,10 @@ PrefabInstance:
     - target: {fileID: 7306959067039767793, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: m_BodyType
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7457988340299286387, guid: c418ce2279317a8428be44d36793e081, type: 3}
+      propertyPath: roomName
+      value: "\u0446\u0435\u043D\u0442\u0440"
       objectReference: {fileID: 0}
     - target: {fileID: 7457988340299286387, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: 'doors.Array.data[2]'
@@ -821,6 +917,28 @@ CompositeCollider2D:
   m_CorrespondingSourceObject: {fileID: 7146135863346055775, guid: c418ce2279317a8428be44d36793e081, type: 3}
   m_PrefabInstance: {fileID: 6110648883943848112}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6169318568993299953 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 94769405150176577, guid: c418ce2279317a8428be44d36793e081, type: 3}
+  m_PrefabInstance: {fileID: 6110648883943848112}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+--- !u!114 &6946921709899312114 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3793454435613758274, guid: c418ce2279317a8428be44d36793e081, type: 3}
+  m_PrefabInstance: {fileID: 6110648883943848112}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &7498664809558079344
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -871,7 +989,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6472055768022301354, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
       propertyPath: m_Name
-      value: room_5
+      value: room_parket
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387125596074613269, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+      propertyPath: m_Name
+      value: Door top
+      objectReference: {fileID: 0}
+    - target: {fileID: 7387125596074613269, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7596127736075329974, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+      propertyPath: roomName
+      value: "\u043F\u0430\u0440\u043A\u0435\u0442"
       objectReference: {fileID: 0}
     - target: {fileID: 8215424428280107171, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
       propertyPath: targetDoor
@@ -885,11 +1015,26 @@ PrefabInstance:
       propertyPath: safeOffset.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8215424428280107171, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 7014288177277636934}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+--- !u!114 &1879011597299328979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8215424428280107171, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
+  m_PrefabInstance: {fileID: 7498664809558079344}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!4 &3486261770063281923 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6372922716228094067, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
@@ -908,6 +1053,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3973906819496923182}
     m_Modifications:
+    - target: {fileID: -1067633697717071947, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: roomName
+      value: "\u0440\u044B\u0436\u0430\u044F"
+      objectReference: {fileID: 0}
+    - target: {fileID: 460162863601565979, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 1361644844057267117, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: targetDoor
       value: 
@@ -920,9 +1073,13 @@ PrefabInstance:
       propertyPath: roomCollider
       value: 
       objectReference: {fileID: 7199732226199576205}
+    - target: {fileID: 1361644844057267117, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 6946921709899312114}
     - target: {fileID: 3421137264886493997, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: m_Name
-      value: Room_4
+      value: Room_orange
       objectReference: {fileID: 0}
     - target: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: targetDoor
@@ -935,7 +1092,15 @@ PrefabInstance:
     - target: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: roomCollider
       value: 
-      objectReference: {fileID: 6348835304479993151}
+      objectReference: {fileID: 7199732226199576205}
+    - target: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 8263164415795022420}
+    - target: {fileID: 6444298185558957831, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 7430181512611977408, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.4
@@ -989,11 +1154,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7430181512611977408, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
   m_PrefabInstance: {fileID: 7508964242673008744}
   m_PrefabAsset: {fileID: 0}
---- !u!61 &1111235748652561074 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 7448624167873950426, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
-  m_PrefabInstance: {fileID: 7508964242673008744}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1808815371507257309 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -1067633697717071947, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
@@ -1005,6 +1165,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f75356315a41854dbba3c1682ed1c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Room
+--- !u!114 &2728292236311123417 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+  m_PrefabInstance: {fileID: 7508964242673008744}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!4 &3389549005426909345 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5133870398921597129, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
@@ -1020,6 +1191,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1743815875380559573, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
   m_PrefabInstance: {fileID: 7508964242673008744}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8849779927447505861 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1361644844057267117, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+  m_PrefabInstance: {fileID: 7508964242673008744}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &8590264541711707258
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1028,6 +1210,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3973906819496923182}
     m_Modifications:
+    - target: {fileID: 208954023314585482, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Name
+      value: Door bottom
+      objectReference: {fileID: 0}
+    - target: {fileID: 208954023314585482, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 1612572312438521148, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: targetDoor
       value: 
@@ -1048,9 +1238,13 @@ PrefabInstance:
       propertyPath: safeOffset.y
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 1612572312438521148, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 1879011597299328979}
     - target: {fileID: 2647044892072458102, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: m_Name
-      value: room (1)
+      value: room violet
       objectReference: {fileID: 0}
     - target: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: targetDoor
@@ -1071,6 +1265,22 @@ PrefabInstance:
     - target: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: safeOffset.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 7617203976597866584}
+    - target: {fileID: 4479822850366292349, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Name
+      value: Door top
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479822850366292349, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4682875891366098428, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: roomName
+      value: "\u0444\u0438\u043E\u043B\u0435\u0442\u043E\u0432\u0430\u044F"
       objectReference: {fileID: 0}
     - target: {fileID: 5463441671892600493, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1112,6 +1322,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8067108931276055882, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Name
+      value: Door left
+      objectReference: {fileID: 0}
+    - target: {fileID: 8067108931276055882, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: targetDoor
       value: 
@@ -1128,6 +1346,10 @@ PrefabInstance:
       propertyPath: safeOffset.x
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 4465488213566049100}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1138,6 +1360,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9184668572198363311, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
   m_PrefabInstance: {fileID: 8590264541711707258}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &884319233381614470 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+  m_PrefabInstance: {fileID: 8590264541711707258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!66 &2168031886358921283 stripped
 CompositeCollider2D:
   m_CorrespondingSourceObject: {fileID: 7575236636757781561, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
@@ -1169,6 +1402,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3362456736509592728, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
   m_PrefabInstance: {fileID: 8590264541711707258}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6744734560989489073 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+  m_PrefabInstance: {fileID: 8590264541711707258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+--- !u!114 &7014288177277636934 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1612572312438521148, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+  m_PrefabInstance: {fileID: 8590264541711707258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
 --- !u!1001 &8979013658939130882
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1177,6 +1432,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3973906819496923182}
     m_Modifications:
+    - target: {fileID: -7605277294467464011, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: roomName
+      value: "\u043F\u043B\u0438\u0442\u043A\u0430"
+      objectReference: {fileID: 0}
     - target: {fileID: 764658992241160851, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_TileAssetArray.Array.data[1].m_Data
       value: 
@@ -2348,7 +2607,11 @@ PrefabInstance:
     - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: roomCollider
       value: 
-      objectReference: {fileID: 6019107154684632257}
+      objectReference: {fileID: 2359301049586405808}
+    - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 8736730676702493610}
     - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: targetDoor
       value: 
@@ -2360,7 +2623,19 @@ PrefabInstance:
     - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: roomCollider
       value: 
-      objectReference: {fileID: 1111235748652561074}
+      objectReference: {fileID: 2359301049586405808}
+    - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: connectedDoor
+      value: 
+      objectReference: {fileID: 2728292236311123417}
+    - target: {fileID: 1870341483954156044, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1923088111636841696, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 7086623446459639297, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.42
@@ -2403,7 +2678,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8092397484517499973, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_Name
-      value: room_2
+      value: room_plitka
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2418,6 +2693,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7086623446459639297, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
   m_PrefabInstance: {fileID: 8979013658939130882}
   m_PrefabAsset: {fileID: 0}
+--- !u!61 &2359301049586405808 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6640054711577695666, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+  m_PrefabInstance: {fileID: 8979013658939130882}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2608407378162358236 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6388692424584238046, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
@@ -2426,16 +2706,6 @@ Transform:
 --- !u!4 &2843472762994401584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6624186128724731186, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
-  m_PrefabInstance: {fileID: 8979013658939130882}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &6348835304479993151 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 2630178374878734653, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
-  m_PrefabInstance: {fileID: 8979013658939130882}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &6584121691148557267 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 2865594013692993489, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
   m_PrefabInstance: {fileID: 8979013658939130882}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &7705515758735769783 stripped
@@ -2449,3 +2719,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f75356315a41854dbba3c1682ed1c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Room
+--- !u!114 &8207897838730607800 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+  m_PrefabInstance: {fileID: 8979013658939130882}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+--- !u!114 &8263164415795022420 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+  m_PrefabInstance: {fileID: 8979013658939130882}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7737a5792b3b4b940f6bd7535e478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
