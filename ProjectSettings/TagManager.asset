@@ -14,12 +14,12 @@ TagManager:
   - UI
   - Floor
   - Furniture
-  - Player
+  - Enemy
+  - player
   - Walls
-  - Door
   - Items
   - Obstacles
-  - Enemy
+  - 
   - 
   - 
   - 

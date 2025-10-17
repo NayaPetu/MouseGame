@@ -7,7 +7,7 @@ public class EnemyAI : MonoBehaviour
 {
     [Header("Движение")]
     public float speed = 2f;
-    public float obstacleCheckDistance = 0.4f;
+    public float reachThreshold = 0.1f;
 
     [Header("Зрение")]
     public float detectionRadius = 8f;
@@ -15,24 +15,26 @@ public class EnemyAI : MonoBehaviour
     public LayerMask wallMask;
 
     [Header("Патруль")]
-    public float patrolWaitTime = 2f;
-    public float minPatrolDistance = 2f;
-    public float maxPatrolDistance = 6f;
+    public float patrolWaitTime = 1f;
 
     private Rigidbody2D rb;
     private Animator animator;
-    private Transform target;
-    private bool[,] walkable;
+    private Transform player;
+
+    private Room currentRoom;
+    private Room targetRoom;
+    private Door targetDoor;
+
     private Vector2 patrolTarget;
     private bool hasPatrolTarget = false;
     private float waitTimer = 0f;
+    private bool hasSeenPlayer = false;
 
-    private Door[] allDoors;
     private Vector2 lastMoveDir;
     private Vector2 currentDir;
-    private bool isBlocked = false;
 
-    // Animator hashes
+    private Door[] allDoors;
+
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
@@ -50,16 +52,15 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         allDoors = Object.FindObjectsByType<Door>(FindObjectsSortMode.None);
+        FindCurrentRoom();
+        ChooseNextTarget();
+    }
 
-        if (walkable == null)
-        {
-            walkable = new bool[10, 10];
-            for (int x = 0; x < 10; x++)
-                for (int y = 0; y < 10; y++)
-                    walkable[x, y] = true;
-        }
-
-        ChoosePatrolTarget();
+    public void Init(Room startRoom, Transform playerTransform)
+    {
+        currentRoom = startRoom;
+        player = playerTransform;
+        ChooseNextTarget();
     }
 
     void Update()
@@ -69,62 +70,68 @@ public class EnemyAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector2 moveTarget;
+        if (currentRoom == null) FindCurrentRoom();
+        if (!hasPatrolTarget) ChooseNextTarget();
 
-        if (target != null)
-        {
-            moveTarget = target.position;
-        }
-        else if (hasPatrolTarget)
-        {
-            moveTarget = patrolTarget;
+        Vector2 targetPos = patrolTarget;
 
-            float dist = Vector2.Distance(rb.position, moveTarget);
-            if (dist < 0.1f)
+        // Если игрок замечен и в другой комнате
+        if (hasSeenPlayer && player != null)
+        {
+            Room playerRoom = player.GetComponentInParent<Room>();
+            if (playerRoom != null && playerRoom != currentRoom)
             {
-                waitTimer += Time.fixedDeltaTime;
-                if (waitTimer >= patrolWaitTime)
-                {
-                    waitTimer = 0f;
-                    ChoosePatrolTarget();
-                }
-                HandleAnimation(Vector2.zero, false);
-                return;
+                // Цель — ближайшая дверь в комнату игрока
+                targetDoor = FindDoorToRoom(playerRoom);
+                if (targetDoor != null) targetPos = targetDoor.transform.position;
+            }
+            else
+            {
+                targetPos = player.position;
             }
         }
-        else
+
+        MoveTowards(targetPos);
+
+        // Если дошли до патрульной точки
+        if (!hasSeenPlayer && Vector2.Distance(rb.position, patrolTarget) < reachThreshold)
         {
-            ChoosePatrolTarget();
+            waitTimer += Time.fixedDeltaTime;
+            if (waitTimer >= patrolWaitTime)
+            {
+                waitTimer = 0f;
+                ChooseNextTarget();
+            }
+        }
+
+        // Если дошли до двери — меняем комнату
+        if (targetDoor != null && Vector2.Distance(rb.position, targetDoor.transform.position) < reachThreshold)
+        {
+            currentRoom = targetDoor.targetDoor.GetComponentInParent<Room>();
+            patrolTarget = GetRandomPointInRoom(currentRoom);
+            targetDoor = null;
+        }
+    }
+
+    private void MoveTowards(Vector2 moveTarget)
+    {
+        Vector2 delta = moveTarget - rb.position;
+        if (delta.magnitude < 0.01f)
+        {
             HandleAnimation(Vector2.zero, false);
             return;
         }
 
-        Vector2 delta = moveTarget - rb.position;
-        float distance = delta.magnitude;
+        Vector2 dir = delta.normalized;
+        Vector2 nextPos = rb.position + dir * speed * Time.fixedDeltaTime;
 
-        if (distance > 0.1f)
+        // Проверка столкновений со стенами
+        RaycastHit2D hit = Physics2D.CircleCast(rb.position, 0.1f, dir, delta.magnitude, wallMask);
+        if (hit.collider == null)
         {
-            Vector2 dir = delta / distance;
-
-            // Проверяем, не стена ли впереди
-            RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
-            if (wallHit.collider)
-            {
-                isBlocked = true;
-                // Небольшой обход в сторону
-                dir = new Vector2(dir.y, -dir.x); // поворот на 90°
-            }
-            else
-            {
-                isBlocked = false;
-            }
-
-            Vector2 nextPos = rb.position + dir * speed * Time.fixedDeltaTime;
             rb.MovePosition(nextPos);
-            currentDir = Vector2.Lerp(currentDir, dir, 0.15f);
+            currentDir = Vector2.Lerp(currentDir, dir, 0.2f);
             HandleAnimation(currentDir, true);
-
-            Debug.DrawLine(transform.position, moveTarget, target ? Color.red : Color.green);
         }
         else
         {
@@ -135,7 +142,6 @@ public class EnemyAI : MonoBehaviour
     private void HandleAnimation(Vector2 dir, bool isMoving)
     {
         animator.SetBool(IsMoving, isMoving);
-
         if (isMoving && dir.sqrMagnitude > 0.001f)
         {
             animator.SetFloat(MoveX, dir.x);
@@ -148,58 +154,94 @@ public class EnemyAI : MonoBehaviour
                 Mathf.Abs(lastMoveDir.x) > Mathf.Abs(lastMoveDir.y) ? Mathf.Sign(lastMoveDir.x) : 0,
                 Mathf.Abs(lastMoveDir.y) >= Mathf.Abs(lastMoveDir.x) ? Mathf.Sign(lastMoveDir.y) : 0
             );
-
             animator.SetFloat(MoveX, snapped.x);
             animator.SetFloat(MoveY, snapped.y);
         }
     }
 
-    void DetectPlayer()
+    private void DetectPlayer()
     {
+        if (player == null) return;
+
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectionRadius, playerMask);
         if (hit != null)
         {
             Vector2 dir = (hit.transform.position - transform.position).normalized;
             if (!Physics2D.Raycast(transform.position, dir, detectionRadius, wallMask))
-                target = hit.transform;
+            {
+                hasSeenPlayer = true;
+                targetRoom = player.GetComponentInParent<Room>();
+            }
+        }
+    }
+
+    private void ChooseNextTarget()
+    {
+        // Случайная комната
+        Room[] rooms = Object.FindObjectsByType<Room>(FindObjectsSortMode.None);
+        if (rooms.Length == 0) return;
+
+        targetRoom = rooms[Random.Range(0, rooms.Length)];
+        if (targetRoom == null) return;
+
+        // Если цель в другой комнате, идём к двери
+        if (targetRoom != currentRoom)
+        {
+            targetDoor = FindDoorToRoom(targetRoom);
+            if (targetDoor != null)
+            {
+                patrolTarget = targetDoor.transform.position;
+            }
         }
         else
         {
-            target = null;
-        }
-    }
-
-    void ChoosePatrolTarget()
-    {
-        if (walkable == null)
-        {
-            patrolTarget = rb.position + Random.insideUnitCircle * Random.Range(minPatrolDistance, maxPatrolDistance);
-            hasPatrolTarget = true;
-            return;
+            patrolTarget = GetRandomPointInRoom(targetRoom);
         }
 
-        int w = walkable.GetLength(0);
-        int h = walkable.GetLength(1);
-
-        for (int attempt = 0; attempt < 50; attempt++)
-        {
-            int x = Random.Range(0, w);
-            int y = Random.Range(0, h);
-            if (walkable[x, y])
-            {
-                patrolTarget = TileToWorld(new Vector2Int(x, y));
-                hasPatrolTarget = true;
-                return;
-            }
-        }
-
-        patrolTarget = rb.position + Random.insideUnitCircle * Random.Range(minPatrolDistance, maxPatrolDistance);
         hasPatrolTarget = true;
     }
 
-    Vector2 TileToWorld(Vector2Int tile)
+    private Door FindDoorToRoom(Room room)
     {
-        return new Vector2(tile.x + 0.5f, tile.y + 0.5f);
+        foreach (Door d in allDoors)
+        {
+            if (d.currentRoom == currentRoom)
+            {
+                Room dest = d.targetDoor.GetComponentInParent<Room>();
+                if (dest == room) return d;
+            }
+        }
+        return null;
+    }
+
+    private Vector2 GetRandomPointInRoom(Room room)
+    {
+        Bounds b = room.GetRoomBounds();
+        return new Vector2(
+            Random.Range(b.min.x, b.max.x),
+            Random.Range(b.min.y, b.max.y)
+        );
+    }
+
+    private void FindCurrentRoom()
+    {
+        Room[] rooms = Object.FindObjectsByType<Room>(FindObjectsSortMode.None);
+        foreach (Room r in rooms)
+        {
+            if (r.ContainsPoint(transform.position))
+            {
+                currentRoom = r;
+                return;
+            }
+        }
+        Debug.LogWarning($"⚠️ Враг {name} не нашёл комнату при старте! Позиция: {transform.position}");
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Room r = other.GetComponentInParent<Room>();
+        if (r != null)
+            currentRoom = r;
     }
 
     private void OnDrawGizmosSelected()

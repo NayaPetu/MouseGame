@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6791039841814373667}
   - component: {fileID: 6367559450269668481}
   - component: {fileID: 4753379326152708132}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -688,6 +688,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2861852970182311078}
+  - component: {fileID: 3213803854130352119}
   m_Layer: 0
   m_Name: room
   m_TagString: Untagged
@@ -711,6 +712,21 @@ Transform:
   - {fileID: 5151538171379571216}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3213803854130352119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5249334670651870589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f75356315a41854dbba3c1682ed1c16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Room
+  roomName: 
+  doors: []
+  roomColliders: []
 --- !u!1 &7898969780516815625
 GameObject:
   m_ObjectHideFlags: 0

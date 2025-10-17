@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7005310953420948573}
   - component: {fileID: 684008904707719380}
   - component: {fileID: 2278469536420646498}
-  m_Layer: 13
+  m_Layer: 8
   m_Name: EnemyCat
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233196495347687082}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -180,18 +180,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   speed: 2
-  waitTime: 1.5
-  mapOrigin: {x: 0, y: 0}
-  tileSize: 1
+  obstacleCheckDistance: 0.4
   detectionRadius: 5
   playerMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 512
   wallMask:
     serializedVersion: 2
-    m_Bits: 512
-  enableDebugLogs: 0
-  showGizmos: 1
+    m_Bits: 1024
+  patrolWaitTime: 2
 --- !u!95 &2278469536420646498
 Animator:
   serializedVersion: 7
