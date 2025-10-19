@@ -607,18 +607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dce084ebe0c85f498b66b0704896bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
-  itemPrefabs:
-  - {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
-  itemsToSpawn: 1
-  roomMin: {x: 0, y: 0}
-  roomMax: {x: 0, y: 0}
-  randomRotation: 0
-  floorLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  wallLayerMask:
-    serializedVersion: 2
-    m_Bits: 1024
+  itemPrefab: {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
+  spawnPointTag: SpawnPoint
 --- !u!4 &1557445522
 Transform:
   m_ObjectHideFlags: 0
@@ -686,6 +676,7 @@ MonoBehaviour:
   floorLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  itemSpawner: {fileID: 1557445521}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

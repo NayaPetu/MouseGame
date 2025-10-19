@@ -16,6 +16,9 @@ public class FloorGenerator : MonoBehaviour
     [Header("Layers")]
     public LayerMask floorLayerMask;
 
+    [Header("Item Spawner")]
+    public ItemSpawner itemSpawner; // Ссылка на компонент спавнера предметов
+
     private GameObject playerInstance;
 
     // --- Генерация этажа ---
@@ -58,6 +61,16 @@ public class FloorGenerator : MonoBehaviour
                     enemyAI.Init(startRoom, playerInstance.transform, enemyPos);
             }
         }
+
+        // === СПАВН ПРЕДМЕТОВ ===
+        if (itemSpawner != null)
+        {
+            itemSpawner.InitializeFromRoom(floor);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ Не назначен ItemSpawner в FloorGenerator!");
+        }
     }
 
     // --- Создание безопасной позиции ---
@@ -79,14 +92,12 @@ public class FloorGenerator : MonoBehaviour
             float y = Random.Range(b.min.y + safeMargin, b.max.y - safeMargin);
             Vector2 point = new Vector2(x, y);
 
-            // Проверяем, что точка на полу
             RaycastHit2D hit = Physics2D.Raycast(point + Vector2.up * 2f, Vector2.down, 5f, floorLayerMask);
             if (hit.collider == null)
                 continue;
 
             Vector3 pos = hit.point + Vector2.up * 0.3f;
 
-            // Проверяем коллизии со стенами и дверями
             Collider2D wallHit = Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"));
             if (wallHit != null)
                 continue;

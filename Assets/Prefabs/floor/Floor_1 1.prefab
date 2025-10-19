@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 3218723601571169548}
   m_Layer: 0
   m_Name: SpawnPoint_1
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 5392591304931958861}
   m_Layer: 0
   m_Name: SpawnPoint_1 (3)
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -176,7 +176,7 @@ GameObject:
   - component: {fileID: 8742404393034106247}
   m_Layer: 0
   m_Name: SpawnPoint_1 (2)
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1329,6 +1329,10 @@ PrefabInstance:
     - target: {fileID: 8067108931276055882, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: m_Layer
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 8708161446578009552, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
+      propertyPath: m_TagString
+      value: SpawnPoint
       objectReference: {fileID: 0}
     - target: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: targetDoor
