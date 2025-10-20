@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerCheese
   itemName: "\u0421\u044B\u0440 \u0441\u0438\u043B\u044B"
   isConsumable: 0
-  sizeMultiplier: {x: 1.5, y: 1.5, z: 1}
+  sizeMultiplier: {x: 1, y: 1, z: 1}
   duration: 5
 --- !u!114 &392936592185674161
 MonoBehaviour:
