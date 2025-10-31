@@ -191,6 +191,10 @@ MonoBehaviour:
   doorMask:
     serializedVersion: 2
     m_Bits: 8192
+  catnipMask:
+    serializedVersion: 2
+    m_Bits: 16384
+  catnipPeaceTime: 4
   patrolWaitTime: 2
 --- !u!95 &2278469536420646498
 Animator:

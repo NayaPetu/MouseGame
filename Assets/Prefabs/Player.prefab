@@ -33,7 +33,8 @@ Transform:
   m_LocalPosition: {x: -0.07899, y: -0.31915, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 3821099592761978528}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6602830314441740950
@@ -161,14 +162,13 @@ MonoBehaviour:
   interactionRadius: 1
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 16448
   tileChangeLayer:
     serializedVersion: 2
     m_Bits: 0
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
-  itemHoldPosition: {fileID: 0}
-  animationVelocityThreshold: 0.08
+  itemHoldPosition: {fileID: 3821099592761978528}
 --- !u!61 &7823257962488304807
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -215,3 +215,34 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
+--- !u!1 &3672087023238778983
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3821099592761978528}
+  m_Layer: 0
+  m_Name: ItemHoldPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3821099592761978528
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3672087023238778983}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1283441603906541112}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

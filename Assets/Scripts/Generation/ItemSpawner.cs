@@ -1,46 +1,35 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class ItemSpawner : MonoBehaviour
 {
-    [Header("Настройки спавна")]
-    public GameObject itemPrefab; // Префаб предмета (например, сыр 🧀)
-    public string spawnPointTag = "SpawnPoint"; // Тег для поиска точек
+    [Header("Список предметов для спавна")]
+    public List<GameObject> itemPrefabs; // сыр, мята
+    public string spawnPointTag = "SpawnPoint";
 
-    // Метод инициализации из комнаты
+    // Вызывается при генерации комнаты
     public void InitializeFromRoom(GameObject room)
     {
-        // Находим все объекты с тегом SpawnPoint в комнате
         Transform[] allPoints = room.GetComponentsInChildren<Transform>(true);
-        var spawnPoints = new System.Collections.Generic.List<Transform>();
+        List<Transform> spawnPoints = new List<Transform>();
 
         foreach (Transform t in allPoints)
-        {
             if (t.CompareTag(spawnPointTag))
                 spawnPoints.Add(t);
-        }
 
-        if (spawnPoints.Count == 0)
+        if (spawnPoints.Count == 0) return;
+
+        foreach (var prefab in itemPrefabs)
         {
-            Debug.LogWarning($"⚠️ В комнате {room.name} нет точек спавна (SpawnPoint)!");
-            return;
+            if (prefab == null) continue;
+
+            Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+            GameObject instance = Instantiate(prefab, randomPoint.position, Quaternion.identity);
+
+            // Для мяты отключаем Attractor
+            Catnip catnip = instance.GetComponent<Catnip>();
+            if (catnip != null && catnip.attractor != null)
+                catnip.attractor.SetActive(false);
         }
-
-        if (itemPrefab == null)
-        {
-            Debug.LogWarning("⚠️ Не назначен prefab предмета в ItemSpawner!");
-            return;
-        }
-
-        // Выбираем случайную точку
-        Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-
-        // Спавним предмет в этой точке
-        SpawnItemAt(randomPoint.position);
-    }
-
-    // Метод спавна предмета
-    private void SpawnItemAt(Vector3 position)
-    {
-        Instantiate(itemPrefab, position, Quaternion.identity);
     }
 }
