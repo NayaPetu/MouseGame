@@ -62,7 +62,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void OnStartGame()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("main");
     }
 
     public void OnOptions()
