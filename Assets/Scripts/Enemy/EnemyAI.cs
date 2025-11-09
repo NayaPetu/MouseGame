@@ -17,9 +17,10 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Catnip")]
     public LayerMask catnipMask;
-    public float catnipPeaceTime = 4f;
+    public float catnipPeaceTime = 5f; // теперь отдых 5 секунд
     private bool pacifiedByCatnip = false;
     private Catnip targetCatnip;
+    private bool isResting = false;
 
     [Header("Patrol")]
     public float patrolWaitTime = 2f;
@@ -64,14 +65,21 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (!pacifiedByCatnip)
-            DetectPlayer();
+        if (isResting) return;
 
+        DetectPlayer();
         DetectCatnip();
     }
 
     void FixedUpdate()
     {
+        if (isResting)
+        {
+            rb.velocity = Vector2.zero;
+            HandleAnimation(Vector2.zero, false);
+            return;
+        }
+
         if (pacifiedByCatnip && targetCatnip != null)
         {
             MoveToCatnip();
@@ -84,7 +92,7 @@ public class EnemyAI : MonoBehaviour
     // ------------------ CATNIP LOGIC -----------------------
     private void DetectCatnip()
     {
-        if (pacifiedByCatnip) return;
+        if (pacifiedByCatnip || isResting) return;
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, catnipMask);
         foreach (var hit in hits)
@@ -116,23 +124,21 @@ public class EnemyAI : MonoBehaviour
         {
             targetCatnip.EatenByCat();
             targetCatnip = null;
+
             StartCoroutine(CatnipPeace());
         }
     }
 
     private IEnumerator CatnipPeace()
     {
-        pacifiedByCatnip = true;
+        isResting = true;
+        pacifiedByCatnip = false;
+        targetCatnip = null;
         HandleAnimation(Vector2.zero, false);
 
-        float t = catnipPeaceTime;
-        while (t > 0)
-        {
-            t -= Time.deltaTime;
-            yield return null;
-        }
+        yield return new WaitForSeconds(catnipPeaceTime);
 
-        pacifiedByCatnip = false;
+        isResting = false;
         ChoosePatrolTarget();
     }
 
@@ -294,7 +300,7 @@ public class EnemyAI : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 5f); // радиус для мяты
+        Gizmos.DrawWireSphere(transform.position, 5f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);

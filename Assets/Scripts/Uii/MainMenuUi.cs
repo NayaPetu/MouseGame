@@ -9,15 +9,17 @@ public class MainMenuUI : MonoBehaviour
     public Button optionsButton;
     public Button aboutButton;
     public Button exitButton;
+    public Button backFromOptionsButton;
+    public Button backFromAboutButton;
 
     [Header("Panels")]
-    public GameObject optionsPanel;
-    public GameObject aboutPanel;
+    public GameObject mainMenuPanel;   // панель с кнопками главного меню
+    public GameObject optionsPanel;    // панель настроек
+    public GameObject aboutPanel;      // панель "о программе"
 
     [Header("Options UI")]
     public Toggle soundToggle;
     public Slider volumeSlider;
-    public Button backFromOptionsButton;
 
     [Header("Audio")]
     public AudioSource menuMusic;
@@ -25,15 +27,15 @@ public class MainMenuUI : MonoBehaviour
     private void Start()
     {
         // Подключаем кнопки
-        startButton.onClick.AddListener(OnStartGame);
-        optionsButton.onClick.AddListener(OnOptions);
-        aboutButton.onClick.AddListener(OnAbout);
-        exitButton.onClick.AddListener(OnExit);
+        if (startButton != null) startButton.onClick.AddListener(OnStartGame);
+        if (optionsButton != null) optionsButton.onClick.AddListener(OnOptions);
+        if (aboutButton != null) aboutButton.onClick.AddListener(OnAbout);
+        if (exitButton != null) exitButton.onClick.AddListener(OnExit);
+        if (backFromOptionsButton != null) backFromOptionsButton.onClick.AddListener(CloseOptions);
+        if (backFromAboutButton != null) backFromAboutButton.onClick.AddListener(CloseAbout);
 
-        if (backFromOptionsButton != null)
-            backFromOptionsButton.onClick.AddListener(CloseOptions);
-
-        // Панели
+        // Инициализация панелей
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
         if (optionsPanel != null) optionsPanel.SetActive(false);
         if (aboutPanel != null) aboutPanel.SetActive(false);
 
@@ -60,39 +62,47 @@ public class MainMenuUI : MonoBehaviour
         }
     }
 
+    // ---------------- Кнопки меню ----------------
     public void OnStartGame()
     {
+        // Загружаем сцену игры
         SceneManager.LoadScene("main");
     }
 
     public void OnOptions()
     {
-        if (optionsPanel != null)
-            optionsPanel.SetActive(true);
+        if (optionsPanel != null) optionsPanel.SetActive(true);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
     }
 
     public void OnAbout()
     {
-        if (aboutPanel != null)
-            aboutPanel.SetActive(true);
+        if (aboutPanel != null) aboutPanel.SetActive(true);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
     }
 
     public void CloseOptions()
     {
-        if (optionsPanel != null)
-            optionsPanel.SetActive(false);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+    }
+
+    public void CloseAbout()
+    {
+        if (aboutPanel != null) aboutPanel.SetActive(false);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
     }
 
     public void OnExit()
     {
-        Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
 #endif
     }
 
-    // ======= Настройки звука =======
-
+    // ---------------- Настройки звука ----------------
     public void OnSoundToggle(bool value)
     {
         if (menuMusic != null)

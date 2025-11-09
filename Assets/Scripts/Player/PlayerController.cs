@@ -93,7 +93,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (heldItem != null)
-                DropItem();
+            {
+                // Дропаем только если это не мята
+                if (heldItem.GetComponent<Catnip>() == null)
+                    DropItem();
+            }
             else
                 TryInteract();
         }
@@ -117,10 +121,7 @@ public class PlayerController : MonoBehaviour
             IInteractable interactable = collider.GetComponent<IInteractable>();
             if (interactable != null)
             {
-                // Берём предмет игроком
                 PickUpItem(collider.gameObject);
-
-                // Вызываем взаимодействие предмета
                 interactable.Interact(this);
                 break;
             }
@@ -156,13 +157,11 @@ public class PlayerController : MonoBehaviour
 
         heldItem = item;
 
-        // Сделать предмет дочерним объектом над головой игрока
         heldItem.transform.SetParent(itemHoldPosition);
         heldItem.transform.localPosition = Vector3.zero;
         heldItem.transform.localRotation = Quaternion.identity;
         heldItem.transform.localScale = Vector3.one;
 
-        // Отображение поверх игрока
         SpriteRenderer sr = heldItem.GetComponent<SpriteRenderer>();
         if (sr != null)
         {
@@ -170,7 +169,6 @@ public class PlayerController : MonoBehaviour
             sr.sortingLayerName = "Default";
         }
 
-        // Выключаем физику и коллайдер
         Rigidbody2D rbItem = heldItem.GetComponent<Rigidbody2D>();
         if (rbItem != null) rbItem.simulated = false;
 
@@ -219,7 +217,6 @@ public class PlayerController : MonoBehaviour
     public bool IsCarryingItem() => heldItem != null;
     public GameObject GetHeldItem() => heldItem;
 
-    // ------------------ Направление движения для броска ------------------
     public Vector2 GetCurrentMoveDirection()
     {
         if (movementInput.sqrMagnitude > 0.01f)

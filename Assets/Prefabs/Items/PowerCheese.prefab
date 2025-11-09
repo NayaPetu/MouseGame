@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 392936592185674161}
   - component: {fileID: 4848817513720650781}
   - component: {fileID: -158180999521612647}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: PowerCheese
   m_TagString: Untagged
   m_Icon: {fileID: 0}
