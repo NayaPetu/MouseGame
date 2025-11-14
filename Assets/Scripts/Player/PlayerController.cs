@@ -67,7 +67,7 @@ public class PlayerController : MonoBehaviour
         else
             currentVelocity = Vector2.MoveTowards(currentVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
 
-        rb.velocity = currentVelocity;
+        rb.linearVelocity = currentVelocity;
     }
 
     private void HandleAnimation()
@@ -190,7 +190,7 @@ public class PlayerController : MonoBehaviour
         heldItem.transform.SetParent(null);
 
         if (itemRb != null)
-            itemRb.velocity = rb.velocity * 0.5f;
+            itemRb.linearVelocity = rb.linearVelocity * 0.5f;
 
         heldItem = null;
     }
@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
         canMove = enabled;
         if (!enabled)
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             currentVelocity = Vector2.zero;
         }
     }
