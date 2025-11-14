@@ -21,9 +21,6 @@ public class MainMenuUI : MonoBehaviour
     public Toggle soundToggle;
     public Slider volumeSlider;
 
-    [Header("Audio")]
-    public AudioSource menuMusic;
-
     private void Start()
     {
         // Подключаем кнопки
@@ -39,26 +36,31 @@ public class MainMenuUI : MonoBehaviour
         if (optionsPanel != null) optionsPanel.SetActive(false);
         if (aboutPanel != null) aboutPanel.SetActive(false);
 
-        // Настройки звука
+        // -------------------- Настройки звука --------------------
         float savedVolume = PlayerPrefs.GetFloat("Volume", 1f);
         bool soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
 
-        if (menuMusic != null)
+        // Устанавливаем AudioManager
+        if (AudioManager.Instance != null)
         {
-            menuMusic.volume = savedVolume;
-            menuMusic.mute = !soundOn;
+            AudioManager.Instance.SetVolume(savedVolume);
+            AudioManager.Instance.SetSound(soundOn);
+
+            // Запускаем музыку меню
+            AudioManager.Instance.PlayMenuMusic();
         }
 
+        // Настройка UI слайдера и тумблера
         if (volumeSlider != null)
         {
             volumeSlider.value = savedVolume;
-            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+            volumeSlider.onValueChanged.AddListener(AudioManager.Instance.SetVolume);
         }
 
         if (soundToggle != null)
         {
             soundToggle.isOn = soundOn;
-            soundToggle.onValueChanged.AddListener(OnSoundToggle);
+            soundToggle.onValueChanged.AddListener(AudioManager.Instance.SetSound);
         }
     }
 
@@ -67,6 +69,9 @@ public class MainMenuUI : MonoBehaviour
     {
         // Загружаем сцену игры
         SceneManager.LoadScene("main");
+
+        // В игре позже можно вызвать:
+        // AudioManager.Instance.PlayGameMusic();
     }
 
     public void OnOptions()
@@ -100,24 +105,5 @@ public class MainMenuUI : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-
-    // ---------------- Настройки звука ----------------
-    public void OnSoundToggle(bool value)
-    {
-        if (menuMusic != null)
-            menuMusic.mute = !value;
-
-        PlayerPrefs.SetInt("SoundOn", value ? 1 : 0);
-        PlayerPrefs.Save();
-    }
-
-    public void OnVolumeChanged(float value)
-    {
-        if (menuMusic != null)
-            menuMusic.volume = value;
-
-        PlayerPrefs.SetFloat("Volume", value);
-        PlayerPrefs.Save();
     }
 }
