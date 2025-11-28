@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7005310953420948573}
   - component: {fileID: 684008904707719380}
   - component: {fileID: 2278469536420646498}
+  - component: {fileID: 7907793714114701702}
   m_Layer: 8
   m_Name: EnemyCat
   m_TagString: Enemy
@@ -151,7 +152,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -176,12 +177,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 233196495347687082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2b101c234b109a46804e57df015f4bd, type: 3}
+  m_Script: {fileID: 11500000, guid: abc8dcd4488edbf4a88691518f0492c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   speed: 2
   obstacleCheckDistance: 0.4
-  detectionRadius: 5
+  detectionRadius: 8
   playerMask:
     serializedVersion: 2
     m_Bits: 512
@@ -194,7 +195,7 @@ MonoBehaviour:
   catnipMask:
     serializedVersion: 2
     m_Bits: 16384
-  catnipPeaceTime: 4
+  catnipPeaceTime: 5
   patrolWaitTime: 2
 --- !u!95 &2278469536420646498
 Animator:
@@ -218,3 +219,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7907793714114701702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233196495347687082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e488ba70221b44eaa392eba7433b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CatCatcher
