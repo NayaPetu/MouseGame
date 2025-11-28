@@ -12,6 +12,11 @@ public class SceneStarter : MonoBehaviour
             return;
         }
 
+        // Запускаем музыку игры
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayGameMusic();
+
+        // Генерируем первый этаж
         floorGenerator.SpawnFloor(); 
     }
 }

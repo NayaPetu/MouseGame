@@ -17,7 +17,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Catnip")]
     public LayerMask catnipMask;
-    public float catnipPeaceTime = 5f; // отдых после съедания мяты
+    public float catnipPeaceTime = 5f; // теперь отдых 5 секунд
     private bool pacifiedByCatnip = false;
     private Catnip targetCatnip;
     private bool isResting = false;
@@ -83,13 +83,10 @@ public class EnemyAI : MonoBehaviour
         if (pacifiedByCatnip && targetCatnip != null)
         {
             MoveToCatnip();
-        }
-        else
-        {
-            PatrolAndChase();
+            return;
         }
 
-        CheckPlayerCatch();
+        PatrolAndChase();
     }
 
     // ------------------ CATNIP LOGIC -----------------------
@@ -228,17 +225,6 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void CheckPlayerCatch()
-    {
-        if (player == null || isResting) return;
-
-        float catchDistance = 0.5f; // настрой под размеры
-        if (Vector2.Distance(transform.position, player.position) <= catchDistance)
-        {
-            GameManager.Instance.OnPlayerCaught();
-        }
-    }
-
     private void ChoosePatrolTarget()
     {
         if (currentRoom == null) return;
@@ -314,7 +300,7 @@ public class EnemyAI : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 5f); // радиус для мяты
+        Gizmos.DrawWireSphere(transform.position, 5f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
