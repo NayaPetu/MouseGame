@@ -59,9 +59,14 @@ public class EnemyAI : MonoBehaviour
     {
         currentRoom = spawnRoom;
         player = playerTransform;
-        transform.position = spawnPos;
+
+        if (spawnPos != null)
+            transform.position = spawnPos;
+
+        gameObject.SetActive(true);
         ChoosePatrolTarget();
     }
+
 
     void Update()
     {

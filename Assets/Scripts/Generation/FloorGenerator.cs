@@ -9,12 +9,11 @@ public class FloorGenerator : MonoBehaviour
     [Header("Basements (подвалы)")]
     public GameObject[] basements;
 
-    [Header("Player / Enemy Prefabs")]
+    [Header("Player Prefab")]
     public GameObject playerPrefab;
-    public GameObject enemyPrefab;
 
     [Header("Camera")]
-    public CinemachineCamera virtualCamera;
+    public CinemachineCamera virtualCamera; // исправлено с CinemachineVirtualCamera
 
     [Header("Layers")]
     public LayerMask floorLayerMask;
@@ -25,37 +24,21 @@ public class FloorGenerator : MonoBehaviour
     private GameObject playerInstance;
     private GameObject lastGeneratedFloor;
 
-
-    // ===== СТАРТ ИГРЫ (только обычный этаж!) =====
-    public void SpawnFloor()
-    {
-        if (mainFloors.Length == 0)
-        {
-            Debug.LogError("Нет обычных этажей!");
-            return;
-        }
-
-        GameObject prefab = mainFloors[Random.Range(0, mainFloors.Length)];
-        GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-
-        lastGeneratedFloor = floor;
-        SpawnEverythingOnFloor(floor);
-    }
-
+    // ===== Старый вызов SpawnFloor() для совместимости =====
+    public void SpawnFloor() => SpawnFloorByType(FloorManager.FloorCategory.Main);
 
     // ===== Создание нового этажа по типу =====
     public GameObject SpawnFloorByType(FloorManager.FloorCategory type)
     {
         GameObject prefab = null;
-
         if (type == FloorManager.FloorCategory.Main)
-            prefab = mainFloors.Length > 0 ? mainFloors[0] : null;
+            prefab = mainFloors.Length > 0 ? mainFloors[Random.Range(0, mainFloors.Length)] : null;
         else
-            prefab = basements.Length > 0 ? basements[0] : null;
+            prefab = basements.Length > 0 ? basements[Random.Range(0, basements.Length)] : null;
 
         if (prefab == null)
         {
-            Debug.LogError("Нет префаба для " + type);
+            Debug.LogError("Нет префаба для типа: " + type);
             return null;
         }
 
@@ -65,78 +48,57 @@ public class FloorGenerator : MonoBehaviour
         GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         lastGeneratedFloor = floor;
 
-        SpawnEverythingOnFloor(floor);
-        return floor;
-    }
-
-
-    // ===== Спавн игрока, врага, предметов =====
-    private void SpawnEverythingOnFloor(GameObject floor)
-    {
-        Transform playerSpawnPoint = floor.transform.Find("PlayerSpawnPoint");
-        Vector3 playerPos = playerSpawnPoint != null ?
-            playerSpawnPoint.position :
-            CreateSafeSpawnPosition(floor, 0.4f);
-
-        if (playerInstance == null)
-            playerInstance = Instantiate(playerPrefab, playerPos, Quaternion.identity);
-        else
-            playerInstance.transform.position = playerPos;
-
-        if (virtualCamera != null)
-            virtualCamera.Follow = playerInstance.transform;
-
-        Transform enemySpawnPoint = floor.transform.Find("EnemySpawnPoint");
-
-        if (enemyPrefab != null)
-        {
-            Vector3 enemyPos = enemySpawnPoint != null ?
-                enemySpawnPoint.position :
-                CreateSafeSpawnPosition(floor, 0.4f);
-
-            GameObject enemyInstance = Instantiate(enemyPrefab, enemyPos, Quaternion.identity);
-
-            Room startRoom = floor.GetComponentInChildren<Room>();
-            if (startRoom != null)
-            {
-                EnemyAI ai = enemyInstance.GetComponent<EnemyAI>();
-                if (ai != null)
-                    ai.Init(startRoom, playerInstance.transform, enemyPos);
-            }
-        }
+        SpawnPlayer(floor);
 
         if (itemSpawner != null)
             itemSpawner.InitializeFromRoom(floor);
+
+        return floor;
     }
 
-
-    // ===== Твой оригинальный метод безопасного спавна =====
-    private Vector3 CreateSafeSpawnPosition(GameObject room, float radius)
+    // ===== Спавн игрока один раз =====
+    private void SpawnPlayer(GameObject floor)
     {
-        Collider2D floorCollider = room.GetComponentInChildren<Collider2D>();
-        if (!floorCollider)
-            return room.transform.position;
+        Transform spawnPoint = floor.transform.Find("PlayerSpawnPoint");
+        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : CreateSafeSpawnPosition(floor, 0.4f);
+
+        if (playerInstance == null)
+        {
+            playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            playerInstance.transform.position = spawnPos;
+        }
+
+        if (virtualCamera != null)
+            virtualCamera.Follow = playerInstance.transform;
+    }
+
+    // ===== Создание безопасной позиции (если SpawnPoint нет) =====
+    private Vector3 CreateSafeSpawnPosition(GameObject floor, float radius)
+    {
+        Collider2D floorCollider = floor.GetComponentInChildren<Collider2D>();
+        if (!floorCollider) return floor.transform.position;
 
         Bounds b = floorCollider.bounds;
         float margin = 0.5f;
 
-        for (int attempt = 0; attempt < 100; attempt++)
+        for (int i = 0; i < 100; i++)
         {
             float x = Random.Range(b.min.x + margin, b.max.x - margin);
             float y = Random.Range(b.min.y + margin, b.max.y - margin);
-            Vector2 point = new(x, y);
+            Vector2 point = new Vector2(x, y);
 
             RaycastHit2D hit = Physics2D.Raycast(point + Vector2.up * 2f, Vector2.down, 5f, floorLayerMask);
-            if (!hit.collider)
-                continue;
+            if (!hit.collider) continue;
 
-            Vector3 pos = hit.point + Vector2.up * 0.3f;
-            if (Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls")))
-                continue;
+            Vector3 pos = new Vector3(hit.point.x, hit.point.y + 0.3f, 0f);
+
+            if (Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"))) continue;
 
             Collider2D doorHit = Physics2D.OverlapCircle(pos, radius);
-            if (doorHit && doorHit.CompareTag("Door"))
-                continue;
+            if (doorHit && doorHit.CompareTag("Door")) continue;
 
             return pos;
         }

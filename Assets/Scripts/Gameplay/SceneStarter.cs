@@ -8,7 +8,7 @@ public class SceneStarter : MonoBehaviour
     {
         if (floorGenerator == null)
         {
-            Debug.LogError("RoomGenerator не назначен!");
+            Debug.LogError("FloorGenerator не назначен!");
             return;
         }
 
@@ -17,6 +17,6 @@ public class SceneStarter : MonoBehaviour
             AudioManager.Instance.PlayGameMusic();
 
         // Генерируем первый этаж
-        floorGenerator.SpawnFloor(); 
+        floorGenerator.SpawnFloor(); // теперь метод существует
     }
 }

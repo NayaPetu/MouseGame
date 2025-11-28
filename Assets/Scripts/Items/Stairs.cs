@@ -31,11 +31,22 @@ public class Stair : MonoBehaviour
 
         yield return new WaitForSeconds(0.05f);
 
+        // Телепортируем игрока на новый этаж
         FloorManager.Instance.LoadFloor(targetFloor, spawnPointName, player);
 
         yield return new WaitForSeconds(0.2f);
 
         if (controller != null)
             controller.SetMovement(true);
+
+        // Телепортируем врага через задержку
+        StartCoroutine(TeleportEnemyDelayed(8f));
+    }
+
+    private IEnumerator TeleportEnemyDelayed(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        FloorManager.Instance.TeleportEnemyToFloor();
     }
 }
