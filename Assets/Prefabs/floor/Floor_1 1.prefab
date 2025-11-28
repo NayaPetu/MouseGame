@@ -401,7 +401,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7118671590647209728, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
       propertyPath: safeOffset.y
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 7118671590647209728, guid: bb9c36d4f8dc7ba46ae5c271af501f92, type: 3}
       propertyPath: connectedDoor
@@ -783,7 +783,7 @@ PrefabInstance:
       objectReference: {fileID: 4877988471175548180}
     - target: {fileID: 6080696830105553358, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: safeOffset.y
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 6080696830105553358, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: connectedDoor
@@ -797,6 +797,10 @@ PrefabInstance:
       propertyPath: roomCollider
       value: 
       objectReference: {fileID: 4877988471175548180}
+    - target: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
+      propertyPath: safeOffset.x
+      value: -2
+      objectReference: {fileID: 0}
     - target: {fileID: 6464078248178974080, guid: 14a89107571867448b46c655aa69fd37, type: 3}
       propertyPath: connectedDoor
       value: 
@@ -1075,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 7417709976375217004}
     - target: {fileID: 787666353665427081, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
       propertyPath: safeOffset.x
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3309410139596456947, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
       propertyPath: m_Name
@@ -1204,7 +1208,7 @@ PrefabInstance:
       objectReference: {fileID: 1808815371507257309}
     - target: {fileID: 6227615984636953296, guid: dfb92ba3fb9be73419fd43a19429d3fb, type: 3}
       propertyPath: safeOffset.x
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1249,7 +1253,7 @@ PrefabInstance:
       objectReference: {fileID: 2040608755572152818}
     - target: {fileID: 7851697735694447481, guid: 37899d29d6f15e549a0df73eb8130bb9, type: 3}
       propertyPath: safeOffset.x
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8494264957186395238, guid: 37899d29d6f15e549a0df73eb8130bb9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1338,7 +1342,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7851697735694447481, guid: 37899d29d6f15e549a0df73eb8130bb9, type: 3}
       propertyPath: safeOffset.y
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8494264957186395238, guid: 37899d29d6f15e549a0df73eb8130bb9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1419,7 +1423,7 @@ PrefabInstance:
       objectReference: {fileID: 7417709976375217004}
     - target: {fileID: 787666353665427081, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
       propertyPath: safeOffset.x
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 3309410139596456947, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
       propertyPath: m_Name
@@ -1552,7 +1556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4664786129779791304, guid: a235cdf0b6f4f794889e649a396ddeb9, type: 3}
       propertyPath: safeOffset.y
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1650,7 +1654,7 @@ PrefabInstance:
       objectReference: {fileID: 4026585838375138031}
     - target: {fileID: 8147011829764184836, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
       propertyPath: safeOffset.x
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8147011829764184836, guid: b34bb7569ee4bd849883e26e1d9e9bee, type: 3}
       propertyPath: connectedDoor
@@ -1703,7 +1707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 94769405150176577, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: safeOffset.y
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 94769405150176577, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: connectedDoor
@@ -1759,7 +1763,7 @@ PrefabInstance:
       objectReference: {fileID: 1517163606923438738}
     - target: {fileID: 3793454435613758274, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: safeOffset.x
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 3793454435613758274, guid: c418ce2279317a8428be44d36793e081, type: 3}
       propertyPath: connectedDoor
@@ -2026,7 +2030,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8215424428280107171, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
       propertyPath: safeOffset.y
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8215424428280107171, guid: 8c20ca03e07571643803aca86da80b19, type: 3}
       propertyPath: connectedDoor
@@ -2099,6 +2103,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7199732226199576205}
     - target: {fileID: 1361644844057267117, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: safeOffset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1361644844057267117, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: connectedDoor
       value: 
       objectReference: {fileID: 6946921709899312114}
@@ -2154,6 +2162,10 @@ PrefabInstance:
       propertyPath: roomCollider
       value: 
       objectReference: {fileID: 7199732226199576205}
+    - target: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
+      propertyPath: safeOffset.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5614269531852985777, guid: 58f65b39f624b8948a0f6c744e392046, type: 3}
       propertyPath: connectedDoor
       value: 
@@ -2336,7 +2348,7 @@ PrefabInstance:
       objectReference: {fileID: 3121073521153037103}
     - target: {fileID: 4664786129779791304, guid: a235cdf0b6f4f794889e649a396ddeb9, type: 3}
       propertyPath: safeOffset.x
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2401,7 +2413,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1612572312438521148, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: safeOffset.y
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 1612572312438521148, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: connectedDoor
@@ -2429,7 +2441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: safeOffset.y
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3075074879516052427, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: connectedDoor
@@ -2561,7 +2573,7 @@ PrefabInstance:
       objectReference: {fileID: 2168031886358921283}
     - target: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: safeOffset.x
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8895589745675857916, guid: 24d74953cb7f9744eb5f7e0ec8156553, type: 3}
       propertyPath: connectedDoor
@@ -2725,7 +2737,7 @@ PrefabInstance:
       objectReference: {fileID: 7705515758735769783}
     - target: {fileID: 6227615984636953296, guid: dfb92ba3fb9be73419fd43a19429d3fb, type: 3}
       propertyPath: safeOffset.x
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3922,6 +3934,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2359301049586405808}
     - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: safeOffset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: connectedDoor
       value: 
       objectReference: {fileID: 8736730676702493610}
@@ -3937,6 +3953,10 @@ PrefabInstance:
       propertyPath: roomCollider
       value: 
       objectReference: {fileID: 2359301049586405808}
+    - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: safeOffset.y
+      value: -2
+      objectReference: {fileID: 0}
     - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: connectedDoor
       value: 
