@@ -3,17 +3,17 @@ using Unity.Cinemachine;
 
 public class FloorGenerator : MonoBehaviour
 {
-    [Header("Main Floors (обычные этажи)")]
+    [Header("Main Floors")]
     public GameObject[] mainFloors;
 
-    [Header("Basements (подвалы)")]
+    [Header("Basements")]
     public GameObject[] basements;
 
     [Header("Player Prefab")]
     public GameObject playerPrefab;
 
     [Header("Camera")]
-    public CinemachineCamera virtualCamera; // исправлено с CinemachineVirtualCamera
+    public CinemachineCamera virtualCamera;
 
     [Header("Layers")]
     public LayerMask floorLayerMask;
@@ -24,10 +24,9 @@ public class FloorGenerator : MonoBehaviour
     private GameObject playerInstance;
     private GameObject lastGeneratedFloor;
 
-    // ===== Старый вызов SpawnFloor() для совместимости =====
+    // Старый вызов SpawnFloor()
     public void SpawnFloor() => SpawnFloorByType(FloorManager.FloorCategory.Main);
 
-    // ===== Создание нового этажа по типу =====
     public GameObject SpawnFloorByType(FloorManager.FloorCategory type)
     {
         GameObject prefab = null;
@@ -56,7 +55,6 @@ public class FloorGenerator : MonoBehaviour
         return floor;
     }
 
-    // ===== Спавн игрока один раз =====
     private void SpawnPlayer(GameObject floor)
     {
         Transform spawnPoint = floor.transform.Find("PlayerSpawnPoint");
@@ -75,7 +73,6 @@ public class FloorGenerator : MonoBehaviour
             virtualCamera.Follow = playerInstance.transform;
     }
 
-    // ===== Создание безопасной позиции (если SpawnPoint нет) =====
     private Vector3 CreateSafeSpawnPosition(GameObject floor, float radius)
     {
         Collider2D floorCollider = floor.GetComponentInChildren<Collider2D>();
@@ -93,7 +90,7 @@ public class FloorGenerator : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(point + Vector2.up * 2f, Vector2.down, 5f, floorLayerMask);
             if (!hit.collider) continue;
 
-            Vector3 pos = new Vector3(hit.point.x, hit.point.y + 0.3f, 0f);
+            Vector3 pos = (Vector3)hit.point + Vector3.up * 0.3f;
 
             if (Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"))) continue;
 
@@ -105,4 +102,7 @@ public class FloorGenerator : MonoBehaviour
 
         return b.center + Vector3.up * 0.5f;
     }
+
+    // Метод для получения PlayerInstance извне
+    public GameObject GetPlayerInstance() => playerInstance;
 }

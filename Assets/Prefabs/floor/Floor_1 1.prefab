@@ -2791,6 +2791,10 @@ PrefabInstance:
       propertyPath: roomName
       value: "\u043F\u043B\u0438\u0442\u043A\u0430"
       objectReference: {fileID: 0}
+    - target: {fileID: -7605277294467464011, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: 'roomColliders.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 764658992241160851, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_TileAssetArray.Array.data[1].m_Data
       value: 
@@ -3960,10 +3964,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7705515758735769783}
     - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
-      propertyPath: roomCollider
-      value: 
-      objectReference: {fileID: 2359301049586405808}
-    - target: {fileID: 969279703519688890, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: safeOffset.x
       value: 2
       objectReference: {fileID: 0}
@@ -3979,10 +3979,6 @@ PrefabInstance:
       propertyPath: currentRoom
       value: 
       objectReference: {fileID: 7705515758735769783}
-    - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
-      propertyPath: roomCollider
-      value: 
-      objectReference: {fileID: 2359301049586405808}
     - target: {fileID: 1024416186633211478, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: safeOffset.y
       value: -2
@@ -4014,6 +4010,14 @@ PrefabInstance:
     - target: {fileID: 2865594013692993489, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 0.71875
+      objectReference: {fileID: 0}
+    - target: {fileID: 3777700115628189733, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: m_ColliderPaths.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3777700115628189733, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
+      propertyPath: m_CompositePaths.m_Paths.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6388692424584238046, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
       propertyPath: m_LocalScale.x
@@ -4091,7 +4095,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: room_plitka
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6640054711577695666, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7086623446459639297, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
@@ -4105,11 +4110,6 @@ PrefabInstance:
 --- !u!4 &2216724446949728771 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7086623446459639297, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
-  m_PrefabInstance: {fileID: 8979013658939130882}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &2359301049586405808 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 6640054711577695666, guid: 550c1a2a330e41341ab2fac96151b3a1, type: 3}
   m_PrefabInstance: {fileID: 8979013658939130882}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2608407378162358236 stripped

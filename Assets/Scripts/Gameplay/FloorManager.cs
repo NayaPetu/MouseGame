@@ -9,52 +9,62 @@ public class FloorManager : MonoBehaviour
     [Header("Генератор этажей")]
     public FloorGenerator floorGenerator;
 
+    [Header("Enemy Prefab")]
+    public GameObject enemyPrefab;
+
     private GameObject currentFloor;
+    private GameObject enemyInstance;
 
     private void Awake() => Instance = this;
 
-    // ---------- Загрузка нового этажа (совместимый метод с 3 аргументами) ----------
-    public void LoadFloor(FloorCategory type, string spawnPointName = "PlayerSpawnPoint", Transform playerTransform = null)
+    private void Start()
     {
-        GameObject floor = floorGenerator.SpawnFloorByType(type);
-        if (floor == null) return;
-
-        currentFloor = floor;
-
-        // Телепорт игрока если передан Transform
-        if (playerTransform != null)
+        // Создаём врага один раз при старте
+        if (enemyInstance == null && enemyPrefab != null)
         {
-            Transform spawn = floor.transform.Find(spawnPointName);
-            if (spawn != null)
-                playerTransform.position = spawn.position;
+            enemyInstance = Instantiate(enemyPrefab, Vector3.zero, Quaternion.identity);
+            enemyInstance.SetActive(false); // пока не активен
         }
-
-        TeleportEnemyToFloor();
     }
 
-    // ---------- Телепорт врага ----------
+    // Загрузка нового этажа
+    public void LoadFloor(FloorCategory type, string spawnPointName, Transform playerTransform)
+{
+    GameObject floor = floorGenerator.SpawnFloorByType(type);
+    if (floor == null) return;
+
+    currentFloor = floor;
+
+    // Телепорт игрока
+    if (playerTransform != null)
+    {
+        Transform spawn = floor.transform.Find(spawnPointName);
+        if (spawn != null)
+            playerTransform.position = spawn.position;
+    }
+
+    // Телепорт врага
+    TeleportEnemyToFloor();
+}
+
+
     public void TeleportEnemyToFloor()
     {
-        GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
-        if (enemy == null) return;
-        if (currentFloor == null) return;
+        if (enemyInstance == null || currentFloor == null) return;
 
         Transform spawnPoint = currentFloor.transform.Find("EnemySpawnPoint");
         if (spawnPoint != null)
         {
-            enemy.transform.position = spawnPoint.position;
+            enemyInstance.transform.position = spawnPoint.position;
+            enemyInstance.SetActive(true);
 
-            EnemyAI ai = enemy.GetComponent<EnemyAI>();
+            EnemyAI ai = enemyInstance.GetComponent<EnemyAI>();
             if (ai != null)
             {
                 Room startRoom = currentFloor.GetComponentInChildren<Room>();
                 if (startRoom != null)
-                    ai.Init(startRoom, GameObject.FindGameObjectWithTag("Player").transform, spawnPoint.position);
+                    ai.Init(startRoom, floorGenerator.GetPlayerInstance().transform, spawnPoint.position);
             }
-        }
-        else
-        {
-            Debug.LogWarning("Не найдена точка EnemySpawnPoint на этаже.");
         }
     }
 }
