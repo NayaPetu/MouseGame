@@ -1073,6 +1073,10 @@ PrefabInstance:
       propertyPath: currentRoom
       value: 
       objectReference: {fileID: 7417709976375217004}
+    - target: {fileID: 787666353665427081, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
+      propertyPath: safeOffset.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3309410139596456947, guid: 3a90923bdbb27ad46aa6650c33f7f160, type: 3}
       propertyPath: m_Name
       value: door right
