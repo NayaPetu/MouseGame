@@ -2046,8 +2046,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   musicSource: {fileID: 2015056127}
-  menuMusic: {fileID: 8300000, guid: 496956b69a2f1d44ca9e8bf06f6bd884, type: 3}
-  gameMusic: {fileID: 8300000, guid: 496956b69a2f1d44ca9e8bf06f6bd884, type: 3}
+  menuMusic: {fileID: 8300000, guid: 047e603faf9c3b448a927eaa5fd86ffb, type: 3}
+  gameMusic: {fileID: 8300000, guid: 1dd412b1512dd4c47b703c4110bf56b0, type: 3}
   introAnimationMusic: {fileID: 0}
   endAnimationMusic: {fileID: 0}
 --- !u!4 &2015056129
