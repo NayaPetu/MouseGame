@@ -119,6 +119,26 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &105651122 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1703048875167089157, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+  m_PrefabInstance: {fileID: 9209798285326694206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &105651125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105651122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac679be1fad93644c84ea825a905f414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundButton
+  onImage: {fileID: 1229009160}
+  offImage: {fileID: 1267119500}
+  menuMusic: {fileID: 2015056127}
 --- !u!1 &241379664
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,6 +715,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -747,6 +768,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1116872557 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 252423864323157297, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+  m_PrefabInstance: {fileID: 9209798285326694206}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &1153370249
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,7 +821,7 @@ MonoBehaviour:
   optionsPanel: {fileID: 447614827}
   aboutPanel: {fileID: 660431710}
   soundToggle: {fileID: 0}
-  volumeSlider: {fileID: 0}
+  volumeSlider: {fileID: 1116872557}
 --- !u!114 &1153370251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -970,6 +1002,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1011,6 +1044,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172870607}
   m_CullTransparentMesh: 1
+--- !u!114 &1229009160 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2500024114807859368, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+  m_PrefabInstance: {fileID: 9209798285326694206}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &1267119500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1646009104148338424, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+  m_PrefabInstance: {fileID: 9209798285326694206}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &1291930204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,6 +1282,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1484,6 +1540,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1620,6 +1677,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1877,6 +1935,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2160,6 +2219,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2209,6 +2269,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1153370254}
     m_Modifications:
+    - target: {fileID: 4222189795344843888, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222189795344843888, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 105651125}
+    - target: {fileID: 4222189795344843888, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSoundButtonClicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222189795344843888, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SoundButton, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222189795344843888, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4556358067872585956, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
       propertyPath: m_LocalPosition.x
       value: 841
@@ -2357,7 +2437,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6765367161918388947, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
       insertIndex: 3
       addedObject: {fileID: 666870831}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1703048875167089157, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 105651125}
   m_SourcePrefab: {fileID: 100100000, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

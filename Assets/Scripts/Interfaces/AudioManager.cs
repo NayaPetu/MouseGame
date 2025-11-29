@@ -26,7 +26,7 @@ public class AudioManager : MonoBehaviour
         }
 
         // Загружаем сохраненные настройки звука
-        float volume = PlayerPrefs.GetFloat("Volume", 1f);
+        float volume = PlayerPrefs.GetFloat("Volume", 0.5f);
         bool soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
 
         if (musicSource != null)

@@ -4,45 +4,36 @@ using UnityEngine.UI;
 public class SoundButton : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image onImage;
-    public Image offImage;
-
-    [Header("Audio")]
-    public AudioSource menuMusic;
-
-    private bool soundOn = true;
+    public Image onImage;   // картинка для включённого звука
+    public Image offImage;  // картинка для выключенного звука
 
     void Start()
     {
-        // Загружаем состояние звука
-        soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
-
-        // Обновляем отображение
         UpdateImages();
-
-        // Применяем к музыке
-        if (menuMusic != null)
-            menuMusic.mute = !soundOn;
     }
 
+    // Метод вызывается при нажатии на кнопку
     public void OnSoundButtonClicked()
     {
-        soundOn = !soundOn;
-
-        // Сохраняем состояние
-        PlayerPrefs.SetInt("SoundOn", soundOn ? 1 : 0);
-        PlayerPrefs.Save();
-
-        // Включаем/выключаем музыку
-        if (menuMusic != null)
-            menuMusic.mute = !soundOn;
+        if (AudioManager.Instance != null)
+        {
+            // переключаем состояние звука
+            bool newState = AudioManager.Instance.musicSource.mute;
+            AudioManager.Instance.SetSound(newState); // true = включить звук
+        }
 
         UpdateImages();
     }
 
+    // Обновляем отображение картинок
     private void UpdateImages()
     {
-        if (onImage != null) onImage.gameObject.SetActive(soundOn);
-        if (offImage != null) offImage.gameObject.SetActive(!soundOn);
+        if (AudioManager.Instance != null)
+        {
+            bool soundOn = !AudioManager.Instance.musicSource.mute;
+
+            if (onImage != null) onImage.gameObject.SetActive(soundOn);
+            if (offImage != null) offImage.gameObject.SetActive(!soundOn);
+        }
     }
 }

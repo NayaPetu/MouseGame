@@ -37,7 +37,7 @@ public class MainMenuUI : MonoBehaviour
         if (aboutPanel != null) aboutPanel.SetActive(false);
 
         // -------------------- Настройки звука --------------------
-        float savedVolume = PlayerPrefs.GetFloat("Volume", 1f);
+        float savedVolume = PlayerPrefs.GetFloat("Volume", 0.5f);
         bool soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
 
         // Устанавливаем AudioManager

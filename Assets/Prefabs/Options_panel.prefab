@@ -294,7 +294,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4556358067872585956}
-  - component: {fileID: 3291842363797483562}
   - component: {fileID: 4222189795344843888}
   m_Layer: 0
   m_Name: SoundButton
@@ -320,21 +319,6 @@ Transform:
   - {fileID: 7561510887072685093}
   m_Father: {fileID: 6765367161918388947}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3291842363797483562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1703048875167089157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac679be1fad93644c84ea825a905f414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SoundButton
-  onImage: {fileID: 2500024114807859368}
-  offImage: {fileID: 1646009104148338424}
-  menuMusic: {fileID: 0}
 --- !u!114 &4222189795344843888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,7 +363,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3291842363797483562}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SoundButton, Assembly-CSharp
         m_MethodName: OnSoundButtonClicked
         m_Mode: 1
