@@ -17,6 +17,7 @@ public class FloorGenerator : MonoBehaviour
 
     [Header("Layers")]
     public LayerMask floorLayerMask;
+    public LayerMask wallsLayerMask;
 
     [Header("Item Spawner")]
     public ItemSpawner itemSpawner;
@@ -24,7 +25,7 @@ public class FloorGenerator : MonoBehaviour
     private GameObject playerInstance;
     private GameObject lastGeneratedFloor;
 
-    // Старый вызов SpawnFloor()
+    // -------------------- Публичные методы --------------------
     public void SpawnFloor() => SpawnFloorByType(FloorManager.FloorCategory.Main);
 
     public GameObject SpawnFloorByType(FloorManager.FloorCategory type)
@@ -41,24 +42,43 @@ public class FloorGenerator : MonoBehaviour
             return null;
         }
 
+        // Удаляем прошлый пол
         if (lastGeneratedFloor != null)
             Destroy(lastGeneratedFloor);
 
+        // Создаём новый пол
         GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         lastGeneratedFloor = floor;
 
+        // Спавн игрока в безопасном месте
         SpawnPlayer(floor);
 
+        // Инициализация предметов
         if (itemSpawner != null)
             itemSpawner.InitializeFromRoom(floor);
 
         return floor;
     }
 
+    // -------------------- Спавн игрока --------------------
     private void SpawnPlayer(GameObject floor)
     {
         Transform spawnPoint = floor.transform.Find("PlayerSpawnPoint");
-        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : CreateSafeSpawnPosition(floor, 0.4f);
+
+        Vector3 spawnPos;
+
+        if (spawnPoint != null)
+        {
+            spawnPos = spawnPoint.position;
+        }
+        else
+        {
+            // Ищем безопасное место с увеличенным радиусом
+            spawnPos = FindSafePosition(floor, 0.6f);
+        }
+
+        // Немного сдвигаем игрока вверх, чтобы Rigidbody не залипал
+        spawnPos += Vector3.up * 0.3f;
 
         if (playerInstance == null)
         {
@@ -69,11 +89,18 @@ public class FloorGenerator : MonoBehaviour
             playerInstance.transform.position = spawnPos;
         }
 
+        // Устанавливаем игроку возможность двигаться
+        var controller = playerInstance.GetComponent<PlayerController>();
+        if (controller != null)
+            controller.SetMovement(true);
+
+        // Камера остаётся без изменений
         if (virtualCamera != null)
             virtualCamera.Follow = playerInstance.transform;
     }
 
-    private Vector3 CreateSafeSpawnPosition(GameObject floor, float radius)
+    // -------------------- Поиск безопасной позиции --------------------
+    private Vector3 FindSafePosition(GameObject floor, float radius)
     {
         Collider2D floorCollider = floor.GetComponentInChildren<Collider2D>();
         if (!floorCollider) return floor.transform.position;
@@ -87,22 +114,23 @@ public class FloorGenerator : MonoBehaviour
             float y = Random.Range(b.min.y + margin, b.max.y - margin);
             Vector2 point = new Vector2(x, y);
 
-            RaycastHit2D hit = Physics2D.Raycast(point + Vector2.up * 2f, Vector2.down, 5f, floorLayerMask);
-            if (!hit.collider) continue;
+            // Проверка на пересечение с полом
+            if (Physics2D.OverlapCircle(point, radius, floorLayerMask)) continue;
 
-            Vector3 pos = (Vector3)hit.point + Vector3.up * 0.3f;
+            // Проверка на стены
+            if (Physics2D.OverlapCircle(point, radius, wallsLayerMask)) continue;
 
-            if (Physics2D.OverlapCircle(pos, radius, LayerMask.GetMask("Walls"))) continue;
+            // Проверка на двери (тег "Doors")
+            Collider2D doorHit = Physics2D.OverlapCircle(point, radius);
+            if (doorHit != null && doorHit.CompareTag("Doors")) continue;
 
-            Collider2D doorHit = Physics2D.OverlapCircle(pos, radius);
-            if (doorHit && doorHit.CompareTag("Door")) continue;
-
-            return pos;
+            return new Vector3(x, y, 0f);
         }
 
+        // Если не нашли безопасное место, ставим чуть выше центра
         return b.center + Vector3.up * 0.5f;
     }
 
-    // Метод для получения PlayerInstance извне
+    // -------------------- Получение игрока извне --------------------
     public GameObject GetPlayerInstance() => playerInstance;
 }
