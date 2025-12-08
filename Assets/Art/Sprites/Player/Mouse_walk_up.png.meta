@@ -1,31 +1,22 @@
 fileFormatVersion: 2
-guid: d5fd3451b66878740b0daba30540b3f9
+guid: 8cf6d436544854f47b0bc8c3d80e7c63
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7787222617376055771
-    second: mouse_blink1_0
+      213: 5753134774555028608
+    second: Mouse_walk_up_0
   - first:
-      213: -84466133147786777
-    second: mouse_blink1_1
+      213: 332080282826945065
+    second: Mouse_walk_up_1
   - first:
-      213: 3620087117542411881
-    second: mouse_blink1_2
+      213: -3049637243564164669
+    second: Mouse_walk_up_2
   - first:
-      213: 4567733982327701756
-    second: mouse_blink1_3
+      213: -7753909498620963234
+    second: Mouse_walk_up_3
   - first:
-      213: -7661353531581539053
-    second: mouse_blink1_4
-  - first:
-      213: 4507414620288149845
-    second: mouse_blink1_5
-  - first:
-      213: -8257471332125115475
-    second: mouse_blink1_6
-  - first:
-      213: -4892396071864016314
-    second: mouse_blink1_7
+      213: -3111994672063072414
+    second: Mouse_walk_up_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -58,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -121,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: mouse_blink1_0
+      name: Mouse_walk_up_0
       rect:
         serializedVersion: 2
         x: 0
@@ -136,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 52e9968b94a3ee390800000000000000
-      internalID: -7787222617376055771
+      spriteID: 08cac46989d37df40800000000000000
+      internalID: 5753134774555028608
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse_blink1_1
+      name: Mouse_walk_up_1
       rect:
         serializedVersion: 2
         x: 32
@@ -158,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e1ec2adf7ae3def0800000000000000
-      internalID: -84466133147786777
+      spriteID: 922bfcef149cb9400800000000000000
+      internalID: 332080282826945065
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse_blink1_2
+      name: Mouse_walk_up_2
       rect:
         serializedVersion: 2
         x: 64
@@ -180,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 96e4519ad022d3230800000000000000
-      internalID: 3620087117542411881
+      spriteID: 3c97e8ba5138da5d0800000000000000
+      internalID: -3049637243564164669
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse_blink1_3
+      name: Mouse_walk_up_3
       rect:
         serializedVersion: 2
         x: 96
@@ -202,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cf08f152bd9d36f30800000000000000
-      internalID: 4567733982327701756
+      spriteID: e569b2a9464946490800000000000000
+      internalID: -7753909498620963234
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse_blink1_4
+      name: Mouse_walk_up_4
       rect:
         serializedVersion: 2
         x: 128
@@ -224,96 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 31dd56bfd876da590800000000000000
-      internalID: -7661353531581539053
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse_blink1_5
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5596da147bd8d8e30800000000000000
-      internalID: 4507414620288149845
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse_blink1_6
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dabf5b9c291976d80800000000000000
-      internalID: -8257471332125115475
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse_blink1_7
-      rect:
-        serializedVersion: 2
-        x: 224
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 642670491b7ba1cb0800000000000000
-      internalID: -4892396071864016314
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse_blink1_8
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8a3a3dcd30881f24788d34a7c5abf0b2
-      internalID: 844070964
+      spriteID: 267b5c47559ffc4d0800000000000000
+      internalID: -3111994672063072414
       vertices: []
       indices: 
       edges: []
@@ -322,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: aa860ca22a6107c4eb59137eacbee7b3
+    spriteID: 34a220160103c0f46b8abc65dc287626
     internalID: 0
     vertices: []
     indices: 
@@ -334,15 +237,11 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      mouse_blink1_0: -7787222617376055771
-      mouse_blink1_1: -84466133147786777
-      mouse_blink1_2: 3620087117542411881
-      mouse_blink1_3: 4567733982327701756
-      mouse_blink1_4: -7661353531581539053
-      mouse_blink1_5: 4507414620288149845
-      mouse_blink1_6: -8257471332125115475
-      mouse_blink1_7: -4892396071864016314
-      mouse_blink1_8: 844070964
+      Mouse_walk_up_0: 5753134774555028608
+      Mouse_walk_up_1: 332080282826945065
+      Mouse_walk_up_2: -3049637243564164669
+      Mouse_walk_up_3: -7753909498620963234
+      Mouse_walk_up_4: -3111994672063072414
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
