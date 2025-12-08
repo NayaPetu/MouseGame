@@ -884,7 +884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloorManager
   floorGenerator: {fileID: 1880425265}
-  enemyPrefab: {fileID: 0}
+  enemyPrefab: {fileID: 233196495347687082, guid: bf31d04492cf0c54290b8bde96e32be2, type: 3}
 --- !u!4 &1507808438
 Transform:
   m_ObjectHideFlags: 0
@@ -1231,6 +1231,9 @@ MonoBehaviour:
   floorLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  wallsLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   itemSpawner: {fileID: 1557445521}
 --- !u!1001 &1890364784
 PrefabInstance:
