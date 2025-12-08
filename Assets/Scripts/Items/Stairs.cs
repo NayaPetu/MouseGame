@@ -47,6 +47,7 @@ public class Stair : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        FloorManager.Instance.TeleportEnemyToFloor();
+        // Используем правильное имя метода - TeleportEnemyToFloorPublic()
+        FloorManager.Instance.TeleportEnemyToFloorPublic();
     }
 }
