@@ -60,10 +60,15 @@ public class EnemyAI : MonoBehaviour
         currentRoom = spawnRoom;
         player = playerTransform;
 
-        if (spawnPos != null)
-            transform.position = spawnPos;
+        // transform.position = spawnPos;  // Удаляем — FloorManager уже телепортирует
 
-        gameObject.SetActive(true);
+        // Полный сброс состояния
+        hasSeenPlayer = false;
+        pacifiedByCatnip = false;
+        targetCatnip = null;
+        isResting = false;
+        recentlyUsedDoor = false;
+
         ChoosePatrolTarget();
     }
 
