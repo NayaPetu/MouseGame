@@ -4,29 +4,36 @@ using System.Collections;
 public class Door : MonoBehaviour
 {
     [Header("Целевая дверь")]
-    public Transform targetDoor; // 👈 не трогаем!
+    public Transform targetDoor;
 
     [Header("Комната этой двери")]
-    public Room currentRoom; // 👈 не трогаем!
+    public Room currentRoom;
 
     [Header("Телепорт смещение")]
-    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f); // 👈 не трогаем!
+    public Vector3 safeOffset = new Vector3(0.5f, 0f, 0f);
+
+    [Header("Замок")]
+    public LockedDoor lockedDoor; // 👈 ССЫЛКА НА ЗАМОК
 
     private bool enemyTeleported = false;
     private bool playerTeleported = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // --- Враг ---
+        // ---------- ВРАГ ----------
         if (other.CompareTag("Enemy") && !enemyTeleported)
         {
             TeleportEnemyToTarget(other.transform);
             enemyTeleported = true;
         }
 
-        // --- Игрок ---
+        // ---------- ИГРОК ----------
         if (other.CompareTag("Player") && !playerTeleported)
         {
+            // 🚫 ЕСЛИ ДВЕРЬ ЗАКРЫТА — НИЧЕГО НЕ ДЕЛАЕМ
+            if (lockedDoor != null && !lockedDoor.IsOpen)
+                return;
+
             StartCoroutine(TeleportPlayer(other.transform));
             playerTeleported = true;
         }
@@ -53,14 +60,12 @@ public class Door : MonoBehaviour
     {
         if (targetDoor == null) yield break;
 
-        // Блокируем движение, чтобы не дергался
         PlayerController controller = player.GetComponent<PlayerController>();
         if (controller != null)
             controller.SetMovement(false);
 
         yield return new WaitForSeconds(0.05f);
 
-        // Перемещаем
         player.position = targetDoor.position + safeOffset;
 
         yield return new WaitForSeconds(0.05f);

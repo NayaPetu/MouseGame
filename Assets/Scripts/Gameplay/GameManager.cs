@@ -56,4 +56,13 @@ public class GameManager : MonoBehaviour
         if (enemy != null)
             Destroy(enemy.gameObject);
     }
+
+    public bool hasKey = false;
+
+    public void CollectKey()
+    {
+        hasKey = true;
+    }
+
 }
+
