@@ -13,11 +13,10 @@ public class EnemyAI : MonoBehaviour
     public float detectionRadius = 8f;
     public LayerMask playerMask;
     public LayerMask wallMask;
-    public LayerMask doorMask;
 
     [Header("Catnip")]
     public LayerMask catnipMask;
-    public float catnipPeaceTime = 5f; // отдых после съедания мяты
+    public float catnipPeaceTime = 5f;
     private bool pacifiedByCatnip = false;
     private Catnip targetCatnip;
     private bool isResting = false;
@@ -28,7 +27,6 @@ public class EnemyAI : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Transform player;
-    private Room currentRoom;
 
     private Vector2 patrolTarget;
     private bool hasPatrolTarget = false;
@@ -37,9 +35,6 @@ public class EnemyAI : MonoBehaviour
 
     private Vector2 lastMoveDir;
     private Vector2 currentDir;
-
-    private bool recentlyUsedDoor = false;
-    private float doorCooldown = 1.2f;
 
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
@@ -55,23 +50,21 @@ public class EnemyAI : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void Init(Room spawnRoom, Transform playerTransform, Vector3 spawnPos)
+    // Инициализация врага
+    public void Init(Room room, Transform playerTransform, Vector3 spawnPos)
     {
-        currentRoom = spawnRoom;
         player = playerTransform;
+        transform.position = spawnPos;
 
-        // transform.position = spawnPos;  // Удаляем — FloorManager уже телепортирует
-
-        // Полный сброс состояния
+        // Сброс состояния
         hasSeenPlayer = false;
         pacifiedByCatnip = false;
         targetCatnip = null;
         isResting = false;
-        recentlyUsedDoor = false;
 
         ChoosePatrolTarget();
+        gameObject.SetActive(true);
     }
-
 
     void Update()
     {
@@ -91,18 +84,14 @@ public class EnemyAI : MonoBehaviour
         }
 
         if (pacifiedByCatnip && targetCatnip != null)
-        {
             MoveToCatnip();
-        }
         else
-        {
             PatrolAndChase();
-        }
 
         CheckPlayerCatch();
     }
 
-    // ------------------ CATNIP LOGIC -----------------------
+    // ------------------ CATNIP -----------------------
     private void DetectCatnip()
     {
         if (pacifiedByCatnip || isResting) return;
@@ -132,12 +121,10 @@ public class EnemyAI : MonoBehaviour
         rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
         HandleAnimation(dir, true);
 
-        float dist = Vector2.Distance(rb.position, targetCatnip.transform.position);
-        if (dist < 0.2f)
+        if (Vector2.Distance(rb.position, targetCatnip.transform.position) < 0.2f)
         {
             targetCatnip.EatenByCat();
             targetCatnip = null;
-
             StartCoroutine(CatnipPeace());
         }
     }
@@ -155,30 +142,28 @@ public class EnemyAI : MonoBehaviour
         ChoosePatrolTarget();
     }
 
-    // ------------------ NORMAL AI -------------------------
+    // ------------------ PATROL & CHASE -------------------------
     private void PatrolAndChase()
     {
         if (player == null) return;
 
         Vector2 moveTarget;
-        Vector2 playerPos2D = player.position;
 
         if (hasSeenPlayer)
         {
-            Room playerRoom = player.GetComponentInParent<Room>();
-
-            if (playerRoom != null && playerRoom != currentRoom)
-            {
-                Door doorToUse = FindDoorToRoom(playerRoom);
-                moveTarget = (doorToUse != null ? doorToUse.transform.position : GetNearestDoorPosition());
-            }
-            else moveTarget = playerPos2D;
+            moveTarget = (Vector2)player.position;
         }
-        else if (hasPatrolTarget) moveTarget = patrolTarget;
-        else { ChoosePatrolTarget(); return; }
+        else if (hasPatrolTarget)
+        {
+            moveTarget = patrolTarget;
+        }
+        else
+        {
+            ChoosePatrolTarget();
+            return;
+        }
 
-        float dist = Vector2.Distance(rb.position, moveTarget);
-        if (dist < 0.15f)
+        if (Vector2.Distance(rb.position, moveTarget) < 0.15f)
         {
             waitTimer += Time.fixedDeltaTime;
             if (waitTimer >= patrolWaitTime)
@@ -192,17 +177,6 @@ public class EnemyAI : MonoBehaviour
 
         Vector2 dir = (moveTarget - rb.position).normalized;
 
-        RaycastHit2D doorHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, doorMask);
-        if (doorHit.collider != null)
-        {
-            Door door = doorHit.collider.GetComponent<Door>();
-            if (door != null && !recentlyUsedDoor)
-            {
-                StartCoroutine(PassThroughDoor(door));
-                return;
-            }
-        }
-
         RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
         if (wallHit.collider != null) dir = Vector2.zero;
 
@@ -211,16 +185,7 @@ public class EnemyAI : MonoBehaviour
         HandleAnimation(currentDir, dir.sqrMagnitude > 0.001f);
     }
 
-    private IEnumerator PassThroughDoor(Door door)
-    {
-        if (door == null || recentlyUsedDoor) yield break;
-        recentlyUsedDoor = true;
-        yield return new WaitForSeconds(Random.Range(0.1f, 0.25f));
-        door.TeleportEnemyToTarget(transform);
-        yield return new WaitForSeconds(doorCooldown);
-        recentlyUsedDoor = false;
-    }
-
+    // ------------------ PLAYER DETECTION -----------------------
     private void DetectPlayer()
     {
         if (player == null) return;
@@ -228,13 +193,7 @@ public class EnemyAI : MonoBehaviour
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectionRadius, playerMask);
         if (hit != null)
         {
-            Room playerRoom = hit.GetComponentInParent<Room>();
-            bool sameRoom = (playerRoom == currentRoom);
-            Vector2 dir = (Vector2)(hit.transform.position - transform.position);
-            bool clearLine = !Physics2D.Raycast(transform.position, dir.normalized, detectionRadius, wallMask);
-
-            if (clearLine || !sameRoom)
-                hasSeenPlayer = true;
+            hasSeenPlayer = true;
         }
     }
 
@@ -242,19 +201,18 @@ public class EnemyAI : MonoBehaviour
     {
         if (player == null || isResting) return;
 
-        float catchDistance = 0.5f; // настрой под размеры
+        float catchDistance = 0.5f;
         if (Vector2.Distance(transform.position, player.position) <= catchDistance)
         {
             GameManager.Instance.OnPlayerCaught();
         }
     }
 
+    // ------------------ PATROL HELPERS -----------------------
     private void ChoosePatrolTarget()
     {
-        if (currentRoom == null) return;
-
-        Bounds b = currentRoom.GetRoomBounds();
-        patrolTarget = new Vector2(Random.Range(b.min.x, b.max.x), Random.Range(b.min.y, b.max.y));
+        if (player == null) return;
+        patrolTarget = (Vector2)player.position + Random.insideUnitCircle * 2f;
         hasPatrolTarget = true;
     }
 
@@ -274,61 +232,9 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private Door FindDoorToRoom(Room targetRoom)
-    {
-        if (currentRoom == null || currentRoom.doors == null) return null;
-
-        Door bestDoor = null;
-        float minDist = float.MaxValue;
-
-        foreach (Door d in currentRoom.doors)
-        {
-            if (d != null && d.targetDoor != null)
-            {
-                Door target = d.targetDoor.GetComponent<Door>();
-                if (target != null && target.currentRoom == targetRoom)
-                {
-                    float dist = Vector2.Distance(transform.position, d.transform.position);
-                    if (dist < minDist)
-                    {
-                        minDist = dist;
-                        bestDoor = d;
-                    }
-                }
-            }
-        }
-        return bestDoor;
-    }
-
-    private Vector2 GetNearestDoorPosition()
-    {
-        if (currentRoom == null || currentRoom.doors == null || currentRoom.doors.Length == 0)
-            return transform.position;
-
-        Door nearest = currentRoom.doors[0];
-        float minDist = Vector2.Distance(transform.position, nearest.transform.position);
-
-        foreach (Door d in currentRoom.doors)
-        {
-            if (d == null) continue;
-            float dist = Vector2.Distance(transform.position, d.transform.position);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearest = d;
-            }
-        }
-        return nearest.transform.position;
-    }
-
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 5f); // радиус для мяты
-
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
-
-    public void SetCurrentRoom(Room newRoom) => currentRoom = newRoom;
 }

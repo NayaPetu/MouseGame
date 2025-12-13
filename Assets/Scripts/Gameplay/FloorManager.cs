@@ -20,19 +20,30 @@ public class FloorManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
     }
 
     private void Start()
     {
+        // Создаём врага заранее
         if (enemyInstance == null && enemyPrefab != null)
         {
             enemyInstance = Instantiate(enemyPrefab);
             enemyAI = enemyInstance.GetComponent<EnemyAI>();
             enemyInstance.SetActive(false); // пока не активен
         }
+
+        // Загружаем первый этаж автоматически
+        StartCoroutine(LoadInitialFloor());
     }
 
-    // Загружаем этаж
+    private IEnumerator LoadInitialFloor()
+    {
+        yield return null; // ждём один кадр, чтобы система успела инициализироваться
+
+        LoadFloor(FloorCategory.Main, "PlayerSpawnPoint", floorGenerator.GetPlayerInstance().transform);
+    }
+
     public void LoadFloor(FloorCategory type, string spawnPointName, Transform playerTransform)
     {
         GameObject floor = floorGenerator.SpawnFloorByType(type);
@@ -52,7 +63,6 @@ public class FloorManager : MonoBehaviour
         StartCoroutine(LateTeleportEnemy());
     }
 
-    // Публичный метод для Stairs.cs
     public void TeleportEnemyToFloorPublic()
     {
         StartCoroutine(LateTeleportEnemy());
@@ -60,7 +70,8 @@ public class FloorManager : MonoBehaviour
 
     private IEnumerator LateTeleportEnemy()
     {
-        yield return null; // ждём один кадр
+        // Ждём кадр, чтобы этаж успел создаться
+        yield return null;
 
         if (enemyInstance == null || currentFloor == null || enemyAI == null)
             yield break;

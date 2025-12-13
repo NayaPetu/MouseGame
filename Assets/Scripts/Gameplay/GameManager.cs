@@ -5,26 +5,55 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    void Awake()
+    [Header("Game Over UI")]
+    public GameObject gameOverPanel;
+
+    private void Awake()
     {
         if (Instance != null && Instance != this)
+        {
             Destroy(gameObject);
-        else
-            Instance = this;
+            return;
+        }
 
-        DontDestroyOnLoad(gameObject); // если нужно сохранять между сценами
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    // Вызывается, когда игрок пойман котом
     public void OnPlayerCaught()
     {
-        Debug.Log("Игрок пойман котом! Game Over.");
-        GameOver();
+        ShowGameOver();
     }
 
-    public void GameOver()
+    private void ShowGameOver()
     {
-        // Например, перезагрузить сцену main
-        SceneManager.LoadScene("main");
+        Time.timeScale = 0f; // СЃС‚РѕРї РёРіСЂР°
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+    }
+
+    // РљРќРћРџРљРђ "Р—РђРќРћР’Рћ"
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+
+        // вќ—пёЏ РћР§РР©РђР•Рњ Р’РЎРЃ РџР•Р Р•Р” РЎРўРђР РўРћРњ
+        CleanupGameplayObjects();
+
+        SceneManager.LoadScene("menu");
+    }
+
+    private void CleanupGameplayObjects()
+    {
+        // РЈРЅРёС‡С‚РѕР¶Р°РµРј FloorManager
+        FloorManager fm = FindFirstObjectByType<FloorManager>();
+        if (fm != null)
+            Destroy(fm.gameObject);
+
+        // РЈРЅРёС‡С‚РѕР¶Р°РµРј РІСЂР°РіРѕРІ
+        EnemyAI enemy = FindFirstObjectByType<EnemyAI>();
+        if (enemy != null)
+            Destroy(enemy.gameObject);
     }
 }
