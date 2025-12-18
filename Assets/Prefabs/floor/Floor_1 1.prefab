@@ -2848,6 +2848,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LockedDoor
   IsOpen: 0
+  closedSprite: {fileID: 620132582, guid: 3488f5a413994d44a8c9ec61c2d2d54b, type: 3}
+  openSprite: {fileID: -6576345339619558474, guid: 8670d21a94a75ea4a970bf7696403e81, type: 3}
 --- !u!114 &8022723848106046607
 MonoBehaviour:
   m_ObjectHideFlags: 0

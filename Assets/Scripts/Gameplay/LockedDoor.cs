@@ -5,14 +5,28 @@ public class LockedDoor : MonoBehaviour
     [Header("Состояние двери")]
     public bool IsOpen = false;
 
+    [Header("Спрайты")]
+    public Sprite closedSprite;
+    public Sprite openSprite;
+
+    private SpriteRenderer sr;
+    private Collider2D col;
+
+    private void Awake()
+    {
+        sr = GetComponent<SpriteRenderer>();
+        col = GetComponent<Collider2D>();
+        sr.sprite = closedSprite; // по умолчанию закрыта
+    }
+
     public void TryOpen()
     {
-        if (IsOpen) return; // уже открыта
+        if (IsOpen) return;
 
         if (PlayerInventory.Instance.HasKey())
         {
-            OpenDoor();
             PlayerInventory.Instance.UseKey();
+            OpenDoor();
         }
         else
         {
@@ -25,15 +39,13 @@ public class LockedDoor : MonoBehaviour
         IsOpen = true;
         Debug.Log("Дверь открыта ключом");
 
-        // здесь можно сменить спрайт на открытую дверь
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = new Color(1f, 1f, 1f, 0.5f); // пример: прозрачная
-        }
+        // ✅ МЕНЯЕМ СПРАЙТ
+        if (sr != null && openSprite != null)
+            sr.sprite = openSprite;
 
-        // отключаем коллайдер, который блокирует движение
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
+        // ✅ ОТКЛЮЧАЕМ КОЛЛАЙДЕР
+        if (col != null)
+            col.enabled = false;
     }
 }
+
