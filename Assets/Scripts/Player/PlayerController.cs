@@ -16,12 +16,11 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     public Animator animator;
     public SpriteRenderer spriteRenderer;
-    public Transform itemHoldPosition; // пустой объект над головой игрока
+    public Transform itemHoldPosition; // оставили, но не используем
 
     private Rigidbody2D rb;
     private Vector2 movementInput;
     private Vector2 currentVelocity;
-    private GameObject heldItem;
     private bool canMove = true;
 
     [Header("Animation Settings")]
@@ -45,8 +44,12 @@ public class PlayerController : MonoBehaviour
 
         GetInput();
         HandleAnimation();
-        HandleInteraction();
-        HandleTileChanging();
+
+        // Использование предмета из мини-инвентаря
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            UseInventoryItem();
+        }
     }
 
     void FixedUpdate()
@@ -57,15 +60,26 @@ public class PlayerController : MonoBehaviour
 
     private void GetInput()
     {
-        movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+        movementInput = new Vector2(
+            Input.GetAxisRaw("Horizontal"),
+            Input.GetAxisRaw("Vertical")
+        ).normalized;
     }
 
     private void HandleMovement()
     {
         if (movementInput.magnitude > 0.1f)
-            currentVelocity = Vector2.MoveTowards(currentVelocity, movementInput * moveSpeed, acceleration * Time.fixedDeltaTime);
+            currentVelocity = Vector2.MoveTowards(
+                currentVelocity,
+                movementInput * moveSpeed,
+                acceleration * Time.fixedDeltaTime
+            );
         else
-            currentVelocity = Vector2.MoveTowards(currentVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
+            currentVelocity = Vector2.MoveTowards(
+                currentVelocity,
+                Vector2.zero,
+                deceleration * Time.fixedDeltaTime
+            );
 
         rb.linearVelocity = currentVelocity;
     }
@@ -88,120 +102,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleInteraction()
+    private void UseInventoryItem()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (heldItem != null)
-            {
-                // Дропаем только если это не мята
-                if (heldItem.GetComponent<Catnip>() == null)
-                    DropItem();
-            }
-            else
-                TryInteract();
-        }
+        if (InventoryManager.Instance == null) return;
 
-        if (Input.GetKeyDown(KeyCode.Q) && heldItem != null)
-            UseHeldItem();
-    }
+        GameObject item = InventoryManager.Instance.GetSelectedItem();
+        if (item == null) return;
 
-    private void HandleTileChanging()
-    {
-        if (Input.GetMouseButtonDown(0) && heldItem != null)
-            TryChangeTile();
-    }
+        // Используем предмет
+        item.SendMessage(
+            "Use",
+            this,
+            SendMessageOptions.DontRequireReceiver
+        );
 
-    private void TryInteract()
-    {
-        Collider2D[] interactables = Physics2D.OverlapCircleAll(transform.position, interactionRadius, interactableLayer);
-
-        foreach (Collider2D collider in interactables)
-        {
-            IInteractable interactable = collider.GetComponent<IInteractable>();
-            if (interactable != null)
-            {
-                PickUpItem(collider.gameObject);
-                interactable.Interact(this);
-                break;
-            }
-        }
-    }
-
-    private Vector3 SnapToPixelGrid(Vector3 worldPos, int pixelsPerUnit = 16)
-    {
-        float unitsPerPixel = 1f / pixelsPerUnit;
-        worldPos.x = Mathf.Round(worldPos.x / unitsPerPixel) * unitsPerPixel;
-        worldPos.y = Mathf.Round(worldPos.y / unitsPerPixel) * unitsPerPixel;
-        return worldPos;
-    }
-
-    private void TryChangeTile()
-    {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos = SnapToPixelGrid(mouseWorldPos);
-
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero, 0f, tileChangeLayer);
-        if (hit.collider != null)
-        {
-            TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
-            if (tileChanger != null)
-                tileChanger.ChangeTile(SnapToPixelGrid(hit.point));
-        }
-    }
-
-    // ------------------ Подбор предмета ------------------
-    public void PickUpItem(GameObject item)
-    {
-        if (heldItem != null) return;
-
-        heldItem = item;
-
-        heldItem.transform.SetParent(itemHoldPosition);
-        heldItem.transform.localPosition = Vector3.zero;
-        heldItem.transform.localRotation = Quaternion.identity;
-        heldItem.transform.localScale = Vector3.one;
-
-        SpriteRenderer sr = heldItem.GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.sortingOrder = 10;
-            sr.sortingLayerName = "Default";
-        }
-
-        Rigidbody2D rbItem = heldItem.GetComponent<Rigidbody2D>();
-        if (rbItem != null) rbItem.simulated = false;
-
-        Collider2D colItem = heldItem.GetComponent<Collider2D>();
-        if (colItem != null) colItem.enabled = false;
-    }
-
-    // ------------------ Выброс предмета ------------------
-    public void DropItem()
-    {
-        if (heldItem == null) return;
-
-        Rigidbody2D itemRb = heldItem.GetComponent<Rigidbody2D>();
-        Collider2D itemCollider = heldItem.GetComponent<Collider2D>();
-
-        if (itemRb != null) itemRb.simulated = true;
-        if (itemCollider != null) itemCollider.enabled = true;
-
-        heldItem.transform.SetParent(null);
-
-        if (itemRb != null)
-            itemRb.linearVelocity = rb.linearVelocity * 0.5f;
-
-        heldItem = null;
-    }
-
-    private void UseHeldItem()
-    {
-        if (heldItem == null) return;
-
-        IUsable usable = heldItem.GetComponent<IUsable>();
-        if (usable != null)
-            usable.Use(this);
+        // Удаляем использованный предмет
+        InventoryManager.Instance.RemoveSelectedItem();
     }
 
     public void SetMovement(bool enabled)
@@ -213,9 +129,6 @@ public class PlayerController : MonoBehaviour
             currentVelocity = Vector2.zero;
         }
     }
-
-    public bool IsCarryingItem() => heldItem != null;
-    public GameObject GetHeldItem() => heldItem;
 
     public Vector2 GetCurrentMoveDirection()
     {

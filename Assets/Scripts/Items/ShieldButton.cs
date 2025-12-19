@@ -2,22 +2,24 @@ using UnityEngine;
 
 public class ShieldButton : MonoBehaviour, IUsable
 {
-    public int durability = 2; // выдерживает 2 удара кота
+    public int durability = 2;
 
     public void Use(PlayerController player)
     {
-        // этот предмет просто хранится, использование вручную не нужно
-        Debug.Log("Щит-пуговка активен. Защита от кота!");
+        Debug.Log("Щит-пуговка активен");
+        // можно повесить на игрока, если нужно
     }
 
     public bool AbsorbHit()
     {
         durability--;
+
         if (durability <= 0)
         {
             Destroy(gameObject);
-            return false; // больше не защищает
+            return false;
         }
+
         return true;
     }
 }

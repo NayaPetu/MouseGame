@@ -1,18 +1,35 @@
 using UnityEngine;
 
-public class FriendNote : BaseItem
+public class FriendNote : MonoBehaviour
 {
-    [TextArea] public string noteText = "Друг в подвале!";
+    [TextArea]
+    public string noteText = "Друг в подвале!";
 
-    private void Awake()
+    private bool playerInside = false;
+
+    private void Update()
     {
-        itemName = "Записка друга";
-        isConsumable = false;
+        if (playerInside && Input.GetKeyDown(KeyCode.E))
+        {
+            ReadNote();
+        }
     }
 
-    public override void Use(PlayerController playerController)
+    private void ReadNote()
     {
-        Debug.Log($"Записка: {noteText}");
-        // Здесь можно добавить вызов UI для отображения текста
+        Debug.Log("Записка: " + noteText);
+        // позже сюда можно подключить UI
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            playerInside = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            playerInside = false;
     }
 }

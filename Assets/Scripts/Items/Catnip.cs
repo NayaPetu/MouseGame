@@ -1,70 +1,61 @@
 using UnityEngine;
 using System.Collections;
 
-public class Catnip : MonoBehaviour, IInteractable, IUsable
+public class Catnip : MonoBehaviour
 {
     [Header("Настройки мяты")]
     public float calmDuration = 5f;      // сколько времени враг будет спокойным
-    public GameObject attractor;         // дочерний объект зоны действия мяты
+    public GameObject attractor;         // зона действия
 
-    private bool isPickedUp = false;
-    private bool isEaten = false;
     private bool isUsed = false;
+    private bool isEaten = false;
 
-    // ------------------ Для игрока ------------------
-    public void Interact(PlayerController player)
+    // ================== Для врага ==================
+    public bool IsUsed() => isUsed;
+    public bool IsEaten() => isEaten;
+
+    // ================== Подбор игроком ==================
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isPickedUp) return;
+        if (!other.CompareTag("Player")) return;
 
-        player.PickUpItem(this.gameObject);
-        isPickedUp = true;
+        // Добавляем в инвентарь
+        InventoryManager.Instance?.AddItem(this.gameObject);
+
+        Debug.Log("Catnip подобран!");
+        gameObject.SetActive(false); // спрятать визуально, игрок держит в инвентаре
     }
 
-    public void Use(PlayerController player)
+    // ================== Использование игроком ==================
+    public void Use()
     {
-        if (!isPickedUp) return;
+        if (isUsed) return;
 
-        transform.SetParent(null);
-        transform.position = player.itemHoldPosition.position; // оставляем там, где игрок стоит
-        isPickedUp = false;
         isUsed = true;
 
-        // Включаем зону действия
         if (attractor != null)
             attractor.SetActive(true);
 
-        // Включаем Collider и Rigidbody, чтобы враг мог обнаружить мяту
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = true;
-
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.simulated = true;
+        transform.SetParent(null);
+        gameObject.SetActive(true);
     }
 
-    // ------------------ Для врага ------------------
-    public bool IsPickedUp() => isPickedUp;
-    public bool IsEaten() => isEaten;
-    public bool IsUsed() => isUsed;
-
+    // ================== Когда кот съел ==================
     public void EatenByCat()
     {
         if (isEaten) return;
-
         isEaten = true;
 
-        // Делаем мяту невидимой и отключаем коллайдер
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.enabled = false;
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // Отключаем зону действия через время
-        if (attractor != null)
-            StartCoroutine(DisableAttractorAfterTime());
+        StartCoroutine(DisableAfterTime());
     }
 
-    private IEnumerator DisableAttractorAfterTime()
+    private IEnumerator DisableAfterTime()
     {
         yield return new WaitForSeconds(calmDuration);
 

@@ -1,63 +1,50 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
 {
-    [System.Serializable]
-    public class Item
+    public static InventoryManager Instance;
+
+    public GameObject[] items = new GameObject[2];
+    private int selectedIndex = 0;
+
+    private void Awake()
     {
-        public string itemName;
-        public Sprite icon;
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
-    public List<Item> items = new List<Item>();
-    public Image[] slots; // массив Image слотов UI
-
-    void Start()
+    public bool AddItem(GameObject item)
     {
-        UpdateUI();
-    }
-
-    // Добавление предмета
-    public void AddItem(Item newItem)
-    {
-        if (items.Count < slots.Length)
+        for (int i = 0; i < items.Length; i++)
         {
-            items.Add(newItem);
-            UpdateUI();
-        }
-    }
-
-    // Использование предмета
-    public void UseItem(int index)
-    {
-        if (index >= 0 && index < items.Count)
-        {
-            // Логика эффекта предмета
-            Debug.Log("Использован " + items[index].itemName);
-
-            // Удаляем из инвентаря
-            items.RemoveAt(index);
-            UpdateUI();
-        }
-    }
-
-    // Обновление UI
-    void UpdateUI()
-    {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (i < items.Count)
+            if (items[i] == null)
             {
-                slots[i].gameObject.SetActive(true); // включаем слот
-                slots[i].sprite = items[i].icon;     // ставим иконку предмета
-                slots[i].color = Color.white;
-            }
-            else
-            {
-                slots[i].gameObject.SetActive(false); // выключаем пустой слот
+                items[i] = item;
+                return true;
             }
         }
+        return false;
+    }
+
+    public GameObject GetSelectedItem()
+    {
+        return items[selectedIndex];
+    }
+
+    public void RemoveSelectedItem()
+    {
+        items[selectedIndex] = null;
+    }
+
+    public void SelectNext()
+    {
+        selectedIndex = (selectedIndex + 1) % items.Length;
+    }
+
+    public int GetSelectedIndex()
+    {
+        return selectedIndex;
     }
 }

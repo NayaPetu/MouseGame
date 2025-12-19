@@ -1,32 +1,30 @@
 using UnityEngine;
 using System.Collections;
 
-public class PowerCheese : BaseItem
+public class PowerCheese : MonoBehaviour
 {
     public Vector3 sizeMultiplier = new Vector3(1.5f, 1.5f, 1f);
     public float duration = 5f;
 
-    private void Awake()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        itemName = "Сыр силы";
-        isConsumable = true;
+        if (!other.CompareTag("Player")) return;
+
+        PlayerController player = other.GetComponent<PlayerController>();
+        if (player == null) return;
+
+        player.StartCoroutine(ApplyEffect(player));
+        Debug.Log("Сыр съеден! Мышь увеличена.");
+        Destroy(gameObject); // мгновенно исчезает после использования
     }
 
-    public override void Use(PlayerController playerController)
+    private IEnumerator ApplyEffect(PlayerController player)
     {
-        base.Use(playerController); // выведет Debug
-
-        // Реальный эффект: увеличить мышь
-        playerController.StartCoroutine(ApplyEffect(playerController));
-    }
-
-    private IEnumerator ApplyEffect(PlayerController playerController)
-    {
-        Vector3 originalSize = playerController.transform.localScale;
-        playerController.transform.localScale = originalSize + sizeMultiplier;
+        Vector3 originalSize = player.transform.localScale;
+        player.transform.localScale = originalSize + sizeMultiplier;
 
         yield return new WaitForSeconds(duration);
 
-        playerController.transform.localScale = originalSize;
+        player.transform.localScale = originalSize;
     }
 }
