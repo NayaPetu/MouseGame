@@ -852,7 +852,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1919981788835787328, guid: 8805f1d360c135942af61b53198836c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5546963330265022967}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8805f1d360c135942af61b53198836c1, type: 3}
 --- !u!4 &94564106596506985 stripped
@@ -1651,6 +1654,68 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1784016712142954672, guid: 647e0228ce1c79d49aba4ae86abaec03, type: 3}
   m_PrefabInstance: {fileID: 7501963913433779355}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8594148777152234029
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3937521922016020481}
+    m_Modifications:
+    - target: {fileID: 4285196674874591233, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_Name
+      value: CheeseFactory
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.243075
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+--- !u!4 &5546963330265022967 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4304958583723049946, guid: cee8f06c251dbbc4782b29df6f4288e0, type: 3}
+  m_PrefabInstance: {fileID: 8594148777152234029}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9120141104545967683
 PrefabInstance:

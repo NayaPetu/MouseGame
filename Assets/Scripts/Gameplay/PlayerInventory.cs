@@ -4,9 +4,9 @@ public class PlayerInventory : MonoBehaviour
 {
     public static PlayerInventory Instance;
 
-    private bool hasKey;
-    private bool hasRecipe;
-    private bool hasÑatnip;
+    private bool hasKey = false;
+    private bool hasRecipe = false;
+    private bool hasÑatnip = false;
 
     private void Awake()
     {
@@ -22,9 +22,14 @@ public class PlayerInventory : MonoBehaviour
     public void UseKey() => hasKey = false;
 
     // ===== ĞÅÖÅÏÒ =====
-    public void PickRecipe() => hasRecipe = true;
-    public bool HasRecipe() => hasRecipe;
+    public void PickRecipe()
+    {
+        hasRecipe = true;
+        Debug.Log("Ğåöåïò äîáàâëåí â èíâåíòàğü!");
+    }
+
     public void UseRecipe() => hasRecipe = false;
+    public bool HasRecipe() => hasRecipe;
 
     // ===== ÌßÒÀ =====
     public void PickCatnip()
@@ -33,13 +38,6 @@ public class PlayerInventory : MonoBehaviour
         Debug.Log("Ìÿòà ïîäîáğàíà!");
     }
 
-    public bool HasCatnip()
-    {
-        return hasÑatnip;
-    }
-
-    public void UseCatnip()
-    {
-        hasÑatnip = false;
-    }
+    public bool HasCatnip() => hasÑatnip;
+    public void UseCatnip() => hasÑatnip = false;
 }
