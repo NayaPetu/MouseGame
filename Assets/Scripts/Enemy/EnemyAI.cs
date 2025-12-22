@@ -151,7 +151,21 @@ public class EnemyAI : MonoBehaviour
 
         if (hasSeenPlayer)
         {
-            moveTarget = (Vector2)player.position;
+            // Если есть прямой обзор на игрока — гонимся напрямую
+            if (HasLineOfSightToPlayer())
+            {
+                moveTarget = (Vector2)player.position;
+            }
+            // Если игрок спрятался за стеной и есть информация о двери,
+            // через которую он прошёл — сначала идём к этой двери
+            else if (Door.LastPlayerDoor != null)
+            {
+                moveTarget = (Vector2)Door.LastPlayerDoor.transform.position;
+            }
+            else
+            {
+                moveTarget = (Vector2)player.position;
+            }
         }
         else if (hasPatrolTarget)
         {
@@ -163,7 +177,37 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if (Vector2.Distance(rb.position, moveTarget) < 0.15f)
+        float distanceToTarget = Vector2.Distance(rb.position, moveTarget);
+
+        // Проверяем, что цель действительно является дверью, через которую игрок только что прошёл
+        bool hasDoorInfo = Door.LastPlayerDoor != null;
+        bool isDoorTarget = hasDoorInfo &&
+                            Vector2.Distance(moveTarget, (Vector2)Door.LastPlayerDoor.transform.position) < 0.05f;
+
+        // Если цель — дверь и мы уже достаточно близко, "насильно" проталкиваем кота через дверь,
+        // чтобы он не застревал на коллайдерах и триггерах
+        if (isDoorTarget && distanceToTarget < 0.2f)
+        {
+            Door door = Door.LastPlayerDoor;
+            if (door != null && door.targetDoor != null)
+            {
+                Vector3 targetPos = door.targetDoor.position + door.safeOffset;
+
+                // Жёстко телепортируем кота к целевой двери на другой стороне
+                rb.position = targetPos;
+                transform.position = targetPos;
+
+                // Сбрасываем информацию о двери — дальше кот снова просто гонится за игроком
+                Door.LastPlayerDoor = null;
+                hasSeenPlayer = true;
+            }
+
+            waitTimer = 0f;
+            HandleAnimation(Vector2.zero, false);
+            return;
+        }
+
+        if (!isDoorTarget && distanceToTarget < 0.15f)
         {
             waitTimer += Time.fixedDeltaTime;
             if (waitTimer >= patrolWaitTime)
@@ -177,8 +221,13 @@ public class EnemyAI : MonoBehaviour
 
         Vector2 dir = (moveTarget - rb.position).normalized;
 
-        RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
-        if (wallHit.collider != null) dir = Vector2.zero;
+        // Когда идём к двери за игроком, разрешаем "подходить вплотную",
+        // чтобы луч не блокировал движение возле проёма.
+        if (!isDoorTarget)
+        {
+            RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
+            if (wallHit.collider != null) dir = Vector2.zero;
+        }
 
         rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
         currentDir = Vector2.Lerp(currentDir, dir, 0.15f);
@@ -193,8 +242,22 @@ public class EnemyAI : MonoBehaviour
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectionRadius, playerMask);
         if (hit != null)
         {
-            hasSeenPlayer = true;
+            // Считаем, что враг "увидел" игрока только если между ними нет стены
+            if (HasLineOfSightToPlayer())
+                hasSeenPlayer = true;
         }
+    }
+
+    /// <summary>
+    /// Проверка прямой видимости игрока (нет стены между котом и мышью).
+    /// </summary>
+    private bool HasLineOfSightToPlayer()
+    {
+        if (player == null) return false;
+
+        RaycastHit2D hit = Physics2D.Linecast(transform.position, player.position, wallMask);
+        // Если луч не попал в стену — значит стена не блокирует обзор
+        return hit.collider == null;
     }
 
     private void CheckPlayerCatch()

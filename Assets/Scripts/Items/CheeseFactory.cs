@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class CheeseFactory : MonoBehaviour
 {
+    [SerializeField] private string endCutsceneSceneName = "EndCutscene"; // СЃС†РµРЅР° СЃ С„РёРЅР°Р»СЊРЅРѕР№ РєР°С‚СЃС†РµРЅРѕР№
+
     private bool playerNearby = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -26,20 +28,19 @@ public class CheeseFactory : MonoBehaviour
             if (PlayerInventory.Instance.HasRecipe())
             {
                 PlayerInventory.Instance.UseRecipe();
-                Debug.Log("Рецепт передан в CheeseFactory! Игра завершена!");
+                Debug.Log("Р РµС†РµРїС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅ РІ CheeseFactory! РРіСЂР° Р·Р°РІРµСЂС€РµРЅР°!");
                 EndGame();
             }
             else
             {
-                Debug.Log("У вас нет рецепта!");
+                Debug.Log("РЈ С‚РµР±СЏ РЅРµС‚ СЂРµС†РµРїС‚Р°!");
             }
         }
     }
 
     private void EndGame()
     {
-        // Загружаем сцену окончания игры
-        SceneManager.LoadScene("EndGame"); // имя сцены
+        // Р’РјРµСЃС‚Рѕ РїСЂСЏРјРѕР№ Р·Р°РіСЂСѓР·РєРё EndGame СЃРЅР°С‡Р°Р»Р° Р·Р°РіСЂСѓР¶Р°РµРј СЃС†РµРЅСѓ СЃ С„РёРЅР°Р»СЊРЅРѕР№ РєР°С‚СЃС†РµРЅРѕР№
+        SceneManager.LoadScene(endCutsceneSceneName);
     }
 }
-    

@@ -6,6 +6,10 @@ public class Stair : MonoBehaviour
     public FloorManager.FloorCategory targetFloor;  
     public string spawnPointName = "StairSpawnPoint";
 
+    [Header("РџРµСЂРµС…РѕРґ РІСЂР°РіР°")]
+    [Tooltip("Р—Р°РґРµСЂР¶РєР° РїРµСЂРµРґ С‚РµРј, РєР°Рє РІСЂР°Рі РїРµСЂРµР№РґС‘С‚ РЅР° РЅРѕРІС‹Р№ СЌС‚Р°Р¶ Р·Р° РёРіСЂРѕРєРѕРј")]
+    public float enemyTeleportDelay = 1.5f;
+
     private bool playerTeleported = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -31,7 +35,7 @@ public class Stair : MonoBehaviour
 
         yield return new WaitForSeconds(0.05f);
 
-        // Телепортируем игрока на новый этаж
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         FloorManager.Instance.LoadFloor(targetFloor, spawnPointName, player);
 
         yield return new WaitForSeconds(0.2f);
@@ -39,15 +43,15 @@ public class Stair : MonoBehaviour
         if (controller != null)
             controller.SetMovement(true);
 
-        // Телепортируем врага через задержку
-        StartCoroutine(TeleportEnemyDelayed(8f));
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        StartCoroutine(TeleportEnemyDelayed(enemyTeleportDelay));
     }
 
     private IEnumerator TeleportEnemyDelayed(float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        // Используем правильное имя метода - TeleportEnemyToFloorPublic()
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ - TeleportEnemyToFloorPublic()
         FloorManager.Instance.TeleportEnemyToFloorPublic();
     }
 }

@@ -918,6 +918,7 @@ GameObject:
   - component: {fileID: 865403525}
   - component: {fileID: 865403529}
   - component: {fileID: 865403531}
+  - component: {fileID: 865403532}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: MainCamera
@@ -932,7 +933,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 865403524}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
   m_Name: 
@@ -1047,6 +1048,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a8a05de0ac134f4f9d01bef6b9da077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePixelPerfect
+--- !u!114 &865403532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 865403524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 851de72f486720a4f8ef7cfd7cee2daf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomCameraClamp
+  player: {fileID: 0}
+  smoothTime: 0.15
 --- !u!114 &970580099 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 252423864323157297, guid: 69c7b0767102e054b8d933e67dae7c58, type: 3}
@@ -1749,8 +1764,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c05d3c028f880aa429fd42f9b87044d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PixelPerfectCamera
-  pixelsPerUnit: 16
+  pixelsPerUnit: 8
   referenceHeight: 180
+  targetAspectWidth: 4
+  targetAspectHeight: 3
 --- !u!114 &1526946623
 MonoBehaviour:
   m_ObjectHideFlags: 0

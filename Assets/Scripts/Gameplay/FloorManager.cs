@@ -25,23 +25,28 @@ public class FloorManager : MonoBehaviour
 
     private void Start()
     {
-        // Создаём врага заранее
+        // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (enemyInstance == null && enemyPrefab != null)
         {
             enemyInstance = Instantiate(enemyPrefab);
             enemyAI = enemyInstance.GetComponent<EnemyAI>();
-            enemyInstance.SetActive(false); // пока не активен
+            enemyInstance.SetActive(false); // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         }
 
-        // Загружаем первый этаж автоматически
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         StartCoroutine(LoadInitialFloor());
     }
 
     private IEnumerator LoadInitialFloor()
     {
-        yield return null; // ждём один кадр, чтобы система успела инициализироваться
+        yield return null; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
+        // Р—Р°РіСЂСѓР¶Р°РµРј РїРµСЂРІС‹Р№ СЌС‚Р°Р¶
         LoadFloor(FloorCategory.Main, "PlayerSpawnPoint", floorGenerator.GetPlayerInstance().transform);
+
+        // РџРѕСЃР»Рµ РіРµРЅРµСЂР°С†РёРё СЌС‚Р°Р¶Р° С‚РµР»РµРїРѕСЂС‚РёСЂСѓРµРј РІСЂР°РіР° РЅР° РЅРµРіРѕ (РѕРґРёРЅ СЂР°Р· РїСЂРё СЃС‚Р°СЂС‚Рµ РёРіСЂС‹)
+        yield return null;
+        yield return StartCoroutine(LateTeleportEnemy());
     }
 
     public void LoadFloor(FloorCategory type, string spawnPointName, Transform playerTransform)
@@ -51,16 +56,13 @@ public class FloorManager : MonoBehaviour
 
         currentFloor = floor;
 
-        // Телепорт игрока
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         if (playerTransform != null)
         {
             Transform spawn = floor.transform.Find(spawnPointName);
             if (spawn != null)
                 playerTransform.position = spawn.position;
         }
-
-        // Телепорт врага
-        StartCoroutine(LateTeleportEnemy());
     }
 
     public void TeleportEnemyToFloorPublic()
@@ -70,7 +72,7 @@ public class FloorManager : MonoBehaviour
 
     private IEnumerator LateTeleportEnemy()
     {
-        // Ждём кадр, чтобы этаж успел создаться
+        // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         yield return null;
 
         if (enemyInstance == null || currentFloor == null || enemyAI == null)
@@ -79,7 +81,7 @@ public class FloorManager : MonoBehaviour
         Transform spawnPoint = currentFloor.transform.Find("EnemySpawnPoint");
         if (spawnPoint == null)
         {
-            Debug.LogWarning("На этаже нет EnemySpawnPoint!");
+            Debug.LogWarning("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ EnemySpawnPoint!");
             yield break;
         }
 
@@ -88,7 +90,7 @@ public class FloorManager : MonoBehaviour
         Room room = currentFloor.GetComponentInChildren<Room>();
         if (room == null)
         {
-            Debug.LogWarning("На этаже нет Room!");
+            Debug.LogWarning("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Room!");
             yield break;
         }
 

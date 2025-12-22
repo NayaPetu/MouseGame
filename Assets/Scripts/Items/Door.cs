@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Door : MonoBehaviour
 {
+    // Последняя дверь, через которую проходил игрок (вход)
+    public static Door LastPlayerDoor;
+
     [Header("Целевая дверь")]
     public Transform targetDoor;
 
@@ -59,6 +62,9 @@ public class Door : MonoBehaviour
     private IEnumerator TeleportPlayer(Transform player)
     {
         if (targetDoor == null) yield break;
+
+        // Запоминаем, через какую дверь вошёл игрок
+        LastPlayerDoor = this;
 
         PlayerController controller = player.GetComponent<PlayerController>();
         if (controller != null)
