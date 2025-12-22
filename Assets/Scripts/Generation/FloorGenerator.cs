@@ -22,6 +22,10 @@ public class FloorGenerator : MonoBehaviour
     [Header("Item Spawner")]
     public ItemSpawner itemSpawner;
 
+    [Header("Friend")]
+public FriendSpawner friendSpawner;
+
+
     private GameObject playerInstance;
     private GameObject lastGeneratedFloor;
 
@@ -56,6 +60,11 @@ public class FloorGenerator : MonoBehaviour
         // Инициализация предметов
         if (itemSpawner != null)
             itemSpawner.InitializeFromRoom(floor);
+        if (type == FloorManager.FloorCategory.Basement && friendSpawner != null)
+        {
+            friendSpawner.TrySpawnFriend(floor);
+        }
+
 
         return floor;
     }

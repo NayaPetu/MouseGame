@@ -498,6 +498,26 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: EndGameUI, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 1563799997320072102, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563799997320072102, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.7207546
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563799997320072102, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6554156
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563799997320072102, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
+      propertyPath: m_Color.r
+      value: 0.6459593
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563799997320072102, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 3744727712019642512, guid: c686a29d751467c4ebdce27353ebc03d, type: 3}
       propertyPath: m_Name
       value: Panel_EndGame

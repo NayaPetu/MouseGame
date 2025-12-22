@@ -178,6 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f67a9c79d322f842bedc88abc62a392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  friendRescued: 0
   gameOverPanel: {fileID: 642094522}
   hasKey: 0
 --- !u!1 &141319903 stripped
@@ -2161,6 +2162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1880425264}
   - component: {fileID: 1880425265}
+  - component: {fileID: 1880425266}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -2208,6 +2210,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   itemSpawner: {fileID: 1557445521}
+  friendSpawner: {fileID: 0}
+--- !u!114 &1880425266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1880425263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 573e22810211f20458df44fd8038873f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FriendSpawner
+  friendPrefab: {fileID: 0}
 --- !u!1001 &1890364784
 PrefabInstance:
   m_ObjectHideFlags: 0
