@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,22 +10,17 @@ public class PlayerController : MonoBehaviour
     [Header("Interaction Settings")]
     public float interactionRadius = 1f;
     public LayerMask interactableLayer;
-    public LayerMask tileChangeLayer;
 
     [Header("References")]
     public Animator animator;
     public SpriteRenderer spriteRenderer;
-    public Transform itemHoldPosition; // пустой объект над головой игрока
+    public Transform itemHoldPosition;
 
     private Rigidbody2D rb;
     private Vector2 movementInput;
     private Vector2 currentVelocity;
     private GameObject heldItem;
     private bool canMove = true;
-
-    [Header("Animation Settings")]
-    public float animationVelocityThreshold = 0.08f;
-    private Vector2 lastMoveDir = Vector2.down;
 
     private static readonly int MoveX = Animator.StringToHash("MoveX");
     private static readonly int MoveY = Animator.StringToHash("MoveY");
@@ -46,7 +40,6 @@ public class PlayerController : MonoBehaviour
         GetInput();
         HandleAnimation();
         HandleInteraction();
-        HandleTileChanging();
     }
 
     void FixedUpdate()
@@ -67,7 +60,7 @@ public class PlayerController : MonoBehaviour
         else
             currentVelocity = Vector2.MoveTowards(currentVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
 
-        rb.linearVelocity = currentVelocity;
+        rb.linearVelocity = currentVelocity; // 🔹 исправлено
     }
 
     private void HandleAnimation()
@@ -79,118 +72,107 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetFloat(MoveX, movementInput.x);
             animator.SetFloat(MoveY, movementInput.y);
-            lastMoveDir = movementInput;
-        }
-        else
-        {
-            animator.SetFloat(MoveX, lastMoveDir.x);
-            animator.SetFloat(MoveY, lastMoveDir.y);
         }
     }
 
     private void HandleInteraction()
     {
+        // -------- E: только взаимодействие, мята не дропается
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (heldItem != null)
+            Collider2D[] interactables = Physics2D.OverlapCircleAll(transform.position, interactionRadius, interactableLayer);
+            foreach (Collider2D collider in interactables)
             {
-                // Дропаем только если это не мята
-                if (heldItem.GetComponent<Catnip>() == null)
-                    DropItem();
+                IInteractable interactable = collider.GetComponent<IInteractable>();
+                if (interactable != null)
+                {
+                    interactable.Interact(this);
+                    break;
+                }
+            }
+        }
+
+        // -------- Q: использовать или дропнуть
+        if (Input.GetKeyDown(KeyCode.Q) && heldItem != null)
+        {
+            IUsable usable = heldItem.GetComponent<IUsable>();
+
+            if (usable != null)
+            {
+                usable.Use(this); // Используем предмет
             }
             else
-                TryInteract();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q) && heldItem != null)
-            UseHeldItem();
-    }
-
-    private void HandleTileChanging()
-    {
-        if (Input.GetMouseButtonDown(0) && heldItem != null)
-            TryChangeTile();
-    }
-
-    private void TryInteract()
-    {
-        Collider2D[] interactables = Physics2D.OverlapCircleAll(transform.position, interactionRadius, interactableLayer);
-
-        foreach (Collider2D collider in interactables)
-        {
-            IInteractable interactable = collider.GetComponent<IInteractable>();
-            if (interactable != null)
             {
-                PickUpItem(collider.gameObject);
-                interactable.Interact(this);
-                break;
+                DropItem(); // Дропаем обычные предметы
             }
-        }
-    }
-
-    private Vector3 SnapToPixelGrid(Vector3 worldPos, int pixelsPerUnit = 16)
-    {
-        float unitsPerPixel = 1f / pixelsPerUnit;
-        worldPos.x = Mathf.Round(worldPos.x / unitsPerPixel) * unitsPerPixel;
-        worldPos.y = Mathf.Round(worldPos.y / unitsPerPixel) * unitsPerPixel;
-        return worldPos;
-    }
-
-    private void TryChangeTile()
-    {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos = SnapToPixelGrid(mouseWorldPos);
-
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero, 0f, tileChangeLayer);
-        if (hit.collider != null)
-        {
-            TileChanger tileChanger = heldItem.GetComponent<TileChanger>();
-            if (tileChanger != null)
-                tileChanger.ChangeTile(SnapToPixelGrid(hit.point));
         }
     }
 
     // ------------------ Подбор предмета ------------------
     public void PickUpItem(GameObject item)
     {
-        if (heldItem != null) return;
-
         heldItem = item;
 
-        heldItem.transform.SetParent(itemHoldPosition);
-        heldItem.transform.localPosition = Vector3.zero;
-        heldItem.transform.localRotation = Quaternion.identity;
-        heldItem.transform.localScale = Vector3.one;
-
-        SpriteRenderer sr = heldItem.GetComponent<SpriteRenderer>();
-        if (sr != null)
+        if (item.GetComponent<Catnip>() != null)
         {
-            sr.sortingOrder = 10;
-            sr.sortingLayerName = "Default";
+            // Для мяты — делаем объект невидимым и отключаем физику
+            SpriteRenderer sr = item.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
+
+            Collider2D col = item.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            Rigidbody2D rbItem = item.GetComponent<Rigidbody2D>();
+            if (rbItem != null) rbItem.simulated = false;
         }
+        else
+        {
+            // Стандартный предмет — переносим в руки
+            item.transform.SetParent(itemHoldPosition);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+            item.transform.localScale = Vector3.one;
 
-        Rigidbody2D rbItem = heldItem.GetComponent<Rigidbody2D>();
-        if (rbItem != null) rbItem.simulated = false;
+            Rigidbody2D rbItem = item.GetComponent<Rigidbody2D>();
+            if (rbItem != null) rbItem.simulated = false;
 
-        Collider2D colItem = heldItem.GetComponent<Collider2D>();
-        if (colItem != null) colItem.enabled = false;
+            Collider2D colItem = item.GetComponent<Collider2D>();
+            if (colItem != null) colItem.enabled = false;
+        }
     }
 
-    // ------------------ Выброс предмета ------------------
+    // ------------------ Дроп предмета ------------------
     public void DropItem()
     {
         if (heldItem == null) return;
 
-        Rigidbody2D itemRb = heldItem.GetComponent<Rigidbody2D>();
-        Collider2D itemCollider = heldItem.GetComponent<Collider2D>();
+        if (heldItem.GetComponent<Catnip>() != null)
+        {
+            // Мята — возвращаем на сцену рядом с игроком
+            heldItem.transform.SetParent(null);
+            heldItem.transform.position = transform.position + Vector3.up * 0.5f;
 
-        if (itemRb != null) itemRb.simulated = true;
-        if (itemCollider != null) itemCollider.enabled = true;
+            SpriteRenderer sr = heldItem.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = true;
 
-        heldItem.transform.SetParent(null);
+            Collider2D col = heldItem.GetComponent<Collider2D>();
+            if (col != null) col.enabled = true;
 
-        if (itemRb != null)
-            itemRb.linearVelocity = rb.linearVelocity * 0.5f;
+            Rigidbody2D rbItem = heldItem.GetComponent<Rigidbody2D>();
+            if (rbItem != null) rbItem.simulated = true;
+        }
+        else
+        {
+            Rigidbody2D itemRb = heldItem.GetComponent<Rigidbody2D>();
+            Collider2D itemCollider = heldItem.GetComponent<Collider2D>();
+
+            if (itemRb != null) itemRb.simulated = true;
+            if (itemCollider != null) itemCollider.enabled = true;
+
+            heldItem.transform.SetParent(null);
+            if (itemRb != null)
+                itemRb.linearVelocity = rb.linearVelocity * 0.5f;
+        }
 
         heldItem = null;
     }
@@ -204,25 +186,16 @@ public class PlayerController : MonoBehaviour
             usable.Use(this);
     }
 
+    public GameObject GetHeldItem() => heldItem;
+
     public void SetMovement(bool enabled)
     {
         canMove = enabled;
         if (!enabled)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero; // 🔹 исправлено
             currentVelocity = Vector2.zero;
         }
-    }
-
-    public bool IsCarryingItem() => heldItem != null;
-    public GameObject GetHeldItem() => heldItem;
-
-    public Vector2 GetCurrentMoveDirection()
-    {
-        if (movementInput.sqrMagnitude > 0.01f)
-            return movementInput.normalized;
-        else
-            return Vector2.up;
     }
 
     void OnDrawGizmosSelected()

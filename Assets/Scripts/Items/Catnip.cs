@@ -5,7 +5,8 @@ public class Catnip : MonoBehaviour, IInteractable, IUsable
 {
     [Header("Настройки мяты")]
     public float calmDuration = 5f;      // сколько времени враг будет спокойным
-    public GameObject attractor;         // дочерний объект зоны действия мяты
+    public GameObject attractor;         // зона действия мяты
+    public float pickupRange = 1.5f;     // дистанция для подбора
 
     private bool isPickedUp = false;
     private bool isEaten = false;
@@ -14,31 +15,56 @@ public class Catnip : MonoBehaviour, IInteractable, IUsable
     // ------------------ Для игрока ------------------
     public void Interact(PlayerController player)
     {
-        if (isPickedUp) return;
+        if (isEaten) return;
 
-        player.PickUpItem(this.gameObject);
-        isPickedUp = true;
+        float distance = Vector3.Distance(player.transform.position, transform.position);
+        if (distance > pickupRange) return;
+
+        if (!isPickedUp)
+        {
+            isPickedUp = true;
+            PlayerInventory.Instance.PickCatnip();
+
+            // Скрываем объект визуально, отключаем физику
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
+
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            if (rb != null) rb.simulated = false;
+
+            // Назначаем объект как heldItem, чтобы его можно было дропать
+            player.PickUpItem(this.gameObject);
+        }
     }
 
     public void Use(PlayerController player)
     {
         if (!isPickedUp) return;
 
+        PlayerInventory.Instance.UseCatnip();
+
+        // Сбрасываем объект на сцену рядом с игроком
         transform.SetParent(null);
-        transform.position = player.itemHoldPosition.position; // оставляем там, где игрок стоит
-        isPickedUp = false;
-        isUsed = true;
+        transform.position = player.transform.position + Vector3.up * 0.5f;
 
-        // Включаем зону действия
-        if (attractor != null)
-            attractor.SetActive(true);
+        // Включаем визуализацию и физику
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = true;
 
-        // Включаем Collider и Rigidbody, чтобы враг мог обнаружить мяту
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.simulated = true;
+
+        isPickedUp = false;
+        isUsed = true;
+
+        if (attractor != null)
+            attractor.SetActive(true);
     }
 
     // ------------------ Для врага ------------------
@@ -52,14 +78,15 @@ public class Catnip : MonoBehaviour, IInteractable, IUsable
 
         isEaten = true;
 
-        // Делаем мяту невидимой и отключаем коллайдер
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.enabled = false;
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // Отключаем зону действия через время
+        isPickedUp = false;
+        isUsed = true;
+
         if (attractor != null)
             StartCoroutine(DisableAttractorAfterTime());
     }

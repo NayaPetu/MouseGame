@@ -12,11 +12,35 @@ public class LockedDoor : MonoBehaviour
     private SpriteRenderer sr;
     private Collider2D col;
 
+    private bool playerNearby = false;
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
-        sr.sprite = closedSprite; // по умолчанию закрыта
+        sr.sprite = closedSprite;
+    }
+
+    private void Update()
+    {
+        if (!playerNearby || IsOpen) return;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            TryOpen();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            playerNearby = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            playerNearby = false;
     }
 
     public void TryOpen()
@@ -34,18 +58,15 @@ public class LockedDoor : MonoBehaviour
         }
     }
 
-    public void OpenDoor()
+    private void OpenDoor()
     {
         IsOpen = true;
         Debug.Log("Дверь открыта ключом");
 
-        // ✅ МЕНЯЕМ СПРАЙТ
         if (sr != null && openSprite != null)
             sr.sprite = openSprite;
 
-        // ✅ ОТКЛЮЧАЕМ КОЛЛАЙДЕР
         if (col != null)
             col.enabled = false;
     }
 }
-
