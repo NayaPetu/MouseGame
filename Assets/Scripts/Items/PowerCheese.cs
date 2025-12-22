@@ -11,6 +11,11 @@ public class PowerCheese : BaseItem
         itemName = "—ыр силы";
         isConsumable = true;
     }
+    public void ProduceCheese()
+{
+    Debug.Log("—ыр произведЄн! »гра завершена.");
+    SceneManager.LoadScene("EndGame");
+}
 
     public override void Use(PlayerController playerController)
     {

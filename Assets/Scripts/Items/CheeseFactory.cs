@@ -16,6 +16,13 @@ public class CheeseFactory : MonoBehaviour
         if (other.CompareTag("Player"))
             playerNearby = false;
     }
+  public void ProduceCheese()
+{
+    Debug.Log("Сыр произведён! Игра завершена.");
+    SceneManager.LoadScene("EndGame");
+}
+
+
 
     private void Update()
     {

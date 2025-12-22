@@ -34,13 +34,24 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    {
-        if (!canMove) return;
+{
+    if (!canMove) return;
 
-        GetInput();
-        HandleAnimation();
-        HandleInteraction();
-    }
+    GetInput();
+    HandleAnimation();
+    HandleInteraction();
+
+    // ------------------- Новый функционал инвентаря -------------------
+    if (Input.GetKeyDown(KeyCode.RightArrow))
+        PlayerInventory.Instance.NextItem();
+
+    if (Input.GetKeyDown(KeyCode.LeftArrow))
+        PlayerInventory.Instance.PreviousItem();
+
+    if (Input.GetKeyDown(KeyCode.E))
+        PlayerInventory.Instance.UseSelectedItem(this);
+}
+
 
     void FixedUpdate()
     {
@@ -203,4 +214,6 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, interactionRadius);
     }
+   
+
 }

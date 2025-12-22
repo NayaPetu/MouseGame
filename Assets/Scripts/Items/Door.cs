@@ -47,6 +47,13 @@ public class Door : MonoBehaviour
         if (other.CompareTag("Player"))
             playerTeleported = false;
     }
+    public void UnlockDoor()
+{
+    // Логика открытия двери
+    Debug.Log("Дверь открыта!");
+    // Можно добавить анимацию или отключить коллайдер
+}
+
 
     // --- Телепорт врага ---
     public void TeleportEnemyToTarget(Transform enemy)

@@ -1,103 +1,64 @@
 using UnityEngine;
 using System.Collections;
 
-public class Catnip : MonoBehaviour, IInteractable, IUsable
+public class Catnip : BaseItem
 {
     [Header("Настройки мяты")]
-    public float calmDuration = 5f;      // сколько времени враг будет спокойным
-    public GameObject attractor;         // зона действия мяты
-    public float pickupRange = 1.5f;     // дистанция для подбора
+    public float calmDuration = 5f;
+    public GameObject attractor; // зона действия мяты
+    public float pickupRange = 1.5f;
 
     private bool isPickedUp = false;
-    private bool isEaten = false;
     private bool isUsed = false;
 
-    // ------------------ Для игрока ------------------
-    public void Interact(PlayerController player)
+    private void Awake()
     {
-        if (isEaten) return;
+        itemName = "Catnip";
+        isConsumable = true; // можно использовать
+    }
+    public bool IsUsed() => isUsed;  // для врагов
+public bool IsEaten() => false;  // можно пока отключить или реализовать, если кот ест мяту
+
+public void EatenByCat() { /* если хотите логику для врага */ }
+
+
+
+
+    public override void Interact(PlayerController player)
+    {
+        if (isPickedUp) return;
 
         float distance = Vector3.Distance(player.transform.position, transform.position);
         if (distance > pickupRange) return;
 
-        if (!isPickedUp)
-        {
-            isPickedUp = true;
-            PlayerInventory.Instance.PickCatnip();
+        isPickedUp = true;
 
-            // Скрываем объект визуально, отключаем физику
-            SpriteRenderer sr = GetComponent<SpriteRenderer>();
-            if (sr != null) sr.enabled = false;
+        // Скрываем объект
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Collider2D>().enabled = false;
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.simulated = false;
 
-            Collider2D col = GetComponent<Collider2D>();
-            if (col != null) col.enabled = false;
-
-            Rigidbody2D rb = GetComponent<Rigidbody2D>();
-            if (rb != null) rb.simulated = false;
-
-            // Назначаем объект как heldItem, чтобы его можно было дропать
-            player.PickUpItem(this.gameObject);
-        }
+        // Добавляем в инвентарь
+        InventoryManager.Instance.AddItem(this);
     }
 
-    public void Use(PlayerController player)
+    public override void Use(PlayerController player)
     {
-        if (!isPickedUp) return;
+        if (!isPickedUp || isUsed) return;
 
-        PlayerInventory.Instance.UseCatnip();
-
-        // Сбрасываем объект на сцену рядом с игроком
-        transform.SetParent(null);
-        transform.position = player.transform.position + Vector3.up * 0.5f;
-
-        // Включаем визуализацию и физику
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.enabled = true;
-
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = true;
-
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.simulated = true;
-
-        isPickedUp = false;
         isUsed = true;
 
         if (attractor != null)
             attractor.SetActive(true);
-    }
 
-    // ------------------ Для врага ------------------
-    public bool IsPickedUp() => isPickedUp;
-    public bool IsEaten() => isEaten;
-    public bool IsUsed() => isUsed;
+        // Сбрасываем рядом с игроком
+        transform.position = player.transform.position + Vector3.up * 0.5f;
+        GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<Collider2D>().enabled = true;
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.simulated = true;
 
-    public void EatenByCat()
-    {
-        if (isEaten) return;
-
-        isEaten = true;
-
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.enabled = false;
-
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
-
-        isPickedUp = false;
-        isUsed = true;
-
-        if (attractor != null)
-            StartCoroutine(DisableAttractorAfterTime());
-    }
-
-    private IEnumerator DisableAttractorAfterTime()
-    {
-        yield return new WaitForSeconds(calmDuration);
-
-        if (attractor != null)
-            attractor.SetActive(false);
-
-        Destroy(gameObject);
+        InventoryManager.Instance.RemoveItem(this); // убираем из слота после использования
     }
 }

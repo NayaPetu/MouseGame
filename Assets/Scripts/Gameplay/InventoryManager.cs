@@ -1,62 +1,57 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
 {
+    public static InventoryManager Instance { get; private set; }
+
     [System.Serializable]
-    public class Item
+    public class ItemSlot
     {
-        public string itemName;
-        public Sprite icon;
+        public BaseItem item;
+        public Image slotImage;
     }
 
-    public List<Item> items = new List<Item>();
-    public Image[] slots; // массив Image слотов UI
+    public List<ItemSlot> slots = new List<ItemSlot>(); // СЃР»РѕС‚С‹ UI
 
-    void Start()
+    private void Awake()
     {
-        UpdateUI();
+        if (Instance != null && Instance != this)
+            Destroy(gameObject);
+        else
+            Instance = this;
     }
 
-    // Добавление предмета
-    public void AddItem(Item newItem)
+    public void AddItem(BaseItem item)
     {
-        if (items.Count < slots.Length)
+        // РёС‰РµРј РїРµСЂРІС‹Р№ РїСѓСЃС‚РѕР№ СЃР»РѕС‚
+        foreach (var slot in slots)
         {
-            items.Add(newItem);
-            UpdateUI();
-        }
-    }
-
-    // Использование предмета
-    public void UseItem(int index)
-    {
-        if (index >= 0 && index < items.Count)
-        {
-            // Логика эффекта предмета
-            Debug.Log("Использован " + items[index].itemName);
-
-            // Удаляем из инвентаря
-            items.RemoveAt(index);
-            UpdateUI();
-        }
-    }
-
-    // Обновление UI
-    void UpdateUI()
-    {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (i < items.Count)
+            if (slot.item == null)
             {
-                slots[i].gameObject.SetActive(true); // включаем слот
-                slots[i].sprite = items[i].icon;     // ставим иконку предмета
-                slots[i].color = Color.white;
+                slot.item = item;
+                if (slot.slotImage != null)
+                {
+                    slot.slotImage.sprite = item.icon;
+                    slot.slotImage.enabled = true;
+                }
+                return;
             }
-            else
+        }
+        Debug.LogWarning("РРЅРІРµРЅС‚Р°СЂСЊ РїРѕР»РѕРЅ!");
+    }
+
+    public void RemoveItem(BaseItem item)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.item == item)
             {
-                slots[i].gameObject.SetActive(false); // выключаем пустой слот
+                slot.item = null;
+                if (slot.slotImage != null)
+                    slot.slotImage.enabled = false;
+                return;
             }
         }
     }
