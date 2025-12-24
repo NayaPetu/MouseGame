@@ -24,9 +24,14 @@ public class EnemyAI : MonoBehaviour
     [Header("Patrol")]
     public float patrolWaitTime = 2f;
 
+    [Header("PowerCheese")]
+    public float powerCheeseScaleThreshold = 1.2f;
+    public float fleeSpeed = 3f;
+
     private Rigidbody2D rb;
     private Animator animator;
     private Transform player;
+    private Room currentRoom;
 
     private Vector2 patrolTarget;
     private bool hasPatrolTarget = false;
@@ -54,6 +59,7 @@ public class EnemyAI : MonoBehaviour
     public void Init(Room room, Transform playerTransform, Vector3 spawnPos)
     {
         player = playerTransform;
+        currentRoom = room;
         transform.position = spawnPos;
 
         // Сброс состояния
@@ -147,6 +153,15 @@ public class EnemyAI : MonoBehaviour
     {
         if (player == null) return;
 
+        // Проверяем, увеличен ли игрок
+        bool isPlayerEnlarged = IsPlayerEnlarged();
+        
+        if (isPlayerEnlarged)
+        {
+            FleeFromPlayer();
+            return;
+        }
+
         Vector2 moveTarget;
 
         if (hasSeenPlayer)
@@ -179,33 +194,9 @@ public class EnemyAI : MonoBehaviour
 
         float distanceToTarget = Vector2.Distance(rb.position, moveTarget);
 
-        // Проверяем, что цель действительно является дверью, через которую игрок только что прошёл
-        bool hasDoorInfo = Door.LastPlayerDoor != null;
-        bool isDoorTarget = hasDoorInfo &&
+        // Если цель — дверь, через которую прошёл игрок, не останавливаемся "рядом"
+        bool isDoorTarget = Door.LastPlayerDoor != null &&
                             Vector2.Distance(moveTarget, (Vector2)Door.LastPlayerDoor.transform.position) < 0.05f;
-
-        // Если цель — дверь и мы уже достаточно близко, "насильно" проталкиваем кота через дверь,
-        // чтобы он не застревал на коллайдерах и триггерах
-        if (isDoorTarget && distanceToTarget < 0.2f)
-        {
-            Door door = Door.LastPlayerDoor;
-            if (door != null && door.targetDoor != null)
-            {
-                Vector3 targetPos = door.targetDoor.position + door.safeOffset;
-
-                // Жёстко телепортируем кота к целевой двери на другой стороне
-                rb.position = targetPos;
-                transform.position = targetPos;
-
-                // Сбрасываем информацию о двери — дальше кот снова просто гонится за игроком
-                Door.LastPlayerDoor = null;
-                hasSeenPlayer = true;
-            }
-
-            waitTimer = 0f;
-            HandleAnimation(Vector2.zero, false);
-            return;
-        }
 
         if (!isDoorTarget && distanceToTarget < 0.15f)
         {
@@ -221,12 +212,12 @@ public class EnemyAI : MonoBehaviour
 
         Vector2 dir = (moveTarget - rb.position).normalized;
 
-        // Когда идём к двери за игроком, разрешаем "подходить вплотную",
-        // чтобы луч не блокировал движение возле проёма.
-        if (!isDoorTarget)
+        // Всегда проверяем стены — кот не должен идти сквозь них
+        RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
+        if (wallHit.collider != null)
         {
-            RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dir, obstacleCheckDistance, wallMask);
-            if (wallHit.collider != null) dir = Vector2.zero;
+            // Если целимся прямо в стену перед собой, останавливаемся
+            dir = Vector2.zero;
         }
 
         rb.MovePosition(rb.position + dir * speed * Time.fixedDeltaTime);
@@ -237,7 +228,14 @@ public class EnemyAI : MonoBehaviour
     // ------------------ PLAYER DETECTION -----------------------
     private void DetectPlayer()
     {
-        if (player == null) return;
+        if (player == null || isResting) return;
+
+        // Не обнаруживаем увеличенного игрока для преследования
+        if (IsPlayerEnlarged())
+        {
+            hasSeenPlayer = false;
+            return;
+        }
 
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectionRadius, playerMask);
         if (hit != null)
@@ -262,7 +260,8 @@ public class EnemyAI : MonoBehaviour
 
     private void CheckPlayerCatch()
     {
-        if (player == null || isResting) return;
+        // Кот не может ловить игрока, если он отдыхает после мяты или если игрок увеличен
+        if (player == null || isResting || IsPlayerEnlarged()) return;
 
         float catchDistance = 0.5f;
         if (Vector2.Distance(transform.position, player.position) <= catchDistance)
@@ -274,9 +273,51 @@ public class EnemyAI : MonoBehaviour
     // ------------------ PATROL HELPERS -----------------------
     private void ChoosePatrolTarget()
     {
-        if (player == null) return;
-        patrolTarget = (Vector2)player.position + Random.insideUnitCircle * 2f;
+        // Патрулируем в пределах текущей комнаты
+        if (currentRoom != null)
+        {
+            Bounds roomBounds = currentRoom.GetRoomBounds();
+            patrolTarget = new Vector2(
+                Random.Range(roomBounds.min.x + 1f, roomBounds.max.x - 1f),
+                Random.Range(roomBounds.min.y + 1f, roomBounds.max.y - 1f)
+            );
+        }
+        else
+        {
+            // Если комнаты нет - патрулируем вокруг текущей позиции
+            patrolTarget = (Vector2)transform.position + Random.insideUnitCircle * 3f;
+        }
         hasPatrolTarget = true;
+        waitTimer = 0f;
+    }
+
+    /// <summary>
+    /// Проверяет, увеличен ли игрок (эффект PowerCheese)
+    /// </summary>
+    private bool IsPlayerEnlarged()
+    {
+        if (player == null) return false;
+        return player.localScale.magnitude > powerCheeseScaleThreshold;
+    }
+
+    /// <summary>
+    /// Убегание от увеличенного игрока
+    /// </summary>
+    private void FleeFromPlayer()
+    {
+        if (player == null) return;
+
+        Vector2 dirFromPlayer = ((Vector2)transform.position - (Vector2)player.position).normalized;
+        
+        // Проверяем стены при убегании
+        RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dirFromPlayer, obstacleCheckDistance, wallMask);
+        if (wallHit.collider != null)
+        {
+            dirFromPlayer = Vector2.zero;
+        }
+
+        rb.MovePosition(rb.position + dirFromPlayer * fleeSpeed * Time.fixedDeltaTime);
+        HandleAnimation(dirFromPlayer, dirFromPlayer.sqrMagnitude > 0.001f);
     }
 
     private void HandleAnimation(Vector2 dir, bool isMoving)

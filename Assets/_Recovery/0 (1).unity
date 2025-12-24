@@ -2227,7 +2227,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   itemSpawner: {fileID: 1557445521}
-  friendSpawner: {fileID: 1880425266}
+  friendSpawner: {fileID: 0}
 --- !u!114 &1880425266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2240,7 +2240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 573e22810211f20458df44fd8038873f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FriendSpawner
-  friendPrefab: {fileID: 175587642923206173, guid: 9bd141ab514789e43a27375c9b789287, type: 3}
+  friendPrefab: {fileID: 0}
 --- !u!1001 &1890364784
 PrefabInstance:
   m_ObjectHideFlags: 0
