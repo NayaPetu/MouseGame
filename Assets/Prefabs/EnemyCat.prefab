@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   speed: 2
-  obstacleCheckDistance: 0.4
+  obstacleCheckDistance: 1.21
   detectionRadius: 8
   playerMask:
     serializedVersion: 2
@@ -189,14 +189,13 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 1024
-  doorMask:
-    serializedVersion: 2
-    m_Bits: 8192
   catnipMask:
     serializedVersion: 2
     m_Bits: 16384
-  catnipPeaceTime: 5
-  patrolWaitTime: 2
+  catnipPeaceTime: 9.78
+  patrolWaitTime: 1.96
+  powerCheeseScaleThreshold: 1.2
+  fleeSpeed: 3
 --- !u!95 &2278469536420646498
 Animator:
   serializedVersion: 7

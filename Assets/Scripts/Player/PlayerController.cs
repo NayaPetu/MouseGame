@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Transform itemHoldPosition;
 
+    [HideInInspector]
+    public bool IsPoweredUp = false;
+
     private Rigidbody2D rb;
     private Vector2 movementInput;
     private Vector2 currentVelocity;

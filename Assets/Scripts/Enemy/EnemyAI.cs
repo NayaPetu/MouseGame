@@ -73,12 +73,23 @@ public class EnemyAI : MonoBehaviour
     }
 
     void Update()
-    {
-        if (isResting) return;
+{
+    if (isResting) return;
 
-        DetectPlayer();
-        DetectCatnip();
+    DetectPlayer();
+    DetectCatnip();
+
+    if (player != null)
+    {
+        Debug.Log(
+            $"[EnemyAI] Seen:{hasSeenPlayer} " +
+            $"LOS:{HasLineOfSightToPlayer()} " +
+            $"Enlarged:{IsPlayerEnlarged()} " +
+            $"Pacified:{pacifiedByCatnip}"
+        );
     }
+}
+
 
     void FixedUpdate()
     {
@@ -297,8 +308,11 @@ public class EnemyAI : MonoBehaviour
     private bool IsPlayerEnlarged()
     {
         if (player == null) return false;
-        return player.localScale.magnitude > powerCheeseScaleThreshold;
+
+        PlayerController pc = player.GetComponent<PlayerController>();
+        return pc != null && pc.IsPoweredUp;
     }
+
 
     /// <summary>
     /// Убегание от увеличенного игрока
@@ -341,4 +355,22 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
+    void OnDrawGizmos()
+{
+    // Радиус обнаружения игрока
+    Gizmos.color = hasSeenPlayer ? Color.red : Color.yellow;
+    Gizmos.DrawWireSphere(transform.position, detectionRadius);
+
+    // Линия до игрока
+    if (player != null)
+    {
+        Gizmos.color = HasLineOfSightToPlayer() ? Color.green : Color.magenta;
+        Gizmos.DrawLine(transform.position, player.position);
+    }
+
+    // Цель патруля / погони
+    Gizmos.color = Color.cyan;
+    Gizmos.DrawSphere(patrolTarget, 0.1f);
+}
+
 }

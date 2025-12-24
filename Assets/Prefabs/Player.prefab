@@ -164,13 +164,9 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 16448
-  tileChangeLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  animator: {fileID: 0}
-  spriteRenderer: {fileID: 0}
+  animator: {fileID: 6673912888045455712}
+  spriteRenderer: {fileID: 6602830314441740950}
   itemHoldPosition: {fileID: 3821099592761978528}
-  animationVelocityThreshold: 0.08
 --- !u!61 &7823257962488304807
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -229,7 +225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d002def758470c343a3179a42bbb27fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  HasKey: 0
 --- !u!1 &3672087023238778983
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,10 +23,12 @@ public class PowerCheese : BaseItem
     private IEnumerator ApplyEffect(PlayerController playerController)
     {
         Vector3 originalSize = playerController.transform.localScale;
+        playerController.IsPoweredUp = true;
         playerController.transform.localScale = originalSize + sizeMultiplier;
 
         yield return new WaitForSeconds(duration);
 
         playerController.transform.localScale = originalSize;
+        playerController.IsPoweredUp = false;
     }
 }
