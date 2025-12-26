@@ -72,7 +72,7 @@ public class RoomCameraClamp : MonoBehaviour
 
     private Room FindCurrentRoom(Vector2 playerPos)
     {
-        Room[] rooms = FindObjectsOfType<Room>();
+        Room[] rooms = FindObjectsByType<Room>(FindObjectsSortMode.None);
         foreach (var room in rooms)
         {
             if (room != null && room.ContainsPoint(playerPos))

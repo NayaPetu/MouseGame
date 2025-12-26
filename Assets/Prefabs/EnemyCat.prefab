@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abc8dcd4488edbf4a88691518f0492c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  speed: 2
+  speed: 4
   obstacleCheckDistance: 1.21
   detectionRadius: 8
   playerMask:

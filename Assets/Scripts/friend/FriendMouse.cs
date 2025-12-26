@@ -116,7 +116,7 @@ public class FriendMouse : MonoBehaviour
 
     private void UpdateCurrentRoom()
     {
-        Room[] rooms = FindObjectsOfType<Room>();
+        Room[] rooms = FindObjectsByType<Room>(FindObjectsSortMode.None);
         foreach (var room in rooms)
         {
             if (room != null && room.ContainsPoint(rb.position))

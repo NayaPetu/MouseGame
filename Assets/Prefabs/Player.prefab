@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2f992b5ea4eff46af46c61f0252b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 5
+  moveSpeed: 6
   acceleration: 10
   deceleration: 15
   interactionRadius: 1
@@ -167,6 +167,7 @@ MonoBehaviour:
   animator: {fileID: 6673912888045455712}
   spriteRenderer: {fileID: 6602830314441740950}
   itemHoldPosition: {fileID: 3821099592761978528}
+  IsPoweredUp: 0
 --- !u!61 &7823257962488304807
 BoxCollider2D:
   m_ObjectHideFlags: 0

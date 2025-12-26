@@ -56,7 +56,7 @@ public class DynamicRoomCameraConfiner : MonoBehaviour
     private void UpdateCurrentRoom()
     {
         // Ищем комнату, в которой сейчас стоит игрок
-        Room[] rooms = FindObjectsOfType<Room>();
+        Room[] rooms = FindObjectsByType<Room>(FindObjectsSortMode.None);
 
         Room newRoom = null;
         Vector2 playerPos = player.position;

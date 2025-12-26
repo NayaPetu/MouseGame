@@ -26,6 +26,7 @@ public class Door : MonoBehaviour
         // ---------- ВРАГ ----------
         if (other.CompareTag("Enemy") && !enemyTeleported)
         {
+            Debug.Log($"[Door] Враг вошел в триггер двери! Позиция врага: {other.transform.position}, Позиция двери: {transform.position}");
             TeleportEnemyToTarget(other.transform);
             enemyTeleported = true;
         }
@@ -54,8 +55,55 @@ public class Door : MonoBehaviour
     // --- Телепорт врага ---
     public void TeleportEnemyToTarget(Transform enemy)
     {
+        if (targetDoor == null)
+        {
+            Debug.LogWarning($"[Door] Попытка телепортации врага, но targetDoor == null!");
+            return;
+        }
+        
+        DoTeleportEnemy(enemy);
+    }
+    
+    // Принудительная телепортация врага (вызывается из EnemyAI если враг застрял)
+    public void ForceTeleportEnemy(Transform enemy)
+    {
         if (targetDoor == null) return;
-        enemy.position = targetDoor.position + safeOffset;
+        
+        enemyTeleported = false; // Сбрасываем флаг для принудительной телепортации
+        DoTeleportEnemy(enemy);
+    }
+    
+    private void DoTeleportEnemy(Transform enemy)
+    {
+        EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+        Door targetDoorComponent = targetDoor.GetComponent<Door>();
+        
+        Vector2 oldPos = enemy.position;
+        
+        if (enemyAI != null && targetDoorComponent != null && targetDoorComponent.currentRoom != null)
+        {
+            // Обновляем комнату врага ПЕРЕД телепортацией, чтобы избежать проблем с целью
+            enemyAI.UpdateCurrentRoom(targetDoorComponent.currentRoom);
+        }
+        
+        // Телепортируем врага после обновления комнаты
+        // Используем Rigidbody2D.position напрямую для более надежной телепортации
+        Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
+        Vector2 newPos = (Vector2)targetDoor.position + (Vector2)safeOffset;
+        
+        if (enemyRb != null)
+        {
+            enemyRb.position = newPos;
+            enemyRb.linearVelocity = Vector2.zero; // Останавливаем движение после телепортации
+        }
+        else
+        {
+            enemy.position = newPos;
+        }
+        
+        enemyTeleported = true; // Устанавливаем флаг после телепортации
+        
+        Debug.Log($"[Door] Враг телепортирован! Из {oldPos} в {newPos}. Целевая комната: {(targetDoorComponent != null && targetDoorComponent.currentRoom != null ? targetDoorComponent.currentRoom.name : "null")}");
     }
 
     // --- Телепорт игрока ---

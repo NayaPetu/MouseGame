@@ -2224,7 +2224,7 @@ MonoBehaviour:
     m_Bits: 64
   wallsLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   friendSpawner: {fileID: 1880425266}
 --- !u!114 &1880425266
 MonoBehaviour:

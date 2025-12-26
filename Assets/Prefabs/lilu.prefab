@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba9d1f185a0412645910ecbc6eed51c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FriendMouse
-  followSpeed: 3
+  followSpeed: 5
   followDistance: 2
   obstacleCheckDistance: 0.4
   wallMask:

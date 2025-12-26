@@ -14,11 +14,51 @@ public class LockedDoor : MonoBehaviour
 
     private bool playerNearby = false;
 
+    private bool awakeCalled = false;
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
-        sr.sprite = closedSprite;
+        // При первом создании объекта устанавливаем закрытый спрайт
+        if (closedSprite != null && sr != null)
+        {
+            sr.sprite = closedSprite;
+        }
+        awakeCalled = true;
+    }
+
+    private void OnEnable()
+    {
+        // Инициализируем компоненты если Awake еще не вызван
+        if (!awakeCalled)
+        {
+            sr = GetComponent<SpriteRenderer>();
+            col = GetComponent<Collider2D>();
+            if (closedSprite != null && sr != null && !IsOpen)
+            {
+                sr.sprite = closedSprite;
+            }
+        }
+        
+        // При активации объекта обновляем спрайт в соответствии с текущим состоянием
+        if (sr != null)
+        {
+            if (IsOpen && openSprite != null)
+            {
+                sr.sprite = openSprite;
+            }
+            else if (!IsOpen && closedSprite != null)
+            {
+                sr.sprite = closedSprite;
+            }
+        }
+        
+        // Обновляем состояние коллайдера
+        if (col != null)
+        {
+            col.enabled = !IsOpen;
+        }
     }
 
     private void Update()
