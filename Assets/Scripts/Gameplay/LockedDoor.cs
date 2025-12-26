@@ -41,6 +41,45 @@ public class LockedDoor : MonoBehaviour
             }
         }
         
+        // Проверяем, должна ли дверь быть открыта (если комната уже открыта)
+        if (!IsOpen)
+        {
+            // Получаем Door компонент (LockedDoor может быть на том же GameObject, что и Door, или на дочернем)
+            Door doorComponent = GetComponent<Door>();
+            if (doorComponent == null && transform.parent != null)
+            {
+                doorComponent = transform.parent.GetComponent<Door>();
+            }
+            
+            // Если не нашли через GetComponent, ищем через все Door в сцене
+            if (doorComponent == null)
+            {
+                Door[] allDoors = FindObjectsByType<Door>(FindObjectsSortMode.None);
+                foreach (Door door in allDoors)
+                {
+                    if (door != null && door.lockedDoor == this)
+                    {
+                        doorComponent = door;
+                        break;
+                    }
+                }
+            }
+            
+            if (doorComponent != null && doorComponent.targetDoor != null)
+            {
+                Door targetDoorComponent = doorComponent.targetDoor.GetComponent<Door>();
+                if (targetDoorComponent != null && targetDoorComponent.currentRoom != null)
+                {
+                    string targetRoomName = targetDoorComponent.currentRoom.roomName;
+                    if (!string.IsNullOrEmpty(targetRoomName) && GameManager.IsRoomOpened(targetRoomName))
+                    {
+                        // Комната уже открыта, открываем эту дверь тоже
+                        IsOpen = true;
+                    }
+                }
+            }
+        }
+        
         // При активации объекта обновляем спрайт в соответствии с текущим состоянием
         if (sr != null)
         {
@@ -108,5 +147,78 @@ public class LockedDoor : MonoBehaviour
 
         if (col != null)
             col.enabled = false;
+        
+        // Получаем Door компонент (LockedDoor может быть на том же GameObject, что и Door, или на дочернем)
+        Door doorComponent = GetComponent<Door>();
+        if (doorComponent == null && transform.parent != null)
+        {
+            doorComponent = transform.parent.GetComponent<Door>();
+        }
+        
+        // Если не нашли через GetComponent, ищем через все Door в сцене
+        if (doorComponent == null)
+        {
+            Door[] allDoors = FindObjectsByType<Door>(FindObjectsSortMode.None);
+            foreach (Door door in allDoors)
+            {
+                if (door != null && door.lockedDoor == this)
+                {
+                    doorComponent = door;
+                    break;
+                }
+            }
+        }
+        
+        if (doorComponent != null && doorComponent.targetDoor != null)
+        {
+            Door targetDoorComponent = doorComponent.targetDoor.GetComponent<Door>();
+            if (targetDoorComponent != null && targetDoorComponent.currentRoom != null)
+            {
+                string targetRoomName = targetDoorComponent.currentRoom.roomName;
+                if (!string.IsNullOrEmpty(targetRoomName))
+                {
+                    // Помечаем комнату как открытую
+                    GameManager.MarkRoomAsOpened(targetRoomName);
+                    
+                    // Открываем все двери, ведущие в эту комнату
+                    OpenAllDoorsToRoom(targetRoomName);
+                }
+            }
+        }
+    }
+    
+    // Открывает все двери, ведущие в указанную комнату
+    private void OpenAllDoorsToRoom(string roomName)
+    {
+        // Находим все двери в сцене
+        Door[] allDoors = FindObjectsByType<Door>(FindObjectsSortMode.None);
+        
+        foreach (Door door in allDoors)
+        {
+            if (door == null || door.targetDoor == null) continue;
+            
+            // Проверяем, ведет ли эта дверь в целевую комнату
+            Door targetDoor = door.targetDoor.GetComponent<Door>();
+            if (targetDoor != null && targetDoor.currentRoom != null)
+            {
+                if (targetDoor.currentRoom.roomName == roomName)
+                {
+                    // Открываем LockedDoor на этой двери, если она есть
+                    if (door.lockedDoor != null && !door.lockedDoor.IsOpen)
+                    {
+                        door.lockedDoor.IsOpen = true;
+                        if (door.lockedDoor.openSprite != null)
+                        {
+                            SpriteRenderer sr = door.lockedDoor.GetComponent<SpriteRenderer>();
+                            if (sr != null)
+                                sr.sprite = door.lockedDoor.openSprite;
+                        }
+                        Collider2D col = door.lockedDoor.GetComponent<Collider2D>();
+                        if (col != null)
+                            col.enabled = false;
+                    }
+                }
+            }
+        }
     }
 }

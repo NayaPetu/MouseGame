@@ -506,9 +506,22 @@ public class EnemyAI : MonoBehaviour
         // Кот не может ловить игрока, если он отдыхает после мяты или если игрок увеличен
         if (player == null || isResting || IsPlayerEnlarged()) return;
 
-        float catchDistance = 0.5f;
-        if (Vector2.Distance(transform.position, player.position) <= catchDistance)
+        // Проверяем, что GameManager существует
+        if (GameManager.Instance == null)
         {
+            Debug.LogError("[EnemyAI] GameManager.Instance is null! Cannot trigger game over.");
+            return;
+        }
+
+        float catchDistance = 0.5f;
+        // Используем rb.position для более точного расчета, так как используем Rigidbody2D
+        Vector2 enemyPos = rb != null ? rb.position : (Vector2)transform.position;
+        Vector2 playerPos = player.position;
+        float distanceToPlayer = Vector2.Distance(enemyPos, playerPos);
+        
+        if (distanceToPlayer <= catchDistance)
+        {
+            Debug.Log($"[EnemyAI] Player caught! Distance: {distanceToPlayer:F2}, EnemyPos: {enemyPos}, PlayerPos: {playerPos}");
             GameManager.Instance.OnPlayerCaught();
         }
     }

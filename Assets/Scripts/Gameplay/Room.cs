@@ -33,6 +33,10 @@ public class Room : MonoBehaviour
 
     public bool ContainsPoint(Vector2 point)
     {
+        // Проверяем, что roomColliders назначен
+        if (roomColliders == null || roomColliders.Length == 0)
+            return false;
+            
         foreach (var c in roomColliders)
         {
             if (c != null && c.OverlapPoint(point)) return true;
@@ -45,9 +49,27 @@ public class Room : MonoBehaviour
         if (roomColliders == null || roomColliders.Length == 0)
             return new Bounds(transform.position, Vector3.one * 5f);
 
-        Bounds b = roomColliders[0].bounds;
+        // Находим первый валидный коллайдер
+        Collider2D firstValidCollider = null;
         foreach (var c in roomColliders)
-            if (c != null) b.Encapsulate(c.bounds);
+        {
+            if (c != null)
+            {
+                firstValidCollider = c;
+                break;
+            }
+        }
+
+        // Если нет валидных коллайдеров, возвращаем дефолтные границы
+        if (firstValidCollider == null)
+            return new Bounds(transform.position, Vector3.one * 5f);
+
+        Bounds b = firstValidCollider.bounds;
+        foreach (var c in roomColliders)
+        {
+            if (c != null)
+                b.Encapsulate(c.bounds);
+        }
 
         return b;
     }
