@@ -28,6 +28,58 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        
+        // Подписываемся на событие загрузки сцены
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnDestroy()
+    {
+        // Отписываемся от события при уничтожении
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // При загрузке сцены main - находим панель заново и сбрасываем состояние
+        if (scene.name == "main")
+        {
+            // Ищем панель проигрыша в новой сцене
+            FindGameOverPanel();
+            ResetGameState();
+        }
+        // При загрузке сцены menu - также сбрасываем состояние
+        else if (scene.name == "menu")
+        {
+            ResetGameState();
+        }
+    }
+    
+    private void FindGameOverPanel()
+    {
+        // Всегда ищем панель проигрыша в сцене при загрузке main
+        // чтобы получить актуальную ссылку на объект в новой сцене
+        GameObject panelObj = GameObject.Find("GameOverPanel");
+        if (panelObj != null)
+        {
+            gameOverPanel = panelObj;
+        }
+    }
+    
+    private void ResetGameState()
+    {
+        // Сбрасываем timeScale
+        Time.timeScale = 1f;
+        
+        // Скрываем панель проигрыша
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+        }
+        
+        // Сбрасываем другие флаги состояния
+        friendRescued = false;
+        hasKey = false;
     }
 
     public void OnPlayerCaught()
@@ -39,6 +91,12 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0f; // стоп игра
 
+        // Если панель не найдена, пытаемся найти её
+        if (gameOverPanel == null)
+        {
+            FindGameOverPanel();
+        }
+
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
     }
@@ -46,10 +104,11 @@ public class GameManager : MonoBehaviour
     // КНОПКА "ЗАНОВО"
     public void RestartGame()
     {
-        Time.timeScale = 1f;
-
         // ❗️ ОЧИЩАЕМ ВСЁ ПЕРЕД СТАРТОМ
         CleanupGameplayObjects();
+        
+        // Сбрасываем состояние перед загрузкой меню
+        ResetGameState();
 
         SceneManager.LoadScene("menu");
     }

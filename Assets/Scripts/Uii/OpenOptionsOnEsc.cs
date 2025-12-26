@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class OpenOptionsOnEsc : MonoBehaviour
 {
-    [Header("Панель настроек")]
-    public GameObject optionsPanel; // сюда перетащи свой Options_panel
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
+    public GameObject optionsPanel; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ Options_panel
 
-    [Header("Затемняющий фон (опционально)")]
-    public GameObject darkBackground; // сюда перетащи DarkBackground из Canvas
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)")]
+    public GameObject darkBackground; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ DarkBackground пїЅпїЅ Canvas
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (optionsPanel.activeSelf)
+            if (optionsPanel != null && optionsPanel.activeSelf)
             {
                 CloseOptions();
             }
@@ -25,21 +25,33 @@ public class OpenOptionsOnEsc : MonoBehaviour
 
     public void OpenOptions()
     {
+        if (optionsPanel == null)
+        {
+            Debug.LogWarning("[OpenOptionsOnEsc] optionsPanel is null!");
+            return;
+        }
+        
         optionsPanel.SetActive(true);
 
         if (darkBackground != null)
             darkBackground.SetActive(true);
 
-        Time.timeScale = 0f; // ставим игру на паузу
+        Time.timeScale = 0f; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     }
 
     public void CloseOptions()
     {
+        if (optionsPanel == null)
+        {
+            Debug.LogWarning("[OpenOptionsOnEsc] optionsPanel is null!");
+            return;
+        }
+        
         optionsPanel.SetActive(false);
 
         if (darkBackground != null)
             darkBackground.SetActive(false);
 
-        Time.timeScale = 1f; // возобновляем игру
+        Time.timeScale = 1f; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     }
 }
