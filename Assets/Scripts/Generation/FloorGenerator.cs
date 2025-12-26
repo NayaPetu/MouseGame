@@ -1,8 +1,10 @@
-﻿using UnityEngine;
-using Unity.Cinemachine;
+﻿using Unity.Cinemachine;
+using UnityEngine;
 
 public class FloorGenerator : MonoBehaviour
 {
+    public static FloorGenerator Instance;
+
     [Header("Main Floors")]
     public GameObject[] mainFloors;
 
@@ -19,26 +21,29 @@ public class FloorGenerator : MonoBehaviour
     public LayerMask floorLayerMask;
     public LayerMask wallsLayerMask;
 
-    [Header("Item Spawner")]
-    public ItemSpawner itemSpawner;
-
-    [Header("Friend")]
-public FriendSpawner friendSpawner;
-
+    [Header("Friend Spawner")]
+    public FriendSpawner friendSpawner;
 
     private GameObject playerInstance;
     private GameObject lastGeneratedFloor;
 
-    // -------------------- Публичные методы --------------------
-    public void SpawnFloor() => SpawnFloorByType(FloorManager.FloorCategory.Main);
+    void Awake()
+    {
+        Instance = this;
+    }
 
+    // -------------------- Совместимость со старым кодом --------------------
+    public void SpawnFloor()
+    {
+        SpawnFloorByType(FloorManager.FloorCategory.Main);
+    }
+
+    // -------------------- Основной метод --------------------
     public GameObject SpawnFloorByType(FloorManager.FloorCategory type)
     {
-        GameObject prefab = null;
-        if (type == FloorManager.FloorCategory.Main)
-            prefab = mainFloors.Length > 0 ? mainFloors[Random.Range(0, mainFloors.Length)] : null;
-        else
-            prefab = basements.Length > 0 ? basements[Random.Range(0, basements.Length)] : null;
+        GameObject prefab = type == FloorManager.FloorCategory.Main
+            ? mainFloors.Length > 0 ? mainFloors[Random.Range(0, mainFloors.Length)] : null
+            : basements.Length > 0 ? basements[Random.Range(0, basements.Length)] : null;
 
         if (prefab == null)
         {
@@ -46,25 +51,25 @@ public FriendSpawner friendSpawner;
             return null;
         }
 
-        // Удаляем прошлый пол
+        // Скрываем предыдущий этаж
         if (lastGeneratedFloor != null)
-            Destroy(lastGeneratedFloor);
+            lastGeneratedFloor.SetActive(false);
 
-        // Создаём новый пол
+        // Создаём новый этаж
         GameObject floor = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         lastGeneratedFloor = floor;
 
-        // Спавн игрока в безопасном месте
+        // Спавн игрока
         SpawnPlayer(floor);
 
-        // Инициализация предметов
-        if (itemSpawner != null)
-            itemSpawner.InitializeFromRoom(floor);
+        // Спавн друзей
         if (type == FloorManager.FloorCategory.Basement && friendSpawner != null)
-        {
             friendSpawner.TrySpawnFriend(floor);
-        }
 
+        // Спавн предметов
+        var spawner = floor.GetComponentInChildren<ItemSpawner>();
+        if (spawner != null)
+            spawner.InitializeFromRoom(floor);
 
         return floor;
     }
@@ -73,37 +78,25 @@ public FriendSpawner friendSpawner;
     private void SpawnPlayer(GameObject floor)
     {
         Transform spawnPoint = floor.transform.Find("PlayerSpawnPoint");
-
-        Vector3 spawnPos;
-
-        if (spawnPoint != null)
-        {
-            spawnPos = spawnPoint.position;
-        }
-        else
-        {
-            // Ищем безопасное место с увеличенным радиусом
-            spawnPos = FindSafePosition(floor, 0.6f);
-        }
-
-        // Немного сдвигаем игрока вверх, чтобы Rigidbody не залипал
+        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : FindSafePosition(floor, 0.6f);
         spawnPos += Vector3.up * 0.3f;
 
         if (playerInstance == null)
         {
+            // Создаём нового игрока
             playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+            var controller = playerInstance.GetComponent<PlayerController>();
+            if (controller != null)
+                controller.SetMovement(true); // включаем движение
         }
         else
         {
+            // Телепортируем существующего игрока
             playerInstance.transform.position = spawnPos;
+            // ⚠ не трогаем canMove
         }
 
-        // Устанавливаем игроку возможность двигаться
-        var controller = playerInstance.GetComponent<PlayerController>();
-        if (controller != null)
-            controller.SetMovement(true);
-
-        // Камера остаётся без изменений
+        // Камера остаётся привязанной
         if (virtualCamera != null)
             virtualCamera.Follow = playerInstance.transform;
     }
@@ -123,20 +116,15 @@ public FriendSpawner friendSpawner;
             float y = Random.Range(b.min.y + margin, b.max.y - margin);
             Vector2 point = new Vector2(x, y);
 
-            // Проверка на пересечение с полом
             if (Physics2D.OverlapCircle(point, radius, floorLayerMask)) continue;
-
-            // Проверка на стены
             if (Physics2D.OverlapCircle(point, radius, wallsLayerMask)) continue;
 
-            // Проверка на двери (тег "Doors")
             Collider2D doorHit = Physics2D.OverlapCircle(point, radius);
             if (doorHit != null && doorHit.CompareTag("Doors")) continue;
 
             return new Vector3(x, y, 0f);
         }
 
-        // Если не нашли безопасное место, ставим чуть выше центра
         return b.center + Vector3.up * 0.5f;
     }
 

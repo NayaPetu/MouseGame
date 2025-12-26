@@ -6,6 +6,14 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public bool friendRescued = false;
 
+    // 🔹 Текущий этаж игрока
+    private FloorManager.FloorCategory currentFloor = FloorManager.FloorCategory.Main;
+
+    public FloorManager.FloorCategory PlayerCurrentFloor
+    {
+        get => currentFloor;
+        set => currentFloor = value;
+    }
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
@@ -65,6 +73,4 @@ public class GameManager : MonoBehaviour
     {
         hasKey = true;
     }
-
 }
-

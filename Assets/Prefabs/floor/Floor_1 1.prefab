@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3973906819496923182}
+  - component: {fileID: 311458463101366891}
   m_Layer: 0
   m_Name: Floor_1 1
   m_TagString: Untagged
@@ -45,6 +46,32 @@ Transform:
   - {fileID: 5523128543996428443}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &311458463101366891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352499099127978884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dce084ebe0c85f498b66b0704896bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
+  items:
+  - prefab: {fileID: 5589919293895006780, guid: 482c3ad47bbfa22408459e0a8c94e40c, type: 3}
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
+    minCount: 1
+    maxCount: 1
+  spawnPointTag: SpawnPoint
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 18432
+  checkRadius: 0.5
+  maxAttempts: 10
+  spawnedItems: []
 --- !u!1 &730846840326350453
 GameObject:
   m_ObjectHideFlags: 0

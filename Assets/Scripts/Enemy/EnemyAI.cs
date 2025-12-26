@@ -73,22 +73,22 @@ public class EnemyAI : MonoBehaviour
     }
 
     void Update()
-{
-    if (isResting) return;
-
-    DetectPlayer();
-    DetectCatnip();
-
-    if (player != null)
     {
-        Debug.Log(
-            $"[EnemyAI] Seen:{hasSeenPlayer} " +
-            $"LOS:{HasLineOfSightToPlayer()} " +
-            $"Enlarged:{IsPlayerEnlarged()} " +
-            $"Pacified:{pacifiedByCatnip}"
-        );
+        if (isResting) return;
+
+        DetectPlayer();
+        DetectCatnip();
+
+        if (player != null)
+        {
+            Debug.Log(
+                $"[EnemyAI] Seen:{hasSeenPlayer} " +
+                $"LOS:{HasLineOfSightToPlayer()} " +
+                $"Enlarged:{IsPlayerEnlarged()} " +
+                $"Pacified:{pacifiedByCatnip}"
+            );
+        }
     }
-}
 
 
     void FixedUpdate()
@@ -166,7 +166,7 @@ public class EnemyAI : MonoBehaviour
 
         // Проверяем, увеличен ли игрок
         bool isPlayerEnlarged = IsPlayerEnlarged();
-        
+
         if (isPlayerEnlarged)
         {
             FleeFromPlayer();
@@ -322,7 +322,7 @@ public class EnemyAI : MonoBehaviour
         if (player == null) return;
 
         Vector2 dirFromPlayer = ((Vector2)transform.position - (Vector2)player.position).normalized;
-        
+
         // Проверяем стены при убегании
         RaycastHit2D wallHit = Physics2D.Raycast(rb.position, dirFromPlayer, obstacleCheckDistance, wallMask);
         if (wallHit.collider != null)
@@ -356,21 +356,21 @@ public class EnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
     void OnDrawGizmos()
-{
-    // Радиус обнаружения игрока
-    Gizmos.color = hasSeenPlayer ? Color.red : Color.yellow;
-    Gizmos.DrawWireSphere(transform.position, detectionRadius);
-
-    // Линия до игрока
-    if (player != null)
     {
-        Gizmos.color = HasLineOfSightToPlayer() ? Color.green : Color.magenta;
-        Gizmos.DrawLine(transform.position, player.position);
-    }
+        // Радиус обнаружения игрока
+        Gizmos.color = hasSeenPlayer ? Color.red : Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
 
-    // Цель патруля / погони
-    Gizmos.color = Color.cyan;
-    Gizmos.DrawSphere(patrolTarget, 0.1f);
-}
+        // Линия до игрока
+        if (player != null)
+        {
+            Gizmos.color = HasLineOfSightToPlayer() ? Color.green : Color.magenta;
+            Gizmos.DrawLine(transform.position, player.position);
+        }
+
+        // Цель патруля / погони
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(patrolTarget, 0.1f);
+    }
 
 }

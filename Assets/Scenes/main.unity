@@ -397,8 +397,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -513, y: 0.000045776367}
-  m_SizeDelta: {x: 239.712, y: 239.712}
+  m_AnchoredPosition: {x: -1045.176, y: -1.8493958}
+  m_SizeDelta: {x: 415, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &657324646
 MonoBehaviour:
@@ -863,8 +863,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -514, y: 0.000045776367}
-  m_SizeDelta: {x: 239.712, y: 239.712}
+  m_AnchoredPosition: {x: -1047, y: -0.00015258789}
+  m_SizeDelta: {x: 415, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &862841838
 MonoBehaviour:
@@ -1334,8 +1334,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1527.8279, y: 291.5912}
+  m_AnchoredPosition: {x: 34.9, y: -34.3}
+  m_SizeDelta: {x: 2657.3113, y: 507.157}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1156129910
 MonoBehaviour:
@@ -1664,7 +1664,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1804,7 +1804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1557445521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1817,15 +1817,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dce084ebe0c85f498b66b0704896bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
-  itemPrefabs:
-  - {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
-  - {fileID: 5589919293895006780, guid: 482c3ad47bbfa22408459e0a8c94e40c, type: 3}
+  items: []
   spawnPointTag: SpawnPoint
   collisionLayers:
     serializedVersion: 2
     m_Bits: 18432
   checkRadius: 0.4
   maxAttempts: 10
+  spawnedItems: []
 --- !u!4 &1557445522
 Transform:
   m_ObjectHideFlags: 0
@@ -2226,7 +2225,6 @@ MonoBehaviour:
   wallsLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  itemSpawner: {fileID: 1557445521}
   friendSpawner: {fileID: 1880425266}
 --- !u!114 &1880425266
 MonoBehaviour:
@@ -2683,8 +2681,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -216, y: 0.000045776367}
-  m_SizeDelta: {x: 239.712, y: 239.712}
+  m_AnchoredPosition: {x: -605.973, y: -1.1519928}
+  m_SizeDelta: {x: 415, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2052944762
 MonoBehaviour:
