@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1025800472234933337, guid: e540b8f9ea8f1b04f86164b0d830fdac, type: 3}
+  m_Sprite: {fileID: 1322890409765739682, guid: ce3e92ab6e1eb9849b7434d09bcaee35, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Catnip
   calmDuration: 5
   attractor: {fileID: 6324561936185798598}
+  pickupRange: 1.5
 --- !u!50 &8630725002494767108
 Rigidbody2D:
   serializedVersion: 5

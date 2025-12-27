@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public bool friendRescued = false;
+    
+    // Список открытых комнат (по именам комнат)
+    private static HashSet<string> openedRooms = new HashSet<string>();
 
     // 🔹 Текущий этаж игрока
     private FloorManager.FloorCategory currentFloor = FloorManager.FloorCategory.Main;
@@ -59,11 +63,132 @@ public class GameManager : MonoBehaviour
     {
         // Всегда ищем панель проигрыша в сцене при загрузке main
         // чтобы получить актуальную ссылку на объект в новой сцене
-        GameObject panelObj = GameObject.Find("GameOverPanel");
+        
+        GameObject panelObj = null;
+        
+        // Пробуем разные варианты имени
+        string[] possibleNames = { "GameOverPanel", "Panel_GameOver", "Game Over Panel", "GameOver" };
+        foreach (string name in possibleNames)
+        {
+            panelObj = GameObject.Find(name);
+            if (panelObj != null)
+            {
+                Debug.Log($"[GameManager] Found panel by name: {name}");
+                break;
+            }
+        }
+        
+        // Если не нашли по имени, ищем все объекты с тегом Canvas и ищем внутри них
+        if (panelObj == null)
+        {
+            Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            foreach (Canvas canvas in canvases)
+            {
+                foreach (string name in possibleNames)
+                {
+                    Transform panelTransform = canvas.transform.Find(name);
+                    if (panelTransform == null)
+                    {
+                        // Пробуем найти дочерний объект с нужным именем рекурсивно
+                        panelTransform = FindChildRecursive(canvas.transform, name);
+                    }
+                    if (panelTransform != null)
+                    {
+                        panelObj = panelTransform.gameObject;
+                        Debug.Log($"[GameManager] Found panel in Canvas by name: {name}");
+                        break;
+                    }
+                }
+                if (panelObj != null) break;
+            }
+        }
+        
+        // Пробуем найти по компоненту EndGameUI
+        if (panelObj == null)
+        {
+            UnityEngine.Object endGameUI = FindFirstObjectByType<EndGameUI>();
+            if (endGameUI != null)
+            {
+                panelObj = ((MonoBehaviour)endGameUI).gameObject;
+                Debug.Log("[GameManager] Found panel by EndGameUI component");
+            }
+        }
+        
+        // Поиск через корневые объекты сцены (даже неактивные)
+        if (panelObj == null)
+        {
+            UnityEngine.SceneManagement.Scene activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            GameObject[] rootObjects = activeScene.GetRootGameObjects();
+            foreach (GameObject rootObj in rootObjects)
+            {
+                // Ищем рекурсивно во всех дочерних объектах
+                foreach (string name in possibleNames)
+                {
+                    Transform found = FindChildRecursive(rootObj.transform, name);
+                    if (found != null)
+                    {
+                        panelObj = found.gameObject;
+                        Debug.Log($"[GameManager] Found panel in scene root objects by name: {name}");
+                        break;
+                    }
+                }
+                if (panelObj != null) break;
+            }
+        }
+        
+        // Последняя попытка - поиск по части имени во всех объектах (включая неактивные)
+        if (panelObj == null)
+        {
+            // Используем Resources.FindObjectsOfTypeAll для поиска даже неактивных объектов
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            foreach (GameObject obj in allObjects)
+            {
+                // Пропускаем префабы, которые не инстанцированы в сцене
+                if (obj.hideFlags == HideFlags.NotEditable || obj.hideFlags == HideFlags.HideAndDontSave)
+                    continue;
+                    
+                string lowerName = obj.name.ToLower();
+                if (lowerName.Contains("gameover") || lowerName.Contains("game over") || 
+                    lowerName.Contains("endgame") || lowerName.Contains("panel_gameover"))
+                {
+                    // Проверяем, что это действительно UI панель (имеет CanvasRenderer или RectTransform)
+                    if (obj.GetComponent<CanvasRenderer>() != null || obj.GetComponent<RectTransform>() != null)
+                    {
+                        // Проверяем, что объект в текущей сцене
+                        if (obj.scene.name == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name)
+                        {
+                            panelObj = obj;
+                            Debug.Log($"[GameManager] Found panel by partial name search: {obj.name}");
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
         if (panelObj != null)
         {
             gameOverPanel = panelObj;
+            Debug.Log($"[GameManager] GameOverPanel found and assigned: {panelObj.name}");
         }
+        else
+        {
+            Debug.LogWarning("[GameManager] GameOverPanel not found in scene! Game over menu will not appear.");
+        }
+    }
+    
+    private Transform FindChildRecursive(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+                return child;
+            
+            Transform found = FindChildRecursive(child, name);
+            if (found != null)
+                return found;
+        }
+        return null;
     }
     
     private void ResetGameState()
@@ -80,25 +205,49 @@ public class GameManager : MonoBehaviour
         // Сбрасываем другие флаги состояния
         friendRescued = false;
         hasKey = false;
+        // НЕ сбрасываем openedRooms - они должны сохраняться до конца игры
     }
 
     public void OnPlayerCaught()
     {
+        Debug.Log("[GameManager] OnPlayerCaught called!");
         ShowGameOver();
     }
 
     private void ShowGameOver()
     {
-        Time.timeScale = 0f; // стоп игра
-
-        // Если панель не найдена, пытаемся найти её
-        if (gameOverPanel == null)
-        {
-            FindGameOverPanel();
-        }
+        Debug.Log("[GameManager] ShowGameOver called!");
+        
+        // Всегда пытаемся найти панель перед показом
+        FindGameOverPanel();
 
         if (gameOverPanel != null)
+        {
+            Debug.Log("[GameManager] Activating gameOverPanel!");
             gameOverPanel.SetActive(true);
+            Time.timeScale = 0f; // стоп игра ПОСЛЕ активации панели
+        }
+        else
+        {
+            Debug.LogError("[GameManager] gameOverPanel is still null after search! Cannot show game over menu. Trying to find any panel with 'Game' in name...");
+            
+            // Последняя попытка - найти любой объект с "Game" или "Over" в имени
+            GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            foreach (GameObject obj in allObjects)
+            {
+                if (obj.name.ToLower().Contains("gameover") || obj.name.ToLower().Contains("game over") || obj.name.ToLower().Contains("endgame"))
+                {
+                    gameOverPanel = obj;
+                    gameOverPanel.SetActive(true);
+                    Time.timeScale = 0f;
+                    Debug.Log($"[GameManager] Found panel by name search: {obj.name}");
+                    return;
+                }
+            }
+            
+            Debug.LogError("[GameManager] Failed to find game over panel! Game will be paused but no menu will appear.");
+            Time.timeScale = 0f; // Все равно останавливаем игру
+        }
     }
 
     // КНОПКА "ЗАНОВО"
@@ -109,6 +258,9 @@ public class GameManager : MonoBehaviour
         
         // Сбрасываем состояние перед загрузкой меню
         ResetGameState();
+        
+        // Сбрасываем список открытых комнат при перезапуске игры
+        ResetOpenedRooms();
 
         SceneManager.LoadScene("menu");
     }
@@ -131,5 +283,32 @@ public class GameManager : MonoBehaviour
     public void CollectKey()
     {
         hasKey = true;
+    }
+    
+    // Добавить комнату в список открытых
+    public static void MarkRoomAsOpened(string roomName)
+    {
+        if (!string.IsNullOrEmpty(roomName))
+        {
+            openedRooms.Add(roomName);
+        }
+    }
+    
+    // Проверить, открыта ли комната
+    public static bool IsRoomOpened(string roomName)
+    {
+        return !string.IsNullOrEmpty(roomName) && openedRooms.Contains(roomName);
+    }
+    
+    // Получить список всех открытых комнат
+    public static HashSet<string> GetOpenedRooms()
+    {
+        return new HashSet<string>(openedRooms);
+    }
+    
+    // Сбросить список открытых комнат (при перезапуске игры)
+    public static void ResetOpenedRooms()
+    {
+        openedRooms.Clear();
     }
 }

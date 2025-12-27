@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7bafdeba6616f804da22687a556180dd
+guid: 6d8f555282c479e49a0ab1e54b83c0f8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8478897426532625981
-    second: Capa 63_0
+      213: 3126791905082641082
+    second: chess_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Capa 63_0
+      name: chess_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 16
-        height: 15
+        x: 1
+        y: 5
+        width: 30
+        height: 26
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d3e637b49481ba570800000000000000
-      internalID: 8478897426532625981
+      spriteID: aba8405dba8946b20800000000000000
+      internalID: 3126791905082641082
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Capa 63_0: 8478897426532625981
+      chess_0: 3126791905082641082
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
