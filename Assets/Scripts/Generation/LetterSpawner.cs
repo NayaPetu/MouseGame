@@ -20,11 +20,24 @@ public class LetterSpawner : MonoBehaviour
 
     private bool initialized;
     private List<GameObject> spawnedLetters = new List<GameObject>();
+    // Словарь для хранения письем по этажам, чтобы знать, были ли они уже заспавнены
+    private Dictionary<GameObject, List<GameObject>> lettersByRoom = new Dictionary<GameObject, List<GameObject>>();
 
     public void InitializeFromRoom(GameObject room)
     {
-        // Очищаем предыдущие письма перед спавном нового этажа
-        Clear();
+        // Проверяем, были ли письма уже заспавнены на этом этаже
+        if (lettersByRoom.ContainsKey(room))
+        {
+            // Письма уже были заспавнены на этом этаже, не спавним повторно
+            Debug.Log($"[LetterSpawner] Письма уже были заспавнены на этаже {room.name}, пропускаем спавн");
+            return;
+        }
+
+        // Очищаем только письма этого этажа (на случай если есть старые)
+        ClearRoom(room);
+        
+        // Создаем новый список для этого этажа
+        lettersByRoom[room] = new List<GameObject>();
         
         if (letterPrefab == null)
         {
@@ -106,6 +119,7 @@ public class LetterSpawner : MonoBehaviour
                     // Создаем экземпляр письма
                     GameObject instance = Instantiate(letterPrefab, pos, Quaternion.identity, room.transform);
                     spawnedLetters.Add(instance);
+                    lettersByRoom[room].Add(instance);
 
                     // Назначаем случайное письмо для этого экземпляра
                     FriendNote friendNote = instance.GetComponent<FriendNote>();
@@ -149,6 +163,7 @@ public class LetterSpawner : MonoBehaviour
         return true;
     }
 
+    // Очистка всех писем (старый метод для совместимости)
     public void Clear()
     {
         foreach (var letter in spawnedLetters)
@@ -157,7 +172,26 @@ public class LetterSpawner : MonoBehaviour
                 Destroy(letter);
         }
         spawnedLetters.Clear();
+        lettersByRoom.Clear();
         initialized = false;
+    }
+
+    // Очистка писем только для конкретного этажа
+    private void ClearRoom(GameObject room)
+    {
+        if (lettersByRoom.ContainsKey(room))
+        {
+            foreach (var letter in lettersByRoom[room])
+            {
+                if (letter != null)
+                {
+                    spawnedLetters.Remove(letter);
+                    Destroy(letter);
+                }
+            }
+            lettersByRoom[room].Clear();
+            lettersByRoom.Remove(room);
+        }
     }
 
     // Сбрасываем состояние при включении (для нового этажа)

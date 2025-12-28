@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &468395701084824202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2417678859638549700}
+  m_Layer: 0
+  m_Name: LetterSpawnPoint0
+  m_TagString: SpawnPoint_Letter
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2417678859638549700
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 468395701084824202}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.7348356, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7927179721535285189}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &907887404386187374
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,6 +61,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4090809596435412229}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1500771602761697265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1996061135240337478}
+  m_Layer: 0
+  m_Name: LetterSpawnPoint0 (1)
+  m_TagString: SpawnPoint_Letter
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1996061135240337478
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500771602761697265}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.29137492, y: -0.34000003, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7612594993345024296}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2257780870489725029
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9071692516076910281}
+  m_Layer: 0
+  m_Name: SpawnPoint_1 (1)
+  m_TagString: SpawnPoint
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9071692516076910281
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2257780870489725029}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.059999466, y: -3.5380335, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3937521922016020481}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3139405467829601460
 GameObject:
@@ -128,6 +221,7 @@ Transform:
   - {fileID: 2905006941567331574}
   - {fileID: 7612594993345024296}
   - {fileID: 1604129319509428878}
+  - {fileID: 2417678859638549700}
   - {fileID: 4514832176796568305}
   - {fileID: 4084203131243028084}
   - {fileID: 1069058011013225522}
@@ -153,11 +247,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
   items:
   - prefab: {fileID: 5589919293895006780, guid: 482c3ad47bbfa22408459e0a8c94e40c, type: 3}
-    minCount: 1
-    maxCount: 1
+    minCount: 2
+    maxCount: 3
   - prefab: {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
-    minCount: 1
-    maxCount: 1
+    minCount: 2
+    maxCount: 3
   spawnPointTag: SpawnPoint
   collisionLayers:
     serializedVersion: 2
@@ -226,6 +320,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1069058011013225522}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6056349123575624993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5460785479347026304}
+  m_Layer: 0
+  m_Name: LetterSpawnPoint0 (1)
+  m_TagString: SpawnPoint_Letter
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5460785479347026304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6056349123575624993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.6348357, y: 2.6236205, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2258663935285495212}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6498922280332288518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8973096346306907948}
+  m_Layer: 0
+  m_Name: LetterSpawnPoint0 (2)
+  m_TagString: SpawnPoint_Letter
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8973096346306907948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498922280332288518}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.95, y: 2.94, z: 0}
+  m_LocalScale: {x: 1, y: -1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5256183344493687394}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7530949393192265393
 GameObject:
@@ -676,7 +832,10 @@ PrefabInstance:
       objectReference: {fileID: 930973892840559644}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6264617037078397360, guid: e8781a33a66adf84fa6adbea17747fc9, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 8973096346306907948}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e8781a33a66adf84fa6adbea17747fc9, type: 3}
 --- !u!114 &930973892840559644 stripped
@@ -1011,6 +1170,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1919981788835787328, guid: 8805f1d360c135942af61b53198836c1, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 9071692516076910281}
     - targetCorrespondingSourceObject: {fileID: 1919981788835787328, guid: 8805f1d360c135942af61b53198836c1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5546963330265022967}
@@ -1448,7 +1610,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6492507674151326540, guid: 3112d43e2f2256e49aa4366ec7ab3fcb, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 5460785479347026304}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3112d43e2f2256e49aa4366ec7ab3fcb, type: 3}
 --- !u!114 &1464450043537465428 stripped
@@ -1762,7 +1927,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 124142278292430259, guid: 647e0228ce1c79d49aba4ae86abaec03, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1996061135240337478}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 647e0228ce1c79d49aba4ae86abaec03, type: 3}
 --- !u!114 &362761346205122465 stripped

@@ -1638,9 +1638,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
   items:
   - itemName: Key
-    icon: {fileID: -5524952644470302947, guid: ecb6fc410a2ebf4479b8678c639bc069, type: 3}
+    icon: {fileID: 1095141833252711340, guid: 695bb17bb97cd064eba5165698f5a64a, type: 3}
   - itemName: Catnip
-    icon: {fileID: 1025800472234933337, guid: e540b8f9ea8f1b04f86164b0d830fdac, type: 3}
+    icon: {fileID: 1322890409765739682, guid: ce3e92ab6e1eb9849b7434d09bcaee35, type: 3}
   - itemName: Recipe
     icon: {fileID: 21300000, guid: a1a213acbe220df49ba14152ce62fde9, type: 3}
   slots:
@@ -1926,7 +1926,7 @@ MonoBehaviour:
       \u0431\u043E\u0438\u0442\u0441\u044F. \u0418\u043B\u0438 \u043E\u0445\u0440\u0430\u043D\u044F\u0435\u0442
       \u0447\u0442\u043E-\u0442\u043E \u0431\u043E\u043B\u0435\u0435 \u0432\u0430\u0436\u043D\u043E\u0435."
     floorCategory: 1
-  - id: 4
+  - id: 5
     text: "\u042F \u043D\u0430\u0448\u043B\u0430 \u0435\u0451. \u041C\u0430\u0448\u0438\u043D\u0443.
       \u041E\u043D\u0430 \u043E\u0433\u0440\u043E\u043C\u043D\u0430\u044F, \u0448\u0443\u043C\u043D\u0430\u044F
       \u0438\u2026 \u043F\u0440\u0435\u043A\u0440\u0430\u0441\u043D\u0430\u044F.
@@ -2469,13 +2469,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1557445522}
   - component: {fileID: 1557445521}
+  - component: {fileID: 1557445523}
   m_Layer: 0
   m_Name: ItemSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1557445521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2488,7 +2489,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dce084ebe0c85f498b66b0704896bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSpawner
-  items: []
+  items:
+  - prefab: {fileID: 5589919293895006780, guid: 482c3ad47bbfa22408459e0a8c94e40c, type: 3}
+    minCount: 3
+    maxCount: 5
+  - prefab: {fileID: 477584837473682495, guid: 3226a3e8fd57ac24d95d5a2c93956d9e, type: 3}
+    minCount: 3
+    maxCount: 5
   spawnPointTag: SpawnPoint
   collisionLayers:
     serializedVersion: 2
@@ -2511,30 +2518,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2500000000
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2500000001}
-  - component: {fileID: 2500000002}
-  m_Layer: 0
-  m_Name: LetterSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &2500000002
+--- !u!114 &1557445523
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2500000000}
+  m_GameObject: {fileID: 1557445520}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 601bd4d83e3567f49bcac0341da2d865, type: 3}
@@ -2542,28 +2532,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LetterSpawner
   letterPrefab: {fileID: 3308984478430008340, guid: 83601051217aa55478d7a3984df200a2, type: 3}
   spawnPointTag: SpawnPoint_Letter
-  minCount: 0
-  maxCount: 1
+  minCount: 4
+  maxCount: 4
   collisionLayers:
     serializedVersion: 2
-    m_Bits: 18432
+    m_Bits: 2048
   checkRadius: 0.5
   maxAttempts: 20
---- !u!4 &2500000001
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2500000000}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.93837, y: 47.80784, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1822404905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3457,6 +3432,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &2500000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2500000001}
+  - component: {fileID: 2500000002}
+  m_Layer: 0
+  m_Name: LetterSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2500000001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2500000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.93837, y: 47.80784, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2500000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2500000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601bd4d83e3567f49bcac0341da2d865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetterSpawner
+  letterPrefab: {fileID: 3308984478430008340, guid: 83601051217aa55478d7a3984df200a2, type: 3}
+  spawnPointTag: SpawnPoint_Letter
+  minCount: 0
+  maxCount: 1
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 2048
+  checkRadius: 0.5
+  maxAttempts: 20
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3475,3 +3503,4 @@ SceneRoots:
   - {fileID: 411153234}
   - {fileID: 1499845347}
   - {fileID: 1420695047}
+  - {fileID: 2500000001}
