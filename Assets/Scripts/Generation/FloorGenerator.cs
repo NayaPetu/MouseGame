@@ -66,10 +66,15 @@ public class FloorGenerator : MonoBehaviour
         if (type == FloorManager.FloorCategory.Basement && friendSpawner != null)
             friendSpawner.TrySpawnFriend(floor);
 
-        // Спавн предметов
-        var spawner = floor.GetComponentInChildren<ItemSpawner>();
+        // Спавн предметов - ищем ItemSpawner в сцене, так как он там находится
+        ItemSpawner spawner = FindFirstObjectByType<ItemSpawner>();
         if (spawner != null)
             spawner.InitializeFromRoom(floor);
+
+        // Спавн писем - ищем LetterSpawner в сцене
+        LetterSpawner letterSpawner = FindFirstObjectByType<LetterSpawner>();
+        if (letterSpawner != null)
+            letterSpawner.InitializeFromRoom(floor);
 
         return floor;
     }

@@ -104,4 +104,11 @@ public class FriendNote : BaseItem
         }
         return letterId;
     }
+
+    // Метод для установки ID письма (используется LetterSpawner)
+    public void SetLetterId(int id)
+    {
+        letterId = id;
+        InitializeLetter(); // Переинициализируем письмо с новым ID
+    }
 }

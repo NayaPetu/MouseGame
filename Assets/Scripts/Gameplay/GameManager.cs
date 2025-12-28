@@ -223,9 +223,37 @@ public class GameManager : MonoBehaviour
 
         if (gameOverPanel != null)
         {
-            Debug.Log("[GameManager] Activating gameOverPanel!");
+            Debug.Log($"[GameManager] Activating gameOverPanel! Panel name: {gameOverPanel.name}, Active: {gameOverPanel.activeSelf}, ActiveInHierarchy: {gameOverPanel.activeInHierarchy}");
+            
+            // Убеждаемся, что панель активна
             gameOverPanel.SetActive(true);
+            
+            // Также убеждаемся, что родительский Canvas активен
+            Canvas canvas = gameOverPanel.GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                canvas.gameObject.SetActive(true);
+                Debug.Log($"[GameManager] Canvas activated: {canvas.gameObject.name}");
+            }
+            
+            // Проверяем, что панель действительно активна
+            if (!gameOverPanel.activeInHierarchy)
+            {
+                Debug.LogWarning("[GameManager] Panel is not active in hierarchy! Checking parent hierarchy...");
+                Transform parent = gameOverPanel.transform.parent;
+                while (parent != null)
+                {
+                    if (!parent.gameObject.activeSelf)
+                    {
+                        Debug.LogWarning($"[GameManager] Found inactive parent: {parent.name}. Activating...");
+                        parent.gameObject.SetActive(true);
+                    }
+                    parent = parent.parent;
+                }
+            }
+            
             Time.timeScale = 0f; // стоп игра ПОСЛЕ активации панели
+            Debug.Log($"[GameManager] Game over panel should now be visible. Final state - Active: {gameOverPanel.activeSelf}, ActiveInHierarchy: {gameOverPanel.activeInHierarchy}");
         }
         else
         {
@@ -239,6 +267,12 @@ public class GameManager : MonoBehaviour
                 {
                     gameOverPanel = obj;
                     gameOverPanel.SetActive(true);
+                    
+                    // Активируем родительский Canvas, если есть
+                    Canvas canvas = gameOverPanel.GetComponentInParent<Canvas>();
+                    if (canvas != null)
+                        canvas.gameObject.SetActive(true);
+                    
                     Time.timeScale = 0f;
                     Debug.Log($"[GameManager] Found panel by name search: {obj.name}");
                     return;

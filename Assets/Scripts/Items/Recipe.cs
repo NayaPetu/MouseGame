@@ -1,14 +1,24 @@
 using UnityEngine;
 
-public class Recipe : MonoBehaviour
+public class Recipe : BaseItem
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    private void Awake()
     {
-        if (!other.CompareTag("Player")) return;
+        itemName = "Р РµС†РµРїС‚";
+        isConsumable = true;
+    }
 
-        PlayerInventory.Instance.PickRecipe(); // добавляем в инвентарь
-        Debug.Log("Рецепт подобран!");
-
-        Destroy(gameObject); // убираем с карты
+    public override void Use(PlayerController playerController)
+    {
+        base.Use(playerController);
+        
+        // Р”РѕР±Р°РІР»СЏРµРј СЂРµС†РµРїС‚ РІ РёРЅРІРµРЅС‚Р°СЂСЊ
+        if (PlayerInventory.Instance != null)
+        {
+            PlayerInventory.Instance.PickRecipe();
+            Debug.Log("Р РµС†РµРїС‚ РїРѕРґРѕР±СЂР°РЅ!");
+        }
+        
+        // РћР±СЉРµРєС‚ Р±СѓРґРµС‚ СѓРЅРёС‡С‚РѕР¶РµРЅ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё, С‚Р°Рє РєР°Рє isConsumable = true
     }
 }
