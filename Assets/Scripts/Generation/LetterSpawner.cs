@@ -18,7 +18,6 @@ public class LetterSpawner : MonoBehaviour
     [SerializeField] private float checkRadius = 0.5f;
     [SerializeField] private int maxAttempts = 20;
 
-    private bool initialized;
     private List<GameObject> spawnedLetters = new List<GameObject>();
     // Словарь для хранения письем по этажам, чтобы знать, были ли они уже заспавнены
     private Dictionary<GameObject, List<GameObject>> lettersByRoom = new Dictionary<GameObject, List<GameObject>>();
@@ -44,8 +43,6 @@ public class LetterSpawner : MonoBehaviour
             Debug.LogWarning($"[LetterSpawner] Letter prefab is not assigned!");
             return;
         }
-
-        initialized = true;
 
         // Получаем текущий этаж
         FloorManager.FloorCategory currentFloor = FloorManager.FloorCategory.Main;
@@ -173,7 +170,6 @@ public class LetterSpawner : MonoBehaviour
         }
         spawnedLetters.Clear();
         lettersByRoom.Clear();
-        initialized = false;
     }
 
     // Очистка писем только для конкретного этажа
@@ -194,10 +190,5 @@ public class LetterSpawner : MonoBehaviour
         }
     }
 
-    // Сбрасываем состояние при включении (для нового этажа)
-    private void OnEnable()
-    {
-        initialized = false;
-    }
 }
 

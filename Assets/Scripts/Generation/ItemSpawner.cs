@@ -25,8 +25,6 @@ public class ItemSpawner : MonoBehaviour
     public float checkRadius = 0.5f;
     public int maxAttempts = 20;
 
-    private bool initialized;
-
     public List<GameObject> spawnedItems = new List<GameObject>();
 
     public void InitializeFromRoom(GameObject room)
@@ -46,8 +44,6 @@ public class ItemSpawner : MonoBehaviour
             Debug.LogWarning($"[{room.name}] Spawn points not found");
             return;
         }
-
-        initialized = true;
 
         foreach (var item in items)
         {
@@ -139,6 +135,5 @@ public class ItemSpawner : MonoBehaviour
                 Destroy(item);
         }
         spawnedItems.Clear();
-        initialized = false;
     }
 }

@@ -163,7 +163,9 @@ MonoBehaviour:
     displayTime: 10
   imageDisplay: {fileID: 1022472296}
   nextSceneName: main
-  fadeSpeed: 2
+  fadeSpeed: 1.5
+  useFadeEffect: 1
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0.88235295}
 --- !u!224 &307603110
 RectTransform:
   m_ObjectHideFlags: 0

@@ -23,47 +23,121 @@ public class ImageCutscene : MonoBehaviour
     
     [Header("Настройки переходов")]
     [SerializeField] private float fadeSpeed = 2f; // Скорость появления/исчезновения
+    [SerializeField] private bool useFadeEffect = false; // Использовать эффект плавного появления (false = мгновенное появление)
+    [SerializeField] private Color backgroundColor = Color.black; // Цвет фона (по умолчанию черный)
     
     private int currentImageIndex = 0;
-    private bool isTransitioning = false;
     private bool skipRequested = false;
     private CanvasGroup canvasGroup;
+    private Image backgroundImage; // Фоновое изображение для черного фона
 
     private void Awake()
     {
-        Debug.Log("[ImageCutscene] Awake вызван! Компонент ImageCutscene инициализируется.");
+        Debug.LogError("[ImageCutscene] Awake вызван! Компонент ImageCutscene инициализируется.");
+        Debug.LogError($"[ImageCutscene] Текущая сцена: {SceneManager.GetActiveScene().name}");
+        Debug.LogError($"[ImageCutscene] GameObject активен: {gameObject.activeSelf}, активен в иерархии: {gameObject.activeInHierarchy}");
+        Debug.LogError($"[ImageCutscene] Компонент включен: {enabled}");
+        
+        // Проверяем, что мы действительно на правильной сцене
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene != "IntroCutscene")
+        {
+            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Awake вызван на неправильной сцене! Ожидалась IntroCutscene, получена: {currentScene}");
+        }
+        
+        // Пытаемся вызвать Start вручную через корутину
+        StartCoroutine(DelayedStartCheck());
     }
-
+    
+    private System.Collections.IEnumerator DelayedStartCheck()
+    {
+        yield return null; // Ждем один кадр
+        string sceneAfterFrame = SceneManager.GetActiveScene().name;
+        Debug.LogError($"[ImageCutscene] DelayedStartCheck: Текущая сцена через кадр: {sceneAfterFrame}");
+        
+        if (gameObject.activeInHierarchy)
+        {
+            Debug.LogError("[ImageCutscene] DelayedStartCheck: GameObject все еще активен через кадр после Awake");
+            if (sceneAfterFrame != "IntroCutscene")
+            {
+                Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Сцена изменилась с IntroCutscene на {sceneAfterFrame} за один кадр!");
+            }
+        }
+        else
+        {
+            Debug.LogError("[ImageCutscene] DelayedStartCheck: GameObject стал НЕактивен после Awake!");
+        }
+        
+        // Проверяем еще через несколько кадров
+        yield return new WaitForSeconds(0.1f);
+        string sceneAfterDelay = SceneManager.GetActiveScene().name;
+        Debug.LogError($"[ImageCutscene] DelayedStartCheck: Текущая сцена через 0.1 сек: {sceneAfterDelay}");
+        if (sceneAfterDelay != "IntroCutscene")
+        {
+            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Сцена была изменена с IntroCutscene на {sceneAfterDelay}!");
+        }
+    }
+    
+    private void OnEnable()
+    {
+        Debug.LogError("[ImageCutscene] OnEnable вызван!");
+    }
+    
     private void Start()
     {
-        Debug.Log("[ImageCutscene] Start вызван. Проверяю настройки...");
+        string currentScene = SceneManager.GetActiveScene().name;
+        Debug.LogError($"[ImageCutscene] Start вызван! Текущая сцена: {currentScene}");
+        
+        // КРИТИЧЕСКАЯ ПРОВЕРКА: убеждаемся, что мы на правильной сцене
+        if (currentScene != "IntroCutscene")
+        {
+            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Start вызван на неправильной сцене! Ожидалась IntroCutscene, получена: {currentScene}");
+            Debug.LogError("[ImageCutscene] Прерываю выполнение Start() чтобы избежать загрузки неправильной сцены!");
+            return;
+        }
+        
+        Debug.LogError("[ImageCutscene] Проверяю настройки...");
         
         // Проверяем, что imageDisplay назначен
         if (imageDisplay == null)
         {
-            Debug.LogError("[ImageCutscene] Image Display не назначен! Кат-сцена не может работать. Укажите Image Display в инспекторе компонента ImageCutscene!");
+            Debug.LogError("[ImageCutscene] ОШИБКА: Image Display не назначен! Кат-сцена не может работать. Укажите Image Display в инспекторе компонента ImageCutscene!");
+            Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия Image Display.");
+            Invoke(nameof(LoadNextScene), 1f);
             return;
         }
-        Debug.Log("[ImageCutscene] Image Display назначен: " + imageDisplay.name);
+        Debug.LogError($"[ImageCutscene] Image Display назначен: {imageDisplay.name}");
+
+        // Настраиваем черный фон
+        SetupBlackBackground();
 
         // Получаем или создаем CanvasGroup для плавных переходов
         canvasGroup = imageDisplay.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = imageDisplay.gameObject.AddComponent<CanvasGroup>();
-            Debug.Log("[ImageCutscene] CanvasGroup добавлен к Image Display");
+            Debug.LogError("[ImageCutscene] CanvasGroup добавлен к Image Display");
+        }
+        
+        // Если fade эффект отключен, сразу устанавливаем alpha = 1
+        if (!useFadeEffect && canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
         }
 
         // Проверяем, что есть изображения
         if (images == null || images.Count == 0)
         {
-            Debug.LogWarning("[ImageCutscene] Нет изображений для кат-сцены! Добавьте изображения в список Images в инспекторе. Загружаю следующую сцену через 1 секунду.");
+            Debug.LogError("[ImageCutscene] ОШИБКА: Нет изображений для кат-сцены! Список Images пустой или null!");
+            Debug.LogError("[ImageCutscene] Добавьте изображения в список Images в инспекторе компонента ImageCutscene!");
+            Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия изображений.");
             Invoke(nameof(LoadNextScene), 1f);
             return;
         }
-        Debug.Log($"[ImageCutscene] Найдено изображений: {images.Count}");
+        Debug.LogError($"[ImageCutscene] Найдено изображений: {images.Count}");
 
         // Начинаем показ первого изображения
+        Debug.LogError("[ImageCutscene] Запускаю корутину ShowCutscene()...");
         StartCoroutine(ShowCutscene());
     }
 
@@ -130,11 +204,85 @@ public class ImageCutscene : MonoBehaviour
         currentImageIndex++;
     }
 
+    private void SetupBlackBackground()
+    {
+        // Устанавливаем черный цвет фона камеры
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            mainCamera = FindFirstObjectByType<Camera>();
+        }
+        
+        if (mainCamera != null)
+        {
+            mainCamera.backgroundColor = backgroundColor;
+            Debug.LogError($"[ImageCutscene] Цвет фона камеры установлен: {backgroundColor}");
+        }
+        
+        // Ищем Canvas в иерархии
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+        {
+            canvas = FindFirstObjectByType<Canvas>();
+        }
+        
+        if (canvas != null)
+        {
+            // Ищем существующее фоновое изображение или создаем новое
+            Image[] allImages = canvas.GetComponentsInChildren<Image>();
+            Image existingBackground = null;
+            
+            foreach (Image img in allImages)
+            {
+                if (img != imageDisplay && img.transform.GetSiblingIndex() < imageDisplay.transform.GetSiblingIndex())
+                {
+                    existingBackground = img;
+                    break;
+                }
+            }
+            
+            if (existingBackground != null)
+            {
+                backgroundImage = existingBackground;
+            }
+            else
+            {
+                // Создаем новое фоновое изображение
+                GameObject bgObject = new GameObject("BlackBackground");
+                bgObject.transform.SetParent(canvas.transform, false);
+                bgObject.transform.SetAsFirstSibling(); // Размещаем за всеми элементами
+                
+                RectTransform bgRect = bgObject.AddComponent<RectTransform>();
+                bgRect.anchorMin = Vector2.zero;
+                bgRect.anchorMax = Vector2.one;
+                bgRect.sizeDelta = Vector2.zero;
+                bgRect.anchoredPosition = Vector2.zero;
+                
+                backgroundImage = bgObject.AddComponent<Image>();
+            }
+            
+            // Устанавливаем цвет фона
+            backgroundImage.color = backgroundColor;
+            
+            Debug.LogError($"[ImageCutscene] Фоновое изображение установлено с цветом: {backgroundColor}");
+        }
+        else
+        {
+            Debug.LogWarning("[ImageCutscene] Canvas не найден, невозможно установить фоновое изображение!");
+        }
+    }
+    
     private IEnumerator FadeIn(int imageIndex)
     {
         if (canvasGroup == null) yield break;
         
-        isTransitioning = true;
+        // Если fade эффект отключен, сразу показываем изображение
+        if (!useFadeEffect)
+        {
+            canvasGroup.alpha = 1f;
+            yield break;
+        }
+        
         canvasGroup.alpha = 0f;
         
         while (canvasGroup.alpha < 1f && currentImageIndex == imageIndex && !skipRequested)
@@ -144,14 +292,18 @@ public class ImageCutscene : MonoBehaviour
         }
         
         canvasGroup.alpha = 1f;
-        isTransitioning = false;
     }
 
     private IEnumerator FadeOut(int imageIndex)
     {
         if (canvasGroup == null) yield break;
         
-        isTransitioning = true;
+        // Если fade эффект отключен, сразу скрываем изображение
+        if (!useFadeEffect)
+        {
+            canvasGroup.alpha = 0f;
+            yield break;
+        }
         
         while (canvasGroup.alpha > 0f && currentImageIndex == imageIndex && !skipRequested)
         {
@@ -160,18 +312,18 @@ public class ImageCutscene : MonoBehaviour
         }
         
         canvasGroup.alpha = 0f;
-        isTransitioning = false;
     }
 
     private void LoadNextScene()
     {
+        Debug.LogError($"[ImageCutscene] LoadNextScene вызван! Загружаю сцену: {nextSceneName}");
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
         }
         else
         {
-            Debug.LogWarning("[ImageCutscene] Next Scene Name не назначен!");
+            Debug.LogError("[ImageCutscene] ОШИБКА: Next Scene Name не назначен!");
         }
     }
 }

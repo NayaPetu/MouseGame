@@ -33,8 +33,62 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         
+        // Настраиваем разрешение экрана
+        SetupScreenResolution();
+        
         // Подписываемся на событие загрузки сцены
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void SetupScreenResolution()
+    {
+        // Параметры разрешения для формата 3:4
+        int targetWidth = 768;  // Ширина
+        int targetHeight = 1024; // Высота (формат 3:4)
+        bool fullscreen = false; // Оконный режим
+        
+        Debug.Log($"[GameManager] Устанавливаю разрешение: {targetWidth}x{targetHeight}");
+        Screen.SetResolution(targetWidth, targetHeight, fullscreen);
+        
+        // Настраиваем letterboxing для поддержания соотношения сторон
+        SetupLetterboxing(targetWidth, targetHeight);
+    }
+    
+    private void SetupLetterboxing(int targetWidth, int targetHeight)
+    {
+        float targetAspect = (float)targetWidth / targetHeight; // 3:4 = 0.75
+        float windowAspect = (float)Screen.width / Screen.height;
+        
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            mainCamera = FindFirstObjectByType<Camera>();
+        }
+        
+        if (mainCamera != null)
+        {
+            // Если окно шире, чем нужно - добавляем вертикальные черные полосы (pillarbox)
+            if (windowAspect > targetAspect)
+            {
+                float scaleHeight = windowAspect / targetAspect;
+                float viewportWidth = 1f / scaleHeight;
+                float viewportX = (1f - viewportWidth) * 0.5f;
+                mainCamera.rect = new Rect(viewportX, 0f, viewportWidth, 1f);
+            }
+            // Если окно уже или выше - добавляем горизонтальные черные полосы (letterbox)
+            else
+            {
+                float scaleWidth = targetAspect / windowAspect;
+                float viewportHeight = 1f / scaleWidth;
+                float viewportY = (1f - viewportHeight) * 0.5f;
+                mainCamera.rect = new Rect(0f, viewportY, 1f, viewportHeight);
+            }
+            
+            // Устанавливаем черный цвет для пустых областей
+            mainCamera.backgroundColor = Color.black;
+            
+            Debug.Log($"[GameManager] Letterboxing настроен. Camera rect: {mainCamera.rect}");
+        }
     }
     
     private void OnDestroy()
@@ -45,9 +99,19 @@ public class GameManager : MonoBehaviour
     
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // При загрузке сцены main - находим панель заново и сбрасываем состояние
+        Debug.LogError($"[GameManager] OnSceneLoaded вызван для сцены: {scene.name}, режим: {mode}");
+        
+        // Обновляем letterboxing для новой сцены
+        SetupLetterboxing(768, 1024);
+        
+        // КРИТИЧЕСКАЯ ПРОВЕРКА: если только что загрузили IntroCutscene, но получаем main - это ошибка!
         if (scene.name == "main")
         {
+            // Получаем полный стек вызовов для отладки
+            Debug.LogError($"[GameManager] КРИТИЧЕСКОЕ: Загружена сцена main! Стек вызовов:");
+            System.Diagnostics.StackTrace stackTrace = new System.Diagnostics.StackTrace(true);
+            Debug.LogError(stackTrace.ToString());
+            
             // Ищем панель проигрыша в новой сцене
             FindGameOverPanel();
             ResetGameState();
@@ -56,6 +120,15 @@ public class GameManager : MonoBehaviour
         else if (scene.name == "menu")
         {
             ResetGameState();
+        }
+        // При загрузке IntroCutscene - ничего не делаем, просто логируем
+        else if (scene.name == "IntroCutscene")
+        {
+            Debug.LogError("[GameManager] Загружена сцена IntroCutscene - ничего не делаю");
+        }
+        else
+        {
+            Debug.LogError($"[GameManager] Загружена неизвестная сцена: {scene.name}");
         }
     }
     
