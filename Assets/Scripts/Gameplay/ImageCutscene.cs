@@ -10,6 +10,10 @@ public class CutsceneImage
     [Header("Изображение")]
     public Sprite image; // Спрайт изображения для кат-сцены
     
+    [Header("Текст")]
+    [TextArea(3, 6)]
+    public string text = ""; // Текст для кат-сцены (может быть пустым)
+    
     [Header("Время показа (секунды)")]
     public float displayTime = 3f; // Время показа этого изображения в секундах
 }
@@ -21,10 +25,18 @@ public class ImageCutscene : MonoBehaviour
     [SerializeField] private Image imageDisplay; // UI Image компонент для отображения спрайтов
     [SerializeField] private string nextSceneName = "main"; // Имя сцены, которая загрузится после кат-сцены
     
+    [Header("UI элементы для текста")]
+    [SerializeField] private GameObject textPanel; // Панель (подложка) под текст
+    [SerializeField] private Text textDisplay; // UI Text компонент для отображения текста
+    
     [Header("Настройки переходов")]
     [SerializeField] private float fadeSpeed = 2f; // Скорость появления/исчезновения
     [SerializeField] private bool useFadeEffect = false; // Использовать эффект плавного появления (false = мгновенное появление)
     [SerializeField] private Color backgroundColor = Color.black; // Цвет фона (по умолчанию черный)
+    
+    [Header("Настройки текста")]
+    [SerializeField] private float typewriterSpeed = 30f; // Символов в секунду для эффекта печатающегося текста
+    [SerializeField] private Color textPanelColor = new Color(0, 0, 0, 0.7f); // Цвет подложки под текст (полупрозрачный черный)
     
     [Header("Кнопка пропуска")]
     [SerializeField] private Button skipButton; // Кнопка для пропуска кат-сцены
@@ -33,6 +45,7 @@ public class ImageCutscene : MonoBehaviour
     private bool skipRequested = false;
     private CanvasGroup canvasGroup;
     private Image backgroundImage; // Фоновое изображение для черного фона
+    private Coroutine typewriterCoroutine; // Корутина для эффекта печатающегося текста
     private const string INTRO_WATCHED_KEY = "IntroCutsceneWatched"; // Ключ для PlayerPrefs
 
     private void Awake()
@@ -103,6 +116,9 @@ public class ImageCutscene : MonoBehaviour
         }
         Debug.LogError($"[ImageCutscene] Image Display назначен: {imageDisplay.name}");
 
+        // Настраиваем UI для текста
+        SetupTextUI();
+
         // Настраиваем черный фон
         SetupBlackBackground();
 
@@ -168,6 +184,20 @@ public class ImageCutscene : MonoBehaviour
     private void SkipCutscene()
     {
         Debug.LogError("[ImageCutscene] Кнопка пропуска нажата! Пропускаю кат-сцену.");
+        
+        // Останавливаем корутину печатающегося текста
+        if (typewriterCoroutine != null)
+        {
+            StopCoroutine(typewriterCoroutine);
+            typewriterCoroutine = null;
+        }
+        
+        // Скрываем текст
+        if (textPanel != null)
+        {
+            textPanel.SetActive(false);
+        }
+        
         skipRequested = true;
         currentImageIndex = images.Count; // Устанавливаем индекс за пределы, чтобы завершить цикл
         LoadNextScene();
@@ -199,8 +229,34 @@ public class ImageCutscene : MonoBehaviour
             // Устанавливаем спрайт
             imageDisplay.sprite = images[i].image;
             
+            // Очищаем текст перед показом нового
+            if (textDisplay != null)
+            {
+                textDisplay.text = "";
+            }
+            
+            // Скрываем панель текста
+            if (textPanel != null)
+            {
+                textPanel.SetActive(false);
+            }
+            
             // Показываем изображение с плавным появлением (можно прервать кликом)
             yield return StartCoroutine(FadeIn(i));
+            
+            // Если есть текст, показываем его с эффектом печатания
+            if (!string.IsNullOrEmpty(images[i].text) && textDisplay != null)
+            {
+                // Показываем панель текста
+                if (textPanel != null)
+                {
+                    textPanel.SetActive(true);
+                }
+                
+                // Показываем текст с эффектом печатания
+                typewriterCoroutine = StartCoroutine(TypewriterText(images[i].text, i));
+                yield return typewriterCoroutine;
+            }
             
             // Если был запрошен пропуск во время fadeIn, переходим к следующему
             if (skipRequested && currentImageIndex != i)
@@ -208,9 +264,23 @@ public class ImageCutscene : MonoBehaviour
                 continue;
             }
             
-            // Ждем указанное время (или до клика мыши)
+            // Если был пропуск во время показа текста, переходим к следующему изображению
+            if (skipRequested && currentImageIndex != i)
+            {
+                continue;
+            }
+            
+            // Ждем указанное время после показа текста (или до клика мыши)
+            // Время отсчитывается с момента завершения печатания текста
             float elapsedTime = 0f;
             float displayTime = images[i].displayTime;
+            
+            // Если текст был показан, даем дополнительное время на чтение
+            // Минимум 2 секунды после завершения текста
+            if (!string.IsNullOrEmpty(images[i].text) && textDisplay != null)
+            {
+                displayTime = Mathf.Max(displayTime, 2f);
+            }
             
             while (elapsedTime < displayTime && currentImageIndex == i && !skipRequested)
             {
@@ -221,16 +291,146 @@ public class ImageCutscene : MonoBehaviour
             // Если мы все еще на этом изображении (не было клика), скрываем его
             if (currentImageIndex == i && !skipRequested)
             {
+                // Скрываем текст перед скрытием изображения
+                if (textPanel != null)
+                {
+                    textPanel.SetActive(false);
+                }
+                
                 yield return StartCoroutine(FadeOut(i));
             }
         }
 
-        // Все изображения показаны, загружаем следующую сцену
+        // Все изображения показаны, скрываем текст и загружаем следующую сцену
+        if (textPanel != null)
+        {
+            textPanel.SetActive(false);
+        }
+        
         LoadNextScene();
     }
 
+    private void SetupTextUI()
+    {
+        // Если textPanel не назначен, пытаемся найти или создать
+        if (textPanel == null)
+        {
+            GameObject panelObj = GameObject.Find("TextPanel");
+            if (panelObj == null)
+            {
+                // Ищем Canvas
+                Canvas canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                {
+                    canvas = FindFirstObjectByType<Canvas>();
+                }
+                
+                if (canvas != null)
+                {
+                    // Создаем панель для текста
+                    textPanel = new GameObject("TextPanel");
+                    textPanel.transform.SetParent(canvas.transform, false);
+                    
+                    RectTransform panelRect = textPanel.AddComponent<RectTransform>();
+                    panelRect.anchorMin = new Vector2(0, 0);
+                    panelRect.anchorMax = new Vector2(1, 0.3f); // Внизу экрана
+                    panelRect.sizeDelta = Vector2.zero;
+                    panelRect.anchoredPosition = Vector2.zero;
+                    
+                    Image panelImage = textPanel.AddComponent<Image>();
+                    panelImage.color = textPanelColor;
+                }
+            }
+            else
+            {
+                textPanel = panelObj;
+            }
+        }
+        
+        // Если textDisplay не назначен, пытаемся найти или создать
+        if (textDisplay == null)
+        {
+            if (textPanel != null)
+            {
+                textDisplay = textPanel.GetComponentInChildren<Text>();
+                
+                if (textDisplay == null)
+                {
+                    // Создаем текст внутри панели
+                    GameObject textObj = new GameObject("TextDisplay");
+                    textObj.transform.SetParent(textPanel.transform, false);
+                    
+                    RectTransform textRect = textObj.AddComponent<RectTransform>();
+                    textRect.anchorMin = Vector2.zero;
+                    textRect.anchorMax = Vector2.one;
+                    textRect.sizeDelta = Vector2.zero;
+                    textRect.anchoredPosition = Vector2.zero;
+                    textRect.offsetMin = new Vector2(20, 20); // Отступы
+                    textRect.offsetMax = new Vector2(-20, -20);
+                    
+                    textDisplay = textObj.AddComponent<Text>();
+                    textDisplay.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    textDisplay.fontSize = 24;
+                    textDisplay.color = Color.white;
+                    textDisplay.alignment = TextAnchor.MiddleLeft;
+                    textDisplay.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    textDisplay.verticalOverflow = VerticalWrapMode.Truncate;
+                }
+            }
+            else
+            {
+                // Ищем текст по имени
+                GameObject textObj = GameObject.Find("TextDisplay");
+                if (textObj != null)
+                {
+                    textDisplay = textObj.GetComponent<Text>();
+                }
+            }
+        }
+        
+        // Скрываем панель по умолчанию
+        if (textPanel != null)
+        {
+            textPanel.SetActive(false);
+        }
+    }
+    
+    private IEnumerator TypewriterText(string fullText, int imageIndex)
+    {
+        if (textDisplay == null || skipRequested || currentImageIndex != imageIndex)
+            yield break;
+        
+        textDisplay.text = "";
+        
+        float charDelay = 1f / typewriterSpeed; // Задержка между символами
+        
+        for (int i = 0; i <= fullText.Length; i++)
+        {
+            // Проверяем, не пропущено ли изображение
+            if (skipRequested || currentImageIndex != imageIndex)
+            {
+                // Если пропущено, сразу показываем весь текст
+                textDisplay.text = fullText;
+                yield break;
+            }
+            
+            textDisplay.text = fullText.Substring(0, i);
+            yield return new WaitForSeconds(charDelay);
+        }
+        
+        // Убеждаемся, что весь текст показан
+        textDisplay.text = fullText;
+    }
+    
     private void SkipToNextImage()
     {
+        // Останавливаем корутину печатающегося текста
+        if (typewriterCoroutine != null)
+        {
+            StopCoroutine(typewriterCoroutine);
+            typewriterCoroutine = null;
+        }
+        
         // Запрашиваем пропуск текущего изображения
         skipRequested = true;
         currentImageIndex++;
