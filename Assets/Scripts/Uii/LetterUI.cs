@@ -8,6 +8,7 @@ public class LetterUI : MonoBehaviour
 
     [Header("UI Элементы")]
     [SerializeField] private GameObject letterPanel;
+    [SerializeField] private TextMeshProUGUI letterTitle; // Заголовок письма
     [SerializeField] private TextMeshProUGUI letterText;
     [SerializeField] private Button closeButton;
     [SerializeField] private GameObject darkBackground;
@@ -59,6 +60,17 @@ public class LetterUI : MonoBehaviour
             return;
         }
 
+        // Устанавливаем заголовок письма
+        if (letterTitle != null)
+        {
+            letterTitle.text = !string.IsNullOrEmpty(letterData.title) ? letterData.title : "Письмо друга";
+        }
+        else
+        {
+            Debug.LogWarning("letterTitle не назначен в LetterUI!");
+        }
+
+        // Устанавливаем текст письма
         if (letterText != null)
         {
             letterText.text = letterData.text;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class LetterData
 {
     public int id;
+    public string title; // Заголовок письма
     public string text;
     public FloorManager.FloorCategory floorCategory;
 }
