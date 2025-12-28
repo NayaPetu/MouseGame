@@ -10,10 +10,6 @@ public class CutsceneImage
     [Header("Изображение")]
     public Sprite image; // Спрайт изображения для кат-сцены
     
-    [Header("Текст")]
-    [TextArea(3, 6)]
-    public string text = ""; // Текст для кат-сцены (может быть пустым)
-    
     [Header("Время показа (секунды)")]
     public float displayTime = 3f; // Время показа этого изображения в секундах
 }
@@ -25,18 +21,10 @@ public class ImageCutscene : MonoBehaviour
     [SerializeField] private Image imageDisplay; // UI Image компонент для отображения спрайтов
     [SerializeField] private string nextSceneName = "main"; // Имя сцены, которая загрузится после кат-сцены
     
-    [Header("UI элементы для текста")]
-    [SerializeField] private GameObject textPanel; // Панель (подложка) под текст
-    [SerializeField] private Text textDisplay; // UI Text компонент для отображения текста
-    
     [Header("Настройки переходов")]
     [SerializeField] private float fadeSpeed = 2f; // Скорость появления/исчезновения
     [SerializeField] private bool useFadeEffect = false; // Использовать эффект плавного появления (false = мгновенное появление)
     [SerializeField] private Color backgroundColor = Color.black; // Цвет фона (по умолчанию черный)
-    
-    [Header("Настройки текста")]
-    [SerializeField] private float typewriterSpeed = 30f; // Символов в секунду для эффекта печатающегося текста
-    [SerializeField] private Color textPanelColor = new Color(0, 0, 0, 0.7f); // Цвет подложки под текст (полупрозрачный черный)
     
     [Header("Кнопка пропуска")]
     [SerializeField] private Button skipButton; // Кнопка для пропуска кат-сцены
@@ -45,51 +33,12 @@ public class ImageCutscene : MonoBehaviour
     private bool skipRequested = false;
     private CanvasGroup canvasGroup;
     private Image backgroundImage; // Фоновое изображение для черного фона
-    private Coroutine typewriterCoroutine; // Корутина для эффекта печатающегося текста
     private const string INTRO_WATCHED_KEY = "IntroCutsceneWatched"; // Ключ для PlayerPrefs
 
     private void Awake()
     {
         Debug.LogError("[ImageCutscene] Awake вызван! Компонент ImageCutscene инициализируется.");
         Debug.LogError($"[ImageCutscene] Текущая сцена: {SceneManager.GetActiveScene().name}");
-        Debug.LogError($"[ImageCutscene] GameObject активен: {gameObject.activeSelf}, активен в иерархии: {gameObject.activeInHierarchy}");
-        Debug.LogError($"[ImageCutscene] Компонент включен: {enabled}");
-        
-        // Проверяем, что мы на правильной сцене (IntroCutscene или EndCutscene)
-        string currentScene = SceneManager.GetActiveScene().name;
-        if (currentScene != "IntroCutscene" && currentScene != "EndCutscene")
-        {
-            Debug.LogError($"[ImageCutscene] ВНИМАНИЕ: Awake вызван на неожиданной сцене: {currentScene}");
-        }
-        
-        // Пытаемся вызвать Start вручную через корутину
-        StartCoroutine(DelayedStartCheck());
-    }
-    
-    private System.Collections.IEnumerator DelayedStartCheck()
-    {
-        yield return null; // Ждем один кадр
-        string sceneAfterFrame = SceneManager.GetActiveScene().name;
-        Debug.LogError($"[ImageCutscene] DelayedStartCheck: Текущая сцена через кадр: {sceneAfterFrame}");
-        
-        if (gameObject.activeInHierarchy)
-        {
-            Debug.LogError("[ImageCutscene] DelayedStartCheck: GameObject все еще активен через кадр после Awake");
-        }
-        else
-        {
-            Debug.LogError("[ImageCutscene] DelayedStartCheck: GameObject стал НЕактивен после Awake!");
-        }
-        
-        // Проверяем еще через несколько кадров
-        yield return new WaitForSeconds(0.1f);
-        string sceneAfterDelay = SceneManager.GetActiveScene().name;
-        Debug.LogError($"[ImageCutscene] DelayedStartCheck: Текущая сцена через 0.1 сек: {sceneAfterDelay}");
-    }
-    
-    private void OnEnable()
-    {
-        Debug.LogError("[ImageCutscene] OnEnable вызван!");
     }
     
     private void Start()
@@ -97,11 +46,19 @@ public class ImageCutscene : MonoBehaviour
         string currentScene = SceneManager.GetActiveScene().name;
         Debug.LogError($"[ImageCutscene] Start вызван! Текущая сцена: {currentScene}");
         
-        // Проверяем, что мы на правильной сцене (IntroCutscene или EndCutscene)
-        if (currentScene != "IntroCutscene" && currentScene != "EndCutscene")
+        // Запускаем музыку для кат-сцены
+        if (AudioManager.Instance != null)
         {
-            Debug.LogError($"[ImageCutscene] ВНИМАНИЕ: Start вызван на неожиданной сцене: {currentScene}");
-            Debug.LogError("[ImageCutscene] Продолжаю выполнение, но могут быть проблемы!");
+            if (currentScene == "IntroCutscene")
+            {
+                AudioManager.Instance.PlayIntroAnimationMusic();
+                Debug.LogError("[ImageCutscene] Музыка интро-кат-сцены запущена");
+            }
+            else if (currentScene == "EndCutscene")
+            {
+                AudioManager.Instance.PlayEndAnimationMusic();
+                Debug.LogError("[ImageCutscene] Музыка финальной кат-сцены запущена");
+            }
         }
         
         Debug.LogError("[ImageCutscene] Проверяю настройки...");
@@ -115,9 +72,18 @@ public class ImageCutscene : MonoBehaviour
             return;
         }
         Debug.LogError($"[ImageCutscene] Image Display назначен: {imageDisplay.name}");
-
-        // Настраиваем UI для текста
-        SetupTextUI();
+        
+        // Убеждаемся, что Image компонент включен и GameObject активен
+        if (!imageDisplay.gameObject.activeInHierarchy)
+        {
+            imageDisplay.gameObject.SetActive(true);
+            Debug.LogError("[ImageCutscene] Image Display GameObject был неактивен! Активировал его.");
+        }
+        if (!imageDisplay.enabled)
+        {
+            imageDisplay.enabled = true;
+            Debug.LogError("[ImageCutscene] Image Display компонент был выключен! Включил его.");
+        }
 
         // Настраиваем черный фон
         SetupBlackBackground();
@@ -146,6 +112,26 @@ public class ImageCutscene : MonoBehaviour
             return;
         }
         Debug.LogError($"[ImageCutscene] Найдено изображений: {images.Count}");
+
+        // Проверяем Canvas
+        Canvas canvas = imageDisplay.GetComponentInParent<Canvas>();
+        if (canvas == null)
+        {
+            canvas = FindFirstObjectByType<Canvas>();
+        }
+        if (canvas != null)
+        {
+            Debug.LogError($"[ImageCutscene] Canvas найден: {canvas.name}, активен: {canvas.gameObject.activeSelf}, активен в иерархии: {canvas.gameObject.activeInHierarchy}");
+            if (!canvas.gameObject.activeInHierarchy)
+            {
+                canvas.gameObject.SetActive(true);
+                Debug.LogError("[ImageCutscene] Canvas был неактивен! Активировал его.");
+            }
+        }
+        else
+        {
+            Debug.LogError("[ImageCutscene] ОШИБКА: Canvas не найден!");
+        }
 
         // Настраиваем кнопку пропуска
         SetupSkipButton();
@@ -184,20 +170,6 @@ public class ImageCutscene : MonoBehaviour
     private void SkipCutscene()
     {
         Debug.LogError("[ImageCutscene] Кнопка пропуска нажата! Пропускаю кат-сцену.");
-        
-        // Останавливаем корутину печатающегося текста
-        if (typewriterCoroutine != null)
-        {
-            StopCoroutine(typewriterCoroutine);
-            typewriterCoroutine = null;
-        }
-        
-        // Скрываем текст
-        if (textPanel != null)
-        {
-            textPanel.SetActive(false);
-        }
-        
         skipRequested = true;
         currentImageIndex = images.Count; // Устанавливаем индекс за пределы, чтобы завершить цикл
         LoadNextScene();
@@ -228,61 +200,27 @@ public class ImageCutscene : MonoBehaviour
 
             // Устанавливаем спрайт
             imageDisplay.sprite = images[i].image;
+            Debug.LogError($"[ImageCutscene] Установлен спрайт для изображения {i}: {images[i].image?.name ?? "NULL"}");
             
-            // Очищаем текст перед показом нового
-            if (textDisplay != null)
+            // Убеждаемся, что Image видимый
+            if (canvasGroup != null && canvasGroup.alpha < 0.01f && !useFadeEffect)
             {
-                textDisplay.text = "";
+                canvasGroup.alpha = 1f;
             }
-            
-            // Скрываем панель текста
-            if (textPanel != null)
-            {
-                textPanel.SetActive(false);
-            }
+            imageDisplay.color = Color.white; // Убеждаемся, что цвет белый (полная видимость)
             
             // Показываем изображение с плавным появлением (можно прервать кликом)
             yield return StartCoroutine(FadeIn(i));
             
-            // Если есть текст, показываем его с эффектом печатания
-            if (!string.IsNullOrEmpty(images[i].text) && textDisplay != null)
+            // Если был запрошен пропуск, выходим
+            if (skipRequested)
             {
-                // Показываем панель текста
-                if (textPanel != null)
-                {
-                    textPanel.SetActive(true);
-                }
-                
-                // Показываем текст с эффектом печатания
-                typewriterCoroutine = StartCoroutine(TypewriterText(images[i].text, i));
-                yield return typewriterCoroutine;
+                break;
             }
             
-            // Если был запрошен пропуск во время fadeIn, переходим к следующему
-            if (skipRequested && currentImageIndex != i)
-            {
-                continue;
-            }
-            
-            // Если был пропуск во время показа текста, переходим к следующему изображению
-            if (skipRequested && currentImageIndex != i)
-            {
-                continue;
-            }
-            
-            // Ждем указанное время после показа текста (или до клика мыши)
-            // Время отсчитывается с момента завершения печатания текста
+            // Ждем указанное время (или до клика мыши)
             float elapsedTime = 0f;
-            float displayTime = images[i].displayTime;
-            
-            // Если текст был показан, даем дополнительное время на чтение
-            // Минимум 2 секунды после завершения текста
-            if (!string.IsNullOrEmpty(images[i].text) && textDisplay != null)
-            {
-                displayTime = Mathf.Max(displayTime, 2f);
-            }
-            
-            while (elapsedTime < displayTime && currentImageIndex == i && !skipRequested)
+            while (elapsedTime < images[i].displayTime && currentImageIndex == i && !skipRequested)
             {
                 elapsedTime += Time.deltaTime;
                 yield return null;
@@ -291,146 +229,16 @@ public class ImageCutscene : MonoBehaviour
             // Если мы все еще на этом изображении (не было клика), скрываем его
             if (currentImageIndex == i && !skipRequested)
             {
-                // Скрываем текст перед скрытием изображения
-                if (textPanel != null)
-                {
-                    textPanel.SetActive(false);
-                }
-                
                 yield return StartCoroutine(FadeOut(i));
             }
         }
 
-        // Все изображения показаны, скрываем текст и загружаем следующую сцену
-        if (textPanel != null)
-        {
-            textPanel.SetActive(false);
-        }
-        
+        // Все изображения показаны, загружаем следующую сцену
         LoadNextScene();
-    }
-
-    private void SetupTextUI()
-    {
-        // Если textPanel не назначен, пытаемся найти или создать
-        if (textPanel == null)
-        {
-            GameObject panelObj = GameObject.Find("TextPanel");
-            if (panelObj == null)
-            {
-                // Ищем Canvas
-                Canvas canvas = GetComponentInParent<Canvas>();
-                if (canvas == null)
-                {
-                    canvas = FindFirstObjectByType<Canvas>();
-                }
-                
-                if (canvas != null)
-                {
-                    // Создаем панель для текста
-                    textPanel = new GameObject("TextPanel");
-                    textPanel.transform.SetParent(canvas.transform, false);
-                    
-                    RectTransform panelRect = textPanel.AddComponent<RectTransform>();
-                    panelRect.anchorMin = new Vector2(0, 0);
-                    panelRect.anchorMax = new Vector2(1, 0.3f); // Внизу экрана
-                    panelRect.sizeDelta = Vector2.zero;
-                    panelRect.anchoredPosition = Vector2.zero;
-                    
-                    Image panelImage = textPanel.AddComponent<Image>();
-                    panelImage.color = textPanelColor;
-                }
-            }
-            else
-            {
-                textPanel = panelObj;
-            }
-        }
-        
-        // Если textDisplay не назначен, пытаемся найти или создать
-        if (textDisplay == null)
-        {
-            if (textPanel != null)
-            {
-                textDisplay = textPanel.GetComponentInChildren<Text>();
-                
-                if (textDisplay == null)
-                {
-                    // Создаем текст внутри панели
-                    GameObject textObj = new GameObject("TextDisplay");
-                    textObj.transform.SetParent(textPanel.transform, false);
-                    
-                    RectTransform textRect = textObj.AddComponent<RectTransform>();
-                    textRect.anchorMin = Vector2.zero;
-                    textRect.anchorMax = Vector2.one;
-                    textRect.sizeDelta = Vector2.zero;
-                    textRect.anchoredPosition = Vector2.zero;
-                    textRect.offsetMin = new Vector2(20, 20); // Отступы
-                    textRect.offsetMax = new Vector2(-20, -20);
-                    
-                    textDisplay = textObj.AddComponent<Text>();
-                    textDisplay.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                    textDisplay.fontSize = 24;
-                    textDisplay.color = Color.white;
-                    textDisplay.alignment = TextAnchor.MiddleLeft;
-                    textDisplay.horizontalOverflow = HorizontalWrapMode.Wrap;
-                    textDisplay.verticalOverflow = VerticalWrapMode.Truncate;
-                }
-            }
-            else
-            {
-                // Ищем текст по имени
-                GameObject textObj = GameObject.Find("TextDisplay");
-                if (textObj != null)
-                {
-                    textDisplay = textObj.GetComponent<Text>();
-                }
-            }
-        }
-        
-        // Скрываем панель по умолчанию
-        if (textPanel != null)
-        {
-            textPanel.SetActive(false);
-        }
-    }
-    
-    private IEnumerator TypewriterText(string fullText, int imageIndex)
-    {
-        if (textDisplay == null || skipRequested || currentImageIndex != imageIndex)
-            yield break;
-        
-        textDisplay.text = "";
-        
-        float charDelay = 1f / typewriterSpeed; // Задержка между символами
-        
-        for (int i = 0; i <= fullText.Length; i++)
-        {
-            // Проверяем, не пропущено ли изображение
-            if (skipRequested || currentImageIndex != imageIndex)
-            {
-                // Если пропущено, сразу показываем весь текст
-                textDisplay.text = fullText;
-                yield break;
-            }
-            
-            textDisplay.text = fullText.Substring(0, i);
-            yield return new WaitForSeconds(charDelay);
-        }
-        
-        // Убеждаемся, что весь текст показан
-        textDisplay.text = fullText;
     }
     
     private void SkipToNextImage()
     {
-        // Останавливаем корутину печатающегося текста
-        if (typewriterCoroutine != null)
-        {
-            StopCoroutine(typewriterCoroutine);
-            typewriterCoroutine = null;
-        }
-        
         // Запрашиваем пропуск текущего изображения
         skipRequested = true;
         currentImageIndex++;
@@ -570,4 +378,3 @@ public class ImageCutscene : MonoBehaviour
         }
     }
 }
-

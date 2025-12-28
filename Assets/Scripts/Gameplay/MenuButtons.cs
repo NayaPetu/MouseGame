@@ -40,12 +40,19 @@ public class MenuButtons : MonoBehaviour
         isLoadingScene = false;
         Debug.LogError($"[MenuButtons] Сцена загружена: {scene.name}, флаг isLoadingScene сброшен");
         
-        // Если загрузили меню - сбрасываем флаг просмотра кат-сцены
+        // Если загрузили меню - сбрасываем флаг просмотра кат-сцены и запускаем музыку
         if (scene.name == "menu")
         {
             PlayerPrefs.DeleteKey(INTRO_WATCHED_KEY);
             PlayerPrefs.Save();
             Debug.LogError("[MenuButtons] Флаг просмотра кат-сцены сброшен при загрузке меню");
+            
+            // Запускаем музыку меню
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayMenuMusic();
+                Debug.LogError("[MenuButtons] Музыка меню запущена");
+            }
         }
     }
     
@@ -75,13 +82,9 @@ public class MenuButtons : MonoBehaviour
         {
             Debug.LogError("[MenuButtons] Настраиваю кнопку startButton на вызов StartGame()");
             
-            // КРИТИЧЕСКИ ВАЖНО: Отключаем MainMenuUI, если он есть
-            MainMenuUI mainMenuUI = FindFirstObjectByType<MainMenuUI>();
-            if (mainMenuUI != null)
-            {
-                Debug.LogError($"[MenuButtons] Найден MainMenuUI! ОТКЛЮЧАЮ его, чтобы избежать конфликта! GameObject: {mainMenuUI.gameObject.name}");
-                mainMenuUI.enabled = false; // Отключаем компонент
-            }
+            // ВАЖНО: НЕ отключаем MainMenuUI сразу, чтобы его Start() успел выполниться
+            // и настроить все кнопки (включая optionsButton и aboutButton)
+            // MainMenuUI будет отключен позже, если потребуется
             
             // Проверяем Persistent Listeners (настроены в Inspector)
             int persistentCount = startButton.onClick.GetPersistentEventCount();
@@ -151,13 +154,8 @@ public class MenuButtons : MonoBehaviour
         isLoadingScene = true; // Устанавливаем флаг
         Debug.LogError("[MenuButtons] StartGame ВЫЗВАН! Загружаю кат-сцену!");
         
-        // КРИТИЧЕСКИ ВАЖНО: Отключаем MainMenuUI окончательно
-        MainMenuUI mainMenuUI = FindFirstObjectByType<MainMenuUI>();
-        if (mainMenuUI != null)
-        {
-            Debug.LogError("[MenuButtons] Окончательно отключаю MainMenuUI перед загрузкой сцены!");
-            mainMenuUI.enabled = false;
-        }
+        // НЕ отключаем MainMenuUI здесь - пусть кнопки работают нормально
+        // MainMenuUI управляет своими панелями и кнопками корректно
         
         // Проверяем, нужно ли пропустить кат-сцену
         // Примечание: флаг просмотра сбрасывается при загрузке меню, поэтому кат-сцена будет показываться при каждом запуске игры

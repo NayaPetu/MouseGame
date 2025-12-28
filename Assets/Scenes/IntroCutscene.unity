@@ -154,7 +154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 277, y: 156}
+  m_AnchoredPosition: {x: 315, y: 193}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &57825503
@@ -269,24 +269,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ImageCutscene
   images:
-  - image: {fileID: -8868803461578586678, guid: b859e01c26cf46d4b83b382db3fbce6d, type: 3}
+  - image: {fileID: 3158270622857650283, guid: b9e67d0879ee78249b648f1b1e35136f, type: 3}
     displayTime: 10
-  - image: {fileID: -9166084717782916886, guid: cbe460879796cb347949225aa0e05e71, type: 3}
+  - image: {fileID: -3914185412309896781, guid: 8f510f8a51ddf3741b90872a34ff3c70, type: 3}
     displayTime: 10
-  - image: {fileID: 2839294785017435275, guid: fcd8fac1466704644b1221950c7b1431, type: 3}
+  - image: {fileID: -4026308372722809712, guid: 8a5ae43cccedd3a469554bc287c1789e, type: 3}
     displayTime: 10
-  - image: {fileID: -4865884503035749218, guid: e9832bf2e6f2f1c448bc456cf96afc2f, type: 3}
+  - image: {fileID: 8927586021198232178, guid: b37da8f9d8825804997a2eb638156932, type: 3}
     displayTime: 10
-  - image: {fileID: 9220187793519253819, guid: e18714813beada043b34ec2fb4812057, type: 3}
+  - image: {fileID: 5593829467820309799, guid: a47ca3e3c498a7a41b2bff1aa2c76b99, type: 3}
     displayTime: 10
-  - image: {fileID: 3421342021128756210, guid: 1b3421d35fb8d48469fca54f84aef5e0, type: 3}
+  - image: {fileID: 5551263347124545603, guid: e0d87ac4cd6247c449b995502e73cafe, type: 3}
     displayTime: 10
   imageDisplay: {fileID: 1022472296}
   nextSceneName: main
   fadeSpeed: 1.5
   useFadeEffect: 1
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.88235295}
-  skipButton: {fileID: 0}
+  skipButton: {fileID: 57825503}
 --- !u!224 &307603110
 RectTransform:
   m_ObjectHideFlags: 0

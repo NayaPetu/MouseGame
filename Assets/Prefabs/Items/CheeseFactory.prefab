@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 6627546512830723136, guid: 143c917c437637c4a8e9f39d420bf32a, type: 3}
+  m_Sprite: {fileID: 537710514816042617, guid: b2d360e4a4be7b94b9f0fd012205d769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130,7 +130,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.28125, y: 1.9375}
+    oldSize: {x: 0.41, y: 0.85}
     newSize: {x: 1.28125, y: 1.9375}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -150,3 +150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 763f127736a25ab48b5aa84bb0fc0197, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheeseFactory
+  endCutsceneSceneName: EndCutscene
+  messagePanel: {fileID: 0}
+  messageText: {fileID: 0}
