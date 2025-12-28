@@ -83,7 +83,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1291870753
   m_SortingLayer: 8
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 1040611843020108027, guid: c9427321a7f243e44930c58adeba32ed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abc8dcd4488edbf4a88691518f0492c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  speed: 4
+  speed: 3
   obstacleCheckDistance: 1.21
   detectionRadius: 8
   playerMask:
@@ -192,8 +192,8 @@ MonoBehaviour:
   catnipMask:
     serializedVersion: 2
     m_Bits: 16384
-  catnipPeaceTime: 9.78
-  patrolWaitTime: 1.96
+  catnipPeaceTime: 15
+  patrolWaitTime: 2
   powerCheeseScaleThreshold: 1.2
   fleeSpeed: 3
 --- !u!95 &2278469536420646498

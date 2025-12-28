@@ -37,14 +37,14 @@ public class ImageCutscene : MonoBehaviour
 
     private void Awake()
     {
-        Debug.LogError("[ImageCutscene] Awake вызван! Компонент ImageCutscene инициализируется.");
-        Debug.LogError($"[ImageCutscene] Текущая сцена: {SceneManager.GetActiveScene().name}");
+        // Debug.LogError("[ImageCutscene] Awake вызван! Компонент ImageCutscene инициализируется.");
+        // Debug.LogError($"[ImageCutscene] Текущая сцена: {SceneManager.GetActiveScene().name}");
     }
     
     private void Start()
     {
         string currentScene = SceneManager.GetActiveScene().name;
-        Debug.LogError($"[ImageCutscene] Start вызван! Текущая сцена: {currentScene}");
+        // Debug.LogError($"[ImageCutscene] Start вызван! Текущая сцена: {currentScene}");
         
         // Запускаем музыку для кат-сцены
         if (AudioManager.Instance != null)
@@ -52,37 +52,37 @@ public class ImageCutscene : MonoBehaviour
             if (currentScene == "IntroCutscene")
             {
                 AudioManager.Instance.PlayIntroAnimationMusic();
-                Debug.LogError("[ImageCutscene] Музыка интро-кат-сцены запущена");
+                // Debug.LogError("[ImageCutscene] Музыка интро-кат-сцены запущена");
             }
             else if (currentScene == "EndCutscene")
             {
                 AudioManager.Instance.PlayEndAnimationMusic();
-                Debug.LogError("[ImageCutscene] Музыка финальной кат-сцены запущена");
+                // Debug.LogError("[ImageCutscene] Музыка финальной кат-сцены запущена");
             }
         }
         
-        Debug.LogError("[ImageCutscene] Проверяю настройки...");
+        // Debug.LogError("[ImageCutscene] Проверяю настройки...");
         
         // Проверяем, что imageDisplay назначен
         if (imageDisplay == null)
         {
-            Debug.LogError("[ImageCutscene] ОШИБКА: Image Display не назначен! Кат-сцена не может работать. Укажите Image Display в инспекторе компонента ImageCutscene!");
-            Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия Image Display.");
+            // Debug.LogError("[ImageCutscene] ОШИБКА: Image Display не назначен! Кат-сцена не может работать. Укажите Image Display в инспекторе компонента ImageCutscene!");
+            // Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия Image Display.");
             Invoke(nameof(LoadNextScene), 1f);
             return;
         }
-        Debug.LogError($"[ImageCutscene] Image Display назначен: {imageDisplay.name}");
+        // Debug.LogError($"[ImageCutscene] Image Display назначен: {imageDisplay.name}");
         
         // Убеждаемся, что Image компонент включен и GameObject активен
         if (!imageDisplay.gameObject.activeInHierarchy)
         {
             imageDisplay.gameObject.SetActive(true);
-            Debug.LogError("[ImageCutscene] Image Display GameObject был неактивен! Активировал его.");
+            // Debug.LogError("[ImageCutscene] Image Display GameObject был неактивен! Активировал его.");
         }
         if (!imageDisplay.enabled)
         {
             imageDisplay.enabled = true;
-            Debug.LogError("[ImageCutscene] Image Display компонент был выключен! Включил его.");
+            // Debug.LogError("[ImageCutscene] Image Display компонент был выключен! Включил его.");
         }
 
         // Настраиваем черный фон
@@ -93,7 +93,7 @@ public class ImageCutscene : MonoBehaviour
         if (canvasGroup == null)
         {
             canvasGroup = imageDisplay.gameObject.AddComponent<CanvasGroup>();
-            Debug.LogError("[ImageCutscene] CanvasGroup добавлен к Image Display");
+            // Debug.LogError("[ImageCutscene] CanvasGroup добавлен к Image Display");
         }
         
         // Если fade эффект отключен, сразу устанавливаем alpha = 1
@@ -105,13 +105,13 @@ public class ImageCutscene : MonoBehaviour
         // Проверяем, что есть изображения
         if (images == null || images.Count == 0)
         {
-            Debug.LogError("[ImageCutscene] ОШИБКА: Нет изображений для кат-сцены! Список Images пустой или null!");
-            Debug.LogError("[ImageCutscene] Добавьте изображения в список Images в инспекторе компонента ImageCutscene!");
-            Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия изображений.");
+            // Debug.LogError("[ImageCutscene] ОШИБКА: Нет изображений для кат-сцены! Список Images пустой или null!");
+            // Debug.LogError("[ImageCutscene] Добавьте изображения в список Images в инспекторе компонента ImageCutscene!");
+            // Debug.LogError("[ImageCutscene] Загружаю следующую сцену через 1 секунду из-за отсутствия изображений.");
             Invoke(nameof(LoadNextScene), 1f);
             return;
         }
-        Debug.LogError($"[ImageCutscene] Найдено изображений: {images.Count}");
+        // Debug.LogError($"[ImageCutscene] Найдено изображений: {images.Count}");
 
         // Проверяем Canvas
         Canvas canvas = imageDisplay.GetComponentInParent<Canvas>();
@@ -121,23 +121,23 @@ public class ImageCutscene : MonoBehaviour
         }
         if (canvas != null)
         {
-            Debug.LogError($"[ImageCutscene] Canvas найден: {canvas.name}, активен: {canvas.gameObject.activeSelf}, активен в иерархии: {canvas.gameObject.activeInHierarchy}");
+            // Debug.LogError($"[ImageCutscene] Canvas найден: {canvas.name}, активен: {canvas.gameObject.activeSelf}, активен в иерархии: {canvas.gameObject.activeInHierarchy}");
             if (!canvas.gameObject.activeInHierarchy)
             {
                 canvas.gameObject.SetActive(true);
-                Debug.LogError("[ImageCutscene] Canvas был неактивен! Активировал его.");
+                // Debug.LogError("[ImageCutscene] Canvas был неактивен! Активировал его.");
             }
         }
         else
         {
-            Debug.LogError("[ImageCutscene] ОШИБКА: Canvas не найден!");
+            // Debug.LogError("[ImageCutscene] ОШИБКА: Canvas не найден!");
         }
 
         // Настраиваем кнопку пропуска
         SetupSkipButton();
 
         // Начинаем показ первого изображения
-        Debug.LogError("[ImageCutscene] Запускаю корутину ShowCutscene()...");
+        // Debug.LogError("[ImageCutscene] Запускаю корутину ShowCutscene()...");
         StartCoroutine(ShowCutscene());
     }
     
@@ -150,7 +150,7 @@ public class ImageCutscene : MonoBehaviour
             if (buttonObj != null)
             {
                 skipButton = buttonObj.GetComponent<Button>();
-                Debug.LogError($"[ImageCutscene] Кнопка Button_Skip найдена: {skipButton != null}");
+                // Debug.LogError($"[ImageCutscene] Кнопка Button_Skip найдена: {skipButton != null}");
             }
         }
         
@@ -159,17 +159,17 @@ public class ImageCutscene : MonoBehaviour
             skipButton.onClick.RemoveAllListeners();
             skipButton.onClick.AddListener(SkipCutscene);
             skipButton.gameObject.SetActive(true); // Показываем кнопку
-            Debug.LogError("[ImageCutscene] Кнопка пропуска настроена!");
+            // Debug.LogError("[ImageCutscene] Кнопка пропуска настроена!");
         }
         else
         {
-            Debug.LogWarning("[ImageCutscene] Кнопка пропуска не найдена. Можно пропустить кат-сцену кликом мыши.");
+            // Debug.LogWarning("[ImageCutscene] Кнопка пропуска не найдена. Можно пропустить кат-сцену кликом мыши.");
         }
     }
     
     private void SkipCutscene()
     {
-        Debug.LogError("[ImageCutscene] Кнопка пропуска нажата! Пропускаю кат-сцену.");
+        // Debug.LogError("[ImageCutscene] Кнопка пропуска нажата! Пропускаю кат-сцену.");
         skipRequested = true;
         currentImageIndex = images.Count; // Устанавливаем индекс за пределы, чтобы завершить цикл
         LoadNextScene();
@@ -194,13 +194,13 @@ public class ImageCutscene : MonoBehaviour
             // Проверяем, что изображение назначено
             if (images[i].image == null)
             {
-                Debug.LogWarning($"[ImageCutscene] Изображение {i} не назначено! Пропускаю.");
+                // Debug.LogWarning($"[ImageCutscene] Изображение {i} не назначено! Пропускаю.");
                 continue;
             }
 
             // Устанавливаем спрайт
             imageDisplay.sprite = images[i].image;
-            Debug.LogError($"[ImageCutscene] Установлен спрайт для изображения {i}: {images[i].image?.name ?? "NULL"}");
+            // Debug.LogError($"[ImageCutscene] Установлен спрайт для изображения {i}: {images[i].image?.name ?? "NULL"}");
             
             // Убеждаемся, что Image видимый
             if (canvasGroup != null && canvasGroup.alpha < 0.01f && !useFadeEffect)
@@ -256,7 +256,7 @@ public class ImageCutscene : MonoBehaviour
         if (mainCamera != null)
         {
             mainCamera.backgroundColor = backgroundColor;
-            Debug.LogError($"[ImageCutscene] Цвет фона камеры установлен: {backgroundColor}");
+            // Debug.LogError($"[ImageCutscene] Цвет фона камеры установлен: {backgroundColor}");
         }
         
         // Ищем Canvas в иерархии
@@ -304,11 +304,11 @@ public class ImageCutscene : MonoBehaviour
             // Устанавливаем цвет фона
             backgroundImage.color = backgroundColor;
             
-            Debug.LogError($"[ImageCutscene] Фоновое изображение установлено с цветом: {backgroundColor}");
+            // Debug.LogError($"[ImageCutscene] Фоновое изображение установлено с цветом: {backgroundColor}");
         }
         else
         {
-            Debug.LogWarning("[ImageCutscene] Canvas не найден, невозможно установить фоновое изображение!");
+            // Debug.LogWarning("[ImageCutscene] Canvas не найден, невозможно установить фоновое изображение!");
         }
     }
     
@@ -359,7 +359,7 @@ public class ImageCutscene : MonoBehaviour
         // Отмечаем, что кат-сцена была просмотрена
         PlayerPrefs.SetInt(INTRO_WATCHED_KEY, 1);
         PlayerPrefs.Save();
-        Debug.LogError("[ImageCutscene] Кат-сцена отмечена как просмотренная. В следующий раз она будет пропущена.");
+        // Debug.LogError("[ImageCutscene] Кат-сцена отмечена как просмотренная. В следующий раз она будет пропущена.");
         
         // Скрываем кнопку пропуска
         if (skipButton != null)
@@ -367,14 +367,14 @@ public class ImageCutscene : MonoBehaviour
             skipButton.gameObject.SetActive(false);
         }
         
-        Debug.LogError($"[ImageCutscene] LoadNextScene вызван! Загружаю сцену: {nextSceneName}");
+        // Debug.LogError($"[ImageCutscene] LoadNextScene вызван! Загружаю сцену: {nextSceneName}");
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
         }
         else
         {
-            Debug.LogError("[ImageCutscene] ОШИБКА: Next Scene Name не назначен!");
+            // Debug.LogError("[ImageCutscene] ОШИБКА: Next Scene Name не назначен!");
         }
     }
 }

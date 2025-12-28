@@ -293,7 +293,6 @@ public class GameManager : MonoBehaviour
         
         // Сбрасываем другие флаги состояния
         friendRescued = false;
-        hasKey = false;
         // НЕ сбрасываем openedRooms - они должны сохраняться до конца игры
     }
 

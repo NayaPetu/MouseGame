@@ -134,7 +134,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.9375, y: 0.8125}
+    oldSize: {x: 1.875, y: 1.625}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
   itemName: "\u0421\u044B\u0440 \u0441\u0438\u043B\u044B"
   isConsumable: 0
   sizeMultiplier: {x: 1, y: 1, z: 1}
-  duration: 5
+  duration: 10
 --- !u!114 &392936592185674161
 MonoBehaviour:
   m_ObjectHideFlags: 0

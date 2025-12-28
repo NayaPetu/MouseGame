@@ -9,6 +9,7 @@ TagManager:
   - CatnipAttractor
   - Doors
   - SpawnPoint_Letter
+  - friend
   layers:
   - Default
   - TransparentFX

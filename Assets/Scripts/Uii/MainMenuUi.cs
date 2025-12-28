@@ -20,11 +20,6 @@ public class MainMenuUI : MonoBehaviour
     [Header("Options UI")]
     public Toggle soundToggle;
     public Slider volumeSlider;
-    
-    [Header("About Panel UI")]
-    [TextArea(10, 20)]
-    public string aboutText = "О игре:\n\nЭто игра о мыши, которая ищет сыр...\n\nЗдесь вы можете добавить описание вашей игры, информацию о разработчиках, версии игры и другую полезную информацию.";
-    public Text aboutTextDisplay; // Текстовое поле для отображения информации в панели "О игре"
 
     private void Awake()
     {
@@ -110,9 +105,6 @@ public class MainMenuUI : MonoBehaviour
             soundToggle.isOn = soundOn;
             soundToggle.onValueChanged.AddListener(AudioManager.Instance.SetSound);
         }
-        
-        // Настраиваем текст в панели "О игре"
-        SetupAboutText();
     }
 
     // ---------------- ������ ���� ----------------
@@ -197,74 +189,5 @@ public class MainMenuUI : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-    
-    private void SetupAboutText()
-    {
-        // Если текстовое поле не назначено, пытаемся найти его в панели
-        if (aboutTextDisplay == null && aboutPanel != null)
-        {
-            // Ищем Text компонент в панели "О игре"
-            aboutTextDisplay = aboutPanel.GetComponentInChildren<Text>();
-            
-            // Если не найден Text, пытаемся найти TMPro
-            if (aboutTextDisplay == null)
-            {
-                var tmpText = aboutPanel.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-                if (tmpText != null)
-                {
-                    Debug.LogWarning("[MainMenuUI] Найден TextMeshProUGUI в панели 'О игре', но требуется обычный Text компонент. Создаю Text компонент.");
-                }
-            }
-            
-            // Если все еще не найден, создаем новый Text компонент
-            if (aboutTextDisplay == null)
-            {
-                // Ищем Panel внутри About_panel для размещения текста
-                Transform panelTransform = aboutPanel.transform.Find("Panel");
-                if (panelTransform == null)
-                {
-                    // Если нет панели, используем саму aboutPanel
-                    panelTransform = aboutPanel.transform;
-                }
-                
-                GameObject textObject = new GameObject("AboutText");
-                textObject.transform.SetParent(panelTransform, false);
-                
-                RectTransform textRect = textObject.AddComponent<RectTransform>();
-                textRect.anchorMin = Vector2.zero;
-                textRect.anchorMax = Vector2.one;
-                textRect.offsetMin = new Vector2(20, 20);
-                textRect.offsetMax = new Vector2(-20, -20);
-                
-                aboutTextDisplay = textObject.AddComponent<Text>();
-                try
-                {
-                    aboutTextDisplay.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                }
-                catch
-                {
-                    // Используем шрифт по умолчанию, если не удалось загрузить
-                }
-                aboutTextDisplay.fontSize = 20;
-                aboutTextDisplay.color = Color.white;
-                aboutTextDisplay.alignment = TextAnchor.UpperLeft;
-                aboutTextDisplay.horizontalOverflow = HorizontalWrapMode.Wrap;
-                aboutTextDisplay.verticalOverflow = VerticalWrapMode.Overflow;
-                
-                Debug.Log("[MainMenuUI] Создан новый Text компонент для панели 'О игре'");
-            }
-        }
-        
-        // Устанавливаем текст, если компонент найден
-        if (aboutTextDisplay != null)
-        {
-            aboutTextDisplay.text = aboutText;
-            Debug.Log("[MainMenuUI] Текст установлен в панели 'О игре'");
-        }
-        else
-        {
-            Debug.LogWarning("[MainMenuUI] Не удалось найти или создать Text компонент для панели 'О игре'. Убедитесь, что aboutPanel назначен в инспекторе.");
-        }
     }
 }

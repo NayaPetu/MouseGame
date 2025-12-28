@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -3225728935929761065}
   m_Layer: 7
   m_Name: lilu
-  m_TagString: Untagged
+  m_TagString: friend
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 6742076583423647180, guid: 592d182859a242f4a96c67fd07b4893a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

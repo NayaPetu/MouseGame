@@ -295,7 +295,7 @@ public class EnemyAI : MonoBehaviour
                     Door doorScript = targetDoor.GetComponent<Door>();
                     if (doorScript != null)
                     {
-                        Debug.Log($"[EnemyAI Door Debug] Немедленная телепортация: расстояние={distanceToTarget:F2}, в триггере={isInTrigger}!");
+                        // Debug.Log($"[EnemyAI Door Debug] Немедленная телепортация: расстояние={distanceToTarget:F2}, в триггере={isInTrigger}!");
                         doorScript.ForceTeleportEnemy(transform);
                         return;
                     }
@@ -318,18 +318,18 @@ public class EnemyAI : MonoBehaviour
                         Vector2 enemyPos = rb.position;
                         bool isInDoorRoom = targetDoor.currentRoom != null && targetDoor.currentRoom == currentRoom;
                         
-                        Debug.LogWarning(
-                            $"[EnemyAI Door Debug] Застревание у двери!\n" +
-                            $"  Расстояние до двери: {distanceToTarget:F2}\n" +
-                            $"  Позиция врага: {enemyPos}\n" +
-                            $"  Позиция двери: {doorPos}\n" +
-                            $"  Враг в комнате двери: {isInDoorRoom}\n" +
-                            $"  Враг в триггере двери: {isInTrigger}\n" +
-                            $"  Текущая комната: {(currentRoom != null ? currentRoom.name : "null")}\n" +
-                            $"  Комната двери: {(targetDoor.currentRoom != null ? targetDoor.currentRoom.name : "null")}\n" +
-                            $"  targetDoor != null: {targetDoor != null}\n" +
-                            $"  hasSeenPlayer: {hasSeenPlayer}"
-                        );
+                        // Debug.LogWarning(
+                        //     $"[EnemyAI Door Debug] Застревание у двери!\n" +
+                        //     $"  Расстояние до двери: {distanceToTarget:F2}\n" +
+                        //     $"  Позиция врага: {enemyPos}\n" +
+                        //     $"  Позиция двери: {doorPos}\n" +
+                        //     $"  Враг в комнате двери: {isInDoorRoom}\n" +
+                        //     $"  Враг в триггере двери: {isInTrigger}\n" +
+                        //     $"  Текущая комната: {(currentRoom != null ? currentRoom.name : "null")}\n" +
+                        //     $"  Комната двери: {(targetDoor.currentRoom != null ? targetDoor.currentRoom.name : "null")}\n" +
+                        //     $"  targetDoor != null: {targetDoor != null}\n" +
+                        //     $"  hasSeenPlayer: {hasSeenPlayer}"
+                        // );
                     }
                     
                     // Если застряли более 0.3 секунды - принудительно телепортируем
@@ -338,7 +338,7 @@ public class EnemyAI : MonoBehaviour
                         Door doorScript = targetDoor.GetComponent<Door>();
                         if (doorScript != null)
                         {
-                            Debug.LogWarning($"[EnemyAI Door Debug] Принудительная телепортация после застревания 0.3 сек!");
+                            // Debug.LogWarning($"[EnemyAI Door Debug] Принудительная телепортация после застревания 0.3 сек!");
                             doorScript.ForceTeleportEnemy(transform);
                             return;
                         }
@@ -347,7 +347,7 @@ public class EnemyAI : MonoBehaviour
                     // Если застряли более 1 секунды - выбираем новую цель
                     if (doorStuckTimer > 1f)
                     {
-                        Debug.LogWarning($"[EnemyAI Door Debug] Враг застрял у двери более 1 сек, выбираю новую цель");
+                        // Debug.LogWarning($"[EnemyAI Door Debug] Враг застрял у двери более 1 сек, выбираю новую цель");
                         patrolDoorTarget = null;
                         hasPatrolTarget = false;
                         doorStuckTimer = 0f;
@@ -431,14 +431,14 @@ public class EnemyAI : MonoBehaviour
                     {
                         Collider2D doorCol = debugDoor.GetComponent<Collider2D>();
                         bool willBeInTrigger = doorCol != null && doorCol.isTrigger && doorCol.OverlapPoint(newPos);
-                        Debug.Log(
-                            $"[EnemyAI Door Debug] Движение к двери:\n" +
-                            $"  Дистанция: {distanceToTarget:F2}\n" +
-                            $"  Текущая позиция: {rb.position}\n" +
-                            $"  Новая позиция: {newPos}\n" +
-                            $"  Направление: {dir}\n" +
-                            $"  Будет в триггере: {willBeInTrigger}"
-                        );
+                        // Debug.Log(
+                        //     $"[EnemyAI Door Debug] Движение к двери:\n" +
+                        //     $"  Дистанция: {distanceToTarget:F2}\n" +
+                        //     $"  Текущая позиция: {rb.position}\n" +
+                        //     $"  Новая позиция: {newPos}\n" +
+                        //     $"  Направление: {dir}\n" +
+                        //     $"  Будет в триггере: {willBeInTrigger}"
+                        // );
                     }
                 }
                 
@@ -521,7 +521,7 @@ public class EnemyAI : MonoBehaviour
         
         if (distanceToPlayer <= catchDistance)
         {
-            Debug.Log($"[EnemyAI] Player caught! Distance: {distanceToPlayer:F2}, EnemyPos: {enemyPos}, PlayerPos: {playerPos}");
+            // Debug.Log($"[EnemyAI] Player caught! Distance: {distanceToPlayer:F2}, EnemyPos: {enemyPos}, PlayerPos: {playerPos}");
             GameManager.Instance.OnPlayerCaught();
         }
     }

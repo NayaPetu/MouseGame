@@ -6,38 +6,52 @@ public class PlayerInventory : MonoBehaviour
 
     private bool hasKey = false;
     private bool hasRecipe = false;
-    private bool hasÑatnip = false;
+    private bool hasCatnip = false;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
+        {
             Destroy(gameObject);
-        else
-            Instance = this;
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Ğ¡Ğ¾Ñ…Ñ€Ğ°Ğ½ÑĞµĞ¼ Ğ¸Ğ½Ğ²ĞµĞ½Ñ‚Ğ°Ñ€ÑŒ Ğ¼ĞµĞ¶Ğ´Ñƒ ÑÑ†ĞµĞ½Ğ°Ğ¼Ğ¸
     }
 
-    // ===== ÊËŞ× =====
-    public void PickKey() => hasKey = true;
+    // ===== ĞšĞ»ÑÑ‡ =====
+    public void PickKey()
+    {
+        hasKey = true;
+        Debug.Log("[PlayerInventory] ĞšĞ»ÑÑ‡ Ğ¿Ğ¾Ğ´Ğ¾Ğ±Ñ€Ğ°Ğ½!");
+    }
+    
     public bool HasKey() => hasKey;
-    public void UseKey() => hasKey = false;
+    
+    public void UseKey()
+    {
+        hasKey = false;
+        Debug.Log("[PlayerInventory] ĞšĞ»ÑÑ‡ Ğ¸ÑĞ¿Ğ¾Ğ»ÑŒĞ·Ğ¾Ğ²Ğ°Ğ½!");
+    }
 
-    // ===== ĞÅÖÅÏÒ =====
+    // ===== Ğ ĞµÑ†ĞµĞ¿Ñ‚ =====
     public void PickRecipe()
     {
         hasRecipe = true;
-        Debug.Log("Ğåöåïò äîáàâëåí â èíâåíòàğü!");
+        Debug.Log("Ğ ĞµÑ†ĞµĞ¿Ñ‚ Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ĞµĞ½ Ğ² Ğ¸Ğ½Ğ²ĞµĞ½Ñ‚Ğ°Ñ€ÑŒ!");
     }
 
     public void UseRecipe() => hasRecipe = false;
     public bool HasRecipe() => hasRecipe;
 
-    // ===== ÌßÒÀ =====
+    // ===== ĞœÑÑ‚Ğ° =====
     public void PickCatnip()
     {
-        hasÑatnip = true;
-        Debug.Log("Ìÿòà ïîäîáğàíà!");
+        hasCatnip = true;
+        Debug.Log("ĞœÑÑ‚Ğ° Ğ¿Ğ¾Ğ´Ğ¾Ğ±Ñ€Ğ°Ğ½Ğ°!");
     }
 
-    public bool HasCatnip() => hasÑatnip;
-    public void UseCatnip() => hasÑatnip = false;
+    public bool HasCatnip() => hasCatnip;
+    public void UseCatnip() => hasCatnip = false;
 }

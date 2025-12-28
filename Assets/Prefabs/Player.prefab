@@ -84,7 +84,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1509997195
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 7972042343384831389, guid: 038f5b01664548d4babeb278eb32db84, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -157,9 +157,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2f992b5ea4eff46af46c61f0252b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 6
-  acceleration: 10
-  deceleration: 15
+  moveSpeed: 9
+  acceleration: 13
+  deceleration: 13
   interactionRadius: 1
   interactableLayer:
     serializedVersion: 2

@@ -6,8 +6,14 @@ public class Key : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            if (PlayerInventory.Instance == null)
+            {
+                Debug.LogError("[Key] PlayerInventory.Instance СЂР°РІРµРЅ null! РљР»СЋС‡ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїРѕРґРѕР±СЂР°РЅ.");
+                return;
+            }
+            
             PlayerInventory.Instance.PickKey();
-            Destroy(gameObject); // убираем ключ с карты
+            Destroy(gameObject); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
         }
     }
 }
