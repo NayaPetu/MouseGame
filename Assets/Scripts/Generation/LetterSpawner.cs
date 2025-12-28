@@ -23,7 +23,9 @@ public class LetterSpawner : MonoBehaviour
 
     public void InitializeFromRoom(GameObject room)
     {
-        if (initialized) return;
+        // Очищаем предыдущие письма перед спавном нового этажа
+        Clear();
+        
         if (letterPrefab == null)
         {
             Debug.LogWarning($"[LetterSpawner] Letter prefab is not assigned!");
@@ -155,6 +157,12 @@ public class LetterSpawner : MonoBehaviour
                 Destroy(letter);
         }
         spawnedLetters.Clear();
+        initialized = false;
+    }
+
+    // Сбрасываем состояние при включении (для нового этажа)
+    private void OnEnable()
+    {
         initialized = false;
     }
 }

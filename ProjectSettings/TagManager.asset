@@ -8,6 +8,7 @@ TagManager:
   - SpawnPoint
   - CatnipAttractor
   - Doors
+  - SpawnPoint_Letter
   layers:
   - Default
   - TransparentFX
