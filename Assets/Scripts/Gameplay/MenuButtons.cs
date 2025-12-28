@@ -11,6 +11,8 @@ public class MenuButtons : MonoBehaviour
     [Header("Настройки кат-сцены")]
     [SerializeField] private bool skipIntroCutscene = false; // Пропустить интро-катсцену (можно легко вернуть обратно)
     
+    private const string INTRO_WATCHED_KEY = "IntroCutsceneWatched"; // Ключ для PlayerPrefs
+    
     [Header("Кнопка начала игры")]
     [SerializeField] private Button startButton; // Кнопка "Начать"
     
@@ -37,11 +39,24 @@ public class MenuButtons : MonoBehaviour
         // Сбрасываем флаг при загрузке новой сцены
         isLoadingScene = false;
         Debug.LogError($"[MenuButtons] Сцена загружена: {scene.name}, флаг isLoadingScene сброшен");
+        
+        // Если загрузили меню - сбрасываем флаг просмотра кат-сцены
+        if (scene.name == "menu")
+        {
+            PlayerPrefs.DeleteKey(INTRO_WATCHED_KEY);
+            PlayerPrefs.Save();
+            Debug.LogError("[MenuButtons] Флаг просмотра кат-сцены сброшен при загрузке меню");
+        }
     }
     
     private void Start()
     {
         Debug.LogError("[MenuButtons] Start вызван!");
+        
+        // Сбрасываем флаг просмотра кат-сцены при загрузке меню (чтобы показывать кат-сцену при каждом запуске)
+        PlayerPrefs.DeleteKey(INTRO_WATCHED_KEY);
+        PlayerPrefs.Save();
+        Debug.LogError("[MenuButtons] Флаг просмотра кат-сцены сброшен для нового запуска игры");
         
         // Если кнопка не назначена в Inspector, пытаемся найти её автоматически
         if (startButton == null)
@@ -144,10 +159,16 @@ public class MenuButtons : MonoBehaviour
             mainMenuUI.enabled = false;
         }
         
+        // Проверяем, нужно ли пропустить кат-сцену
+        // Примечание: флаг просмотра сбрасывается при загрузке меню, поэтому кат-сцена будет показываться при каждом запуске игры
         if (skipIntroCutscene)
         {
             // Прямо загружаем main, пропуская кат-сцену
-            Debug.LogError("[MenuButtons] Пропускаем кат-сцену, загружаем main");
+            Debug.LogError($"[MenuButtons] Пропускаем кат-сцену (skipIntroCutscene: {skipIntroCutscene}), загружаем main");
+            
+            // Скрываем Canvas из menu перед загрузкой main
+            HideMenuCanvas();
+            
             SceneManager.LoadScene("main");
         }
         else
@@ -161,6 +182,9 @@ public class MenuButtons : MonoBehaviour
                 Debug.LogError($"[MenuButtons] Сцена {introCutsceneSceneName} доступна, загружаю...");
                 Debug.LogError($"[MenuButtons] Текущая сцена перед загрузкой: {SceneManager.GetActiveScene().name}");
                 
+                // Скрываем Canvas из menu перед загрузкой кат-сцены
+                HideMenuCanvas();
+                
                 // Используем LoadSceneMode.Single для гарантии, что предыдущая сцена выгрузится
                 SceneManager.LoadScene(introCutsceneSceneName, LoadSceneMode.Single);
                 Debug.LogError($"[MenuButtons] SceneManager.LoadScene вызван для {introCutsceneSceneName} с режимом Single");
@@ -172,8 +196,24 @@ public class MenuButtons : MonoBehaviour
             {
                 Debug.LogError($"[MenuButtons] ОШИБКА: Сцена {introCutsceneSceneName} НЕ доступна! Проверьте Build Settings!");
                 Debug.LogError($"[MenuButtons] Загружаю main вместо кат-сцены");
+                
+                HideMenuCanvas();
                 isLoadingScene = false; // Сбрасываем флаг перед загрузкой main
                 SceneManager.LoadScene("main");
+            }
+        }
+    }
+    
+    private void HideMenuCanvas()
+    {
+        // Находим и скрываем все Canvas на сцене menu
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        foreach (Canvas canvas in canvases)
+        {
+            if (canvas.gameObject.scene.name == "menu")
+            {
+                Debug.LogError($"[MenuButtons] Скрываю Canvas перед загрузкой новой сцены: {canvas.gameObject.name}");
+                canvas.gameObject.SetActive(false);
             }
         }
     }

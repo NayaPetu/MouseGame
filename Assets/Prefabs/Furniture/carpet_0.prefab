@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7129404129946026013}
   - component: {fileID: 2859378578117251861}
   - component: {fileID: 3226718938293474410}
+  - component: {fileID: 5599779341434537507}
   m_Layer: 0
   m_Name: carpet_0
   m_TagString: Untagged
@@ -165,3 +166,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.875, y: 2.53125}
   m_EdgeRadius: 0
+--- !u!114 &5599779341434537507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6696853485929946685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67de61371f2cb84469f0237b324f3e18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Furniture
+  sizeInTiles: {x: 2, y: 4}
+  isWalkable: 1
+  autoSetupCollider: 1

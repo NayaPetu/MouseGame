@@ -43,8 +43,8 @@ public class GameManager : MonoBehaviour
     private void SetupScreenResolution()
     {
         // Параметры разрешения для формата 3:4
-        int targetWidth = 768;  // Ширина
-        int targetHeight = 1024; // Высота (формат 3:4)
+        int targetWidth = 1024;  // Ширина
+        int targetHeight = 768; // Высота (формат 3:4)
         bool fullscreen = false; // Оконный режим
         
         Debug.Log($"[GameManager] Устанавливаю разрешение: {targetWidth}x{targetHeight}");
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
     
     private void SetupLetterboxing(int targetWidth, int targetHeight)
     {
-        float targetAspect = (float)targetWidth / targetHeight; // 3:4 = 0.75
+        float targetAspect = (float)targetWidth / targetHeight; // 1024/768 = 4:3 = 1.333
         float windowAspect = (float)Screen.width / Screen.height;
         
         Camera mainCamera = Camera.main;
@@ -91,6 +91,20 @@ public class GameManager : MonoBehaviour
         }
     }
     
+    private void ShowMenuCanvas()
+    {
+        // Находим и показываем все Canvas на сцене menu
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        foreach (Canvas canvas in canvases)
+        {
+            if (canvas.gameObject.scene.name == "menu")
+            {
+                Debug.Log($"[GameManager] Показываю Canvas в меню: {canvas.gameObject.name}");
+                canvas.gameObject.SetActive(true);
+            }
+        }
+    }
+    
     private void OnDestroy()
     {
         // Отписываемся от события при уничтожении
@@ -102,7 +116,7 @@ public class GameManager : MonoBehaviour
         Debug.LogError($"[GameManager] OnSceneLoaded вызван для сцены: {scene.name}, режим: {mode}");
         
         // Обновляем letterboxing для новой сцены
-        SetupLetterboxing(768, 1024);
+        SetupLetterboxing(1024, 768);
         
         // КРИТИЧЕСКАЯ ПРОВЕРКА: если только что загрузили IntroCutscene, но получаем main - это ошибка!
         if (scene.name == "main")
@@ -116,10 +130,12 @@ public class GameManager : MonoBehaviour
             FindGameOverPanel();
             ResetGameState();
         }
-        // При загрузке сцены menu - также сбрасываем состояние
+        // При загрузке сцены menu - также сбрасываем состояние и показываем Canvas
         else if (scene.name == "menu")
         {
             ResetGameState();
+            // Показываем Canvas в меню
+            ShowMenuCanvas();
         }
         // При загрузке IntroCutscene - ничего не делаем, просто логируем
         else if (scene.name == "IntroCutscene")

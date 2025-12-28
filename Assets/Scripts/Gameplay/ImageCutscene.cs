@@ -26,10 +26,14 @@ public class ImageCutscene : MonoBehaviour
     [SerializeField] private bool useFadeEffect = false; // Использовать эффект плавного появления (false = мгновенное появление)
     [SerializeField] private Color backgroundColor = Color.black; // Цвет фона (по умолчанию черный)
     
+    [Header("Кнопка пропуска")]
+    [SerializeField] private Button skipButton; // Кнопка для пропуска кат-сцены
+    
     private int currentImageIndex = 0;
     private bool skipRequested = false;
     private CanvasGroup canvasGroup;
     private Image backgroundImage; // Фоновое изображение для черного фона
+    private const string INTRO_WATCHED_KEY = "IntroCutsceneWatched"; // Ключ для PlayerPrefs
 
     private void Awake()
     {
@@ -38,11 +42,11 @@ public class ImageCutscene : MonoBehaviour
         Debug.LogError($"[ImageCutscene] GameObject активен: {gameObject.activeSelf}, активен в иерархии: {gameObject.activeInHierarchy}");
         Debug.LogError($"[ImageCutscene] Компонент включен: {enabled}");
         
-        // Проверяем, что мы действительно на правильной сцене
+        // Проверяем, что мы на правильной сцене (IntroCutscene или EndCutscene)
         string currentScene = SceneManager.GetActiveScene().name;
-        if (currentScene != "IntroCutscene")
+        if (currentScene != "IntroCutscene" && currentScene != "EndCutscene")
         {
-            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Awake вызван на неправильной сцене! Ожидалась IntroCutscene, получена: {currentScene}");
+            Debug.LogError($"[ImageCutscene] ВНИМАНИЕ: Awake вызван на неожиданной сцене: {currentScene}");
         }
         
         // Пытаемся вызвать Start вручную через корутину
@@ -58,10 +62,6 @@ public class ImageCutscene : MonoBehaviour
         if (gameObject.activeInHierarchy)
         {
             Debug.LogError("[ImageCutscene] DelayedStartCheck: GameObject все еще активен через кадр после Awake");
-            if (sceneAfterFrame != "IntroCutscene")
-            {
-                Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Сцена изменилась с IntroCutscene на {sceneAfterFrame} за один кадр!");
-            }
         }
         else
         {
@@ -72,10 +72,6 @@ public class ImageCutscene : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         string sceneAfterDelay = SceneManager.GetActiveScene().name;
         Debug.LogError($"[ImageCutscene] DelayedStartCheck: Текущая сцена через 0.1 сек: {sceneAfterDelay}");
-        if (sceneAfterDelay != "IntroCutscene")
-        {
-            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Сцена была изменена с IntroCutscene на {sceneAfterDelay}!");
-        }
     }
     
     private void OnEnable()
@@ -88,12 +84,11 @@ public class ImageCutscene : MonoBehaviour
         string currentScene = SceneManager.GetActiveScene().name;
         Debug.LogError($"[ImageCutscene] Start вызван! Текущая сцена: {currentScene}");
         
-        // КРИТИЧЕСКАЯ ПРОВЕРКА: убеждаемся, что мы на правильной сцене
-        if (currentScene != "IntroCutscene")
+        // Проверяем, что мы на правильной сцене (IntroCutscene или EndCutscene)
+        if (currentScene != "IntroCutscene" && currentScene != "EndCutscene")
         {
-            Debug.LogError($"[ImageCutscene] КРИТИЧЕСКАЯ ОШИБКА: Start вызван на неправильной сцене! Ожидалась IntroCutscene, получена: {currentScene}");
-            Debug.LogError("[ImageCutscene] Прерываю выполнение Start() чтобы избежать загрузки неправильной сцены!");
-            return;
+            Debug.LogError($"[ImageCutscene] ВНИМАНИЕ: Start вызван на неожиданной сцене: {currentScene}");
+            Debug.LogError("[ImageCutscene] Продолжаю выполнение, но могут быть проблемы!");
         }
         
         Debug.LogError("[ImageCutscene] Проверяю настройки...");
@@ -136,9 +131,46 @@ public class ImageCutscene : MonoBehaviour
         }
         Debug.LogError($"[ImageCutscene] Найдено изображений: {images.Count}");
 
+        // Настраиваем кнопку пропуска
+        SetupSkipButton();
+
         // Начинаем показ первого изображения
         Debug.LogError("[ImageCutscene] Запускаю корутину ShowCutscene()...");
         StartCoroutine(ShowCutscene());
+    }
+    
+    private void SetupSkipButton()
+    {
+        // Если кнопка не назначена, пытаемся найти её автоматически
+        if (skipButton == null)
+        {
+            GameObject buttonObj = GameObject.Find("Button_Skip");
+            if (buttonObj != null)
+            {
+                skipButton = buttonObj.GetComponent<Button>();
+                Debug.LogError($"[ImageCutscene] Кнопка Button_Skip найдена: {skipButton != null}");
+            }
+        }
+        
+        if (skipButton != null)
+        {
+            skipButton.onClick.RemoveAllListeners();
+            skipButton.onClick.AddListener(SkipCutscene);
+            skipButton.gameObject.SetActive(true); // Показываем кнопку
+            Debug.LogError("[ImageCutscene] Кнопка пропуска настроена!");
+        }
+        else
+        {
+            Debug.LogWarning("[ImageCutscene] Кнопка пропуска не найдена. Можно пропустить кат-сцену кликом мыши.");
+        }
+    }
+    
+    private void SkipCutscene()
+    {
+        Debug.LogError("[ImageCutscene] Кнопка пропуска нажата! Пропускаю кат-сцену.");
+        skipRequested = true;
+        currentImageIndex = images.Count; // Устанавливаем индекс за пределы, чтобы завершить цикл
+        LoadNextScene();
     }
 
     private void Update()
@@ -316,6 +348,17 @@ public class ImageCutscene : MonoBehaviour
 
     private void LoadNextScene()
     {
+        // Отмечаем, что кат-сцена была просмотрена
+        PlayerPrefs.SetInt(INTRO_WATCHED_KEY, 1);
+        PlayerPrefs.Save();
+        Debug.LogError("[ImageCutscene] Кат-сцена отмечена как просмотренная. В следующий раз она будет пропущена.");
+        
+        // Скрываем кнопку пропуска
+        if (skipButton != null)
+        {
+            skipButton.gameObject.SetActive(false);
+        }
+        
         Debug.LogError($"[ImageCutscene] LoadNextScene вызван! Загружаю сцену: {nextSceneName}");
         if (!string.IsNullOrEmpty(nextSceneName))
         {
